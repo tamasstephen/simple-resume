@@ -4,24 +4,8 @@ import {
   type ContactHeader,
   type Summary,
   type Template,
-  type ExperienceItem,
-  type EducationItem,
-  type SkillItem,
-  type ProjectItem,
-  type CertificationItem,
-  type LanguageItem,
-  type LinkItem,
 } from "../schema/resume";
 import type { RepeatableSection } from "./repeatableSections";
-
-export type SectionItem =
-  | ExperienceItem
-  | EducationItem
-  | SkillItem
-  | ProjectItem
-  | CertificationItem
-  | LanguageItem
-  | LinkItem;
 
 export interface ResumeState {
   committed: Resume;
