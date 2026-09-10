@@ -17,7 +17,19 @@ export default tseslint.config(
       globals: {
         ...globals.browser,
         ...globals.es2021,
+      },
+    },
+  },
+  {
+    // Build/test config files run under Node, not the browser — keep Node
+    // globals (e.g. `process`) scoped to them instead of leaking into src/**.
+    files: ["*.config.{js,ts}", "eslint.config.js"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: {
         ...globals.node,
+        ...globals.es2021,
       },
     },
   },

@@ -1,5 +1,5 @@
 import { InMemoryPersistence } from "./InMemoryPersistence";
-import { LocalStoragePersistence } from "./LocalStoragePersistence";
+import { LocalStoragePersistence, DEFAULT_KEY } from "./LocalStoragePersistence";
 import { emptyResume } from "../schema/resume";
 
 describe("InMemoryPersistence", () => {
@@ -20,6 +20,22 @@ describe("InMemoryPersistence", () => {
     store.clear();
     expect(store.load()).toBeNull();
   });
+
+  test("mutating the object passed to save() does not change what load() returns", () => {
+    const store = new InMemoryPersistence();
+    const resume = { ...emptyResume(), contact: { ...emptyResume().contact, name: "Ada" } };
+    store.save(resume);
+    resume.contact.name = "Mutated";
+    expect(store.load()?.contact.name).toBe("Ada");
+  });
+
+  test("mutating a loaded object does not change what a later load() returns", () => {
+    const store = new InMemoryPersistence();
+    store.save({ ...emptyResume(), contact: { ...emptyResume().contact, name: "Ada" } });
+    const loaded = store.load();
+    if (loaded) loaded.contact.name = "Mutated";
+    expect(store.load()?.contact.name).toBe("Ada");
+  });
 });
 
 describe("LocalStoragePersistence", () => {
@@ -33,12 +49,12 @@ describe("LocalStoragePersistence", () => {
   });
 
   test("returns null when stored JSON is invalid against the schema", () => {
-    window.localStorage.setItem("resume-builder:v1", JSON.stringify({ nope: true }));
+    window.localStorage.setItem(DEFAULT_KEY, JSON.stringify({ nope: true }));
     expect(new LocalStoragePersistence().load()).toBeNull();
   });
 
   test("returns null when stored value is not JSON", () => {
-    window.localStorage.setItem("resume-builder:v1", "{not json");
+    window.localStorage.setItem(DEFAULT_KEY, "{not json");
     expect(new LocalStoragePersistence().load()).toBeNull();
   });
 

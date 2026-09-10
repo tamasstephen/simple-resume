@@ -5,11 +5,11 @@ export class InMemoryPersistence implements PersistenceProvider {
   private stored: Resume | null = null;
 
   load(): Resume | null {
-    return this.stored;
+    return this.stored === null ? null : structuredClone(this.stored);
   }
 
   save(resume: Resume): void {
-    this.stored = resume;
+    this.stored = structuredClone(resume);
   }
 
   clear(): void {

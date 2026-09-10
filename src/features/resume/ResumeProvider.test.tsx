@@ -8,7 +8,6 @@ function Probe() {
   const { state, dispatch } = useResume();
   return (
     <div>
-      <span data-testid="count">{state.committed.experience.length}</span>
       <span data-testid="skills">{state.committed.skills.length}</span>
       <button
         onClick={() =>

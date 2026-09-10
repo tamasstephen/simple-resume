@@ -1,7 +1,7 @@
 import { resumeSchema, type Resume } from "../schema/resume";
 import type { PersistenceProvider } from "./PersistenceProvider";
 
-const DEFAULT_KEY = "resume-builder:v1";
+export const DEFAULT_KEY = "resume-builder:v1";
 
 export class LocalStoragePersistence implements PersistenceProvider {
   constructor(
