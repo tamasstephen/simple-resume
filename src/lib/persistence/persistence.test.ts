@@ -45,4 +45,15 @@ describe("LocalStoragePersistence", () => {
   test("isAvailable reports true in jsdom", () => {
     expect(LocalStoragePersistence.isAvailable()).toBe(true);
   });
+
+  test("returns null when nothing is stored", () => {
+    expect(new LocalStoragePersistence().load()).toBeNull();
+  });
+
+  test("clear removes stored data", () => {
+    const store = new LocalStoragePersistence();
+    store.save(emptyResume());
+    store.clear();
+    expect(store.load()).toBeNull();
+  });
 });
