@@ -42,3 +42,9 @@ test("reducer does not mutate the previous state", () => {
   expect(state.committed.experience).toHaveLength(0);
   expect(next).not.toBe(state);
 });
+
+test("SAVE_ITEM rejects an item that does not match its section's type at compile time", () => {
+  const state = initialState();
+  // @ts-expect-error - a SkillItem-shaped object is not a valid "experience" item.
+  resumeReducer(state, { type: "SAVE_ITEM", section: "experience", item: { id: "x", name: "TS" } });
+});
