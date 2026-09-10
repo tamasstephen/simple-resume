@@ -1,6 +1,6 @@
 import { InMemoryPersistence } from "./InMemoryPersistence";
 import { LocalStoragePersistence, DEFAULT_KEY } from "./LocalStoragePersistence";
-import { emptyResume } from "../schema/resume";
+import { emptyResume, SCHEMA_VERSION } from "../schema/resume";
 
 describe("InMemoryPersistence", () => {
   test("returns null before any save", () => {
@@ -55,6 +55,12 @@ describe("LocalStoragePersistence", () => {
 
   test("returns null when stored value is not JSON", () => {
     window.localStorage.setItem(DEFAULT_KEY, "{not json");
+    expect(new LocalStoragePersistence().load()).toBeNull();
+  });
+
+  test("returns null when stored schemaVersion is unknown (newer than supported)", () => {
+    const futureDoc = { ...emptyResume(), schemaVersion: SCHEMA_VERSION + 998 };
+    window.localStorage.setItem(DEFAULT_KEY, JSON.stringify(futureDoc));
     expect(new LocalStoragePersistence().load()).toBeNull();
   });
 
