@@ -45,7 +45,7 @@
 - Produces: `printStyles: string` — one `@media print` block, self-contained (no design tokens, literal colors like `pageStyles`).
 - Consumes: nothing new; `App` renders `<style>{printStyles}</style>` exactly once, inside the provider.
 
-- [ ] **Step 1: Write failing tests for the print stylesheet**
+- [x] **Step 1: Write failing tests for the print stylesheet**
 
 Create `src/features/render/printStyles.test.ts`:
 ```ts
@@ -87,12 +87,12 @@ test("does not duplicate the print rules Paged.js injects itself", () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `npm test -- printStyles`
 Expected: FAIL — module not found.
 
-- [ ] **Step 3: Implement the print stylesheet**
+- [x] **Step 3: Implement the print stylesheet**
 
 Create `src/features/render/printStyles.ts`:
 ```ts
@@ -124,12 +124,12 @@ export const printStyles = `
 `;
 ```
 
-- [ ] **Step 4: Run the print-styles tests to verify they pass**
+- [x] **Step 4: Run the print-styles tests to verify they pass**
 
 Run: `npm test -- printStyles`
 Expected: PASS (3 tests).
 
-- [ ] **Step 5: Add the failing App mount test**
+- [x] **Step 5: Add the failing App mount test**
 
 Append to `src/App.test.tsx` (existing mock and smoke test stay verbatim), adding the import at the top:
 ```tsx
@@ -143,12 +143,12 @@ test("mounts the print stylesheet for native PDF export", () => {
 });
 ```
 
-- [ ] **Step 6: Run to verify it fails**
+- [x] **Step 6: Run to verify it fails**
 
 Run: `npm test -- App`
 Expected: FAIL — no `<style>` element is rendered yet (`querySelector` returns null).
 
-- [ ] **Step 7: Mount the style element in App**
+- [x] **Step 7: Mount the style element in App**
 
 Modify `src/App.tsx` — add the import and render the print CSS once, as the first child inside the provider (position within `#root` is irrelevant to cascade; only "inside `#root`, after `<head>`" matters):
 ```tsx
@@ -162,12 +162,12 @@ import { printStyles } from "./features/render/printStyles";
       <AppHeader />
 ```
 
-- [ ] **Step 8: Run the App test, then the full suite**
+- [x] **Step 8: Run the App test, then the full suite**
 
 Run: `npm test -- App` → Expected: PASS (2 tests).
 Run: `npm test` → Expected: all green — 79 tests (76 existing + 3 new).
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add src/features/render/printStyles.ts src/features/render/printStyles.test.ts src/App.tsx src/App.test.tsx
@@ -185,7 +185,7 @@ git commit -m "feat: add full-bleed print stylesheet and mount it in the app"
 **Interfaces:**
 - Produces: `AppHeader()` now also renders `<button type="button" className="btn btn--secondary app-header__export">Export PDF</button>` whose click calls `window.print()` exactly once. Still no props, no app state.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `src/AppHeader.test.tsx`:
 ```tsx
@@ -215,12 +215,12 @@ test("Export PDF opens the browser's native print dialog exactly once", async ()
 });
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `npm test -- AppHeader`
 Expected: FAIL — the button role does not exist yet (first test fails at `getByRole`).
 
-- [ ] **Step 3: Implement the button**
+- [x] **Step 3: Implement the button**
 
 Replace `src/AppHeader.tsx`:
 ```tsx
@@ -240,7 +240,7 @@ export function AppHeader() {
 }
 ```
 
-- [ ] **Step 4: Add the band styles to index.css**
+- [x] **Step 4: Add the band styles to index.css**
 
 In `src/index.css` — first, next to the other `.app-header__*` rules:
 ```css
@@ -262,12 +262,12 @@ Then, **immediately after the `.btn--secondary` rules** (order is load-bearing �
 }
 ```
 
-- [ ] **Step 5: Run the AppHeader tests, then the full suite**
+- [x] **Step 5: Run the AppHeader tests, then the full suite**
 
 Run: `npm test -- AppHeader` → Expected: PASS (2 tests).
 Run: `npm test` → Expected: all green — 81 tests (79 + 2 new).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/AppHeader.tsx src/AppHeader.test.tsx src/index.css
@@ -284,7 +284,7 @@ git commit -m "feat: add Export PDF button that opens the native print dialog"
 
 **Interfaces:** none new — a pure styling refactor. `.preview-scroll`'s static `overflow`/`height` move from inline style to the class; the dynamic scale transform stays inline.
 
-- [ ] **Step 1: Write the failing regression test**
+- [x] **Step 1: Write the failing regression test**
 
 Append to `src/features/preview/Preview.test.tsx` (existing tests stay verbatim):
 ```tsx
@@ -303,12 +303,12 @@ test("scroll overflow/height come from CSS, not inline — only scale stays inli
 });
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+- [x] **Step 2: Run to verify it fails**
 
 Run: `npm test -- Preview`
 Expected: FAIL — `.preview-scroll` still carries inline `overflow: auto; height: 100%`.
 
-- [ ] **Step 3: Move the static styles to CSS**
+- [x] **Step 3: Move the static styles to CSS**
 
 In `src/features/preview/Preview.tsx`, replace the return block (the pagination and fit effects are untouched):
 ```tsx
@@ -334,13 +334,13 @@ In `src/index.css`, replace the existing `.preview-scroll` rule with:
 }
 ```
 
-- [ ] **Step 4: Run the Preview test, the full suite, lint, and build**
+- [x] **Step 4: Run the Preview test, the full suite, lint, and build**
 
 Run: `npm test -- Preview` → Expected: PASS (4 tests).
 Run: `npm test` → Expected: all green — 82 tests (81 + 1 new), zero edits to existing assertions.
 Run: `npm run lint && npm run build` → Expected: clean; build succeeds.
 
-- [ ] **Step 5: Manual verification — activate the print CSS in-session**
+- [x] **Step 5: Manual verification — activate the print CSS in-session**
 
 jsdom cannot emulate print media, so verify in the running app. Run `npm run dev`, open the app, and in DevTools console temporarily inject the print rules as an **active** (not media-gated) style:
 ```js
@@ -359,7 +359,7 @@ Expected observations:
 - `@page` has no on-screen effect (paged media only) — the full-bleed fit is covered by Step 6.
 Remove with `el.remove()` (or reload). If any observation fails, fix `printStyles` before proceeding.
 
-- [ ] **Step 6: Pause — the user runs the native print check**
+- [x] **Step 6: Pause — the user runs the native print check**
 
 Ask the user to click **Export PDF** (or Cmd+P) with a populated multi-page resume and "Save as PDF". Expected:
 - Only the resume sheets print — no band, editor, preview scrollbars, or page rings.
@@ -367,14 +367,14 @@ Ask the user to click **Export PDF** (or Cmd+P) with a populated multi-page resu
 - Multi-page resumes break one sheet per printed page; the bottom-center page numbers are present.
 - Text in the saved PDF is selectable/copyable — real text, not rasterized (FR11 / AC).
 
-- [ ] **Step 7: Update docs and progress checkboxes**
+- [x] **Step 7: Update docs and progress checkboxes**
 
 Only after the user confirms Step 6:
 - `docs/PRD.md`: tick the AC `- [ ] **Given** an exported PDF … recoverable as real text` → `- [x]`.
 - `docs/STORIES.md`: mark S12 shipped (append ` ✅` to the `### S12 — Export to PDF (native print)` heading).
 - Tick this plan's completed step checkboxes.
 
-- [ ] **Step 8: Commit (two focused commits)**
+- [x] **Step 8: Commit (two focused commits)**
 
 ```bash
 git add src/features/preview/Preview.tsx src/features/preview/Preview.test.tsx src/index.css

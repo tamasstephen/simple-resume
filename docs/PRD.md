@@ -76,7 +76,7 @@ The previous resume builder (cvpeers, Angular + jsPDF) produced PDFs through a l
 - [ ] **Given** a user clicks Save on an entry, **when** the save completes, **then** the item appears in the saved-items list and the pdf.js preview regenerates to include it.
 - [ ] **Given** a saved item, **when** the user clicks Edit, changes values, and clicks Save, **then** the preview reflects the updated values; **when** the user clicks Delete, **then** the item is removed from the list and preview.
 - [ ] **Given** the two templates, **when** the user switches between T1 and T2, **then** the same resume data renders in the selected layout with no data loss.
-- [ ] **Given** an exported PDF, **when** its text is selected/copied (or run through a text extractor), **then** the resume content is recoverable as real text.
+- [x] **Given** an exported PDF, **when** its text is selected/copied (or run through a text extractor), **then** the resume content is recoverable as real text.
 - [ ] **Given** a user reloads the browser, **when** the app opens, **then** their most recent resume and selected template are restored from local storage.
 - [ ] **Given** a user exports JSON and imports it in a different browser, **when** the import completes, **then** the resume is reproduced identically.
 - [ ] **Given** an invalid JSON import, **when** the user attempts it, **then** the app shows a validation error and preserves existing data.

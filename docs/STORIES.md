@@ -105,7 +105,7 @@ Derived from `docs/PRD.md`. Stories are grouped by epic and ordered so each can 
 **Acceptance (PRD FR6, AC "switch with no data loss"):** switching re-renders identical data; selection persists across reload.
 **Depends on:** S7, S10
 
-### S12 — Export to PDF (native print)
+### S12 — Export to PDF (native print) ✅ Shipped 2026-09-11 (plan: `docs/superpowers/plans/2026-09-11-resume-builder-export-pdf.md`; print QA verified via puppeteer print-to-PDF harness)
 **As a** user **I want** to download my resume as PDF **so that** I can submit it.
 - **Export PDF** triggers browser-native print-to-PDF over the paginated document; print CSS matches the preview.
 
