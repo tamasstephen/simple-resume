@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { StrictMode } from "react";
 import { Preview } from "./Preview";
 import { ResumeProvider } from "../resume/ResumeProvider";
 import { useResumeDispatch } from "../resume/useResume";
@@ -27,7 +28,10 @@ function Rename() {
   return (
     <button
       onClick={() =>
-        dispatch({ type: "SET_CONTACT", contact: { name: "Grace Hopper", title: "", email: "", phone: "", location: "" } })
+        dispatch({
+          type: "SET_CONTACT",
+          contact: { name: "Grace Hopper", title: "", email: "", phone: "", location: "" },
+        })
       }
     >
       rename
@@ -37,7 +41,10 @@ function Rename() {
 
 test("renders the committed resume through Paged.js with the page styles", () => {
   const persistence = new InMemoryPersistence();
-  persistence.save({ ...emptyResume(), contact: { name: "Ada Lovelace", title: "", email: "", phone: "", location: "" } });
+  persistence.save({
+    ...emptyResume(),
+    contact: { name: "Ada Lovelace", title: "", email: "", phone: "", location: "" },
+  });
   render(
     <ResumeProvider persistence={persistence}>
       <Preview />
@@ -63,4 +70,26 @@ test("re-renders the preview when committed state changes", async () => {
     [{ "resume-page": pageStyles }],
     expect.anything(),
   );
+});
+
+test("a superseded pagination run cannot leave stale pages behind", async () => {
+  const targets: HTMLElement[] = [];
+  previewMock.mockImplementation((_html: unknown, _styles: unknown, target: HTMLElement) => {
+    targets.push(target);
+    return Promise.resolve({ total: 1 });
+  });
+  render(
+    <StrictMode>
+      <ResumeProvider persistence={new InMemoryPersistence()}>
+        <Preview />
+      </ResumeProvider>
+    </StrictMode>,
+  );
+  // StrictMode double-mounts the effect: the first run's target must be
+  // removed by cleanup so its late async output cannot stack a second copy.
+  expect(targets).toHaveLength(2);
+  const [staleTarget, liveTarget] = targets;
+  expect(staleTarget?.isConnected).toBe(false);
+  expect(liveTarget?.isConnected).toBe(true);
+  expect(liveTarget?.parentElement?.children).toHaveLength(1);
 });

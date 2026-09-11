@@ -13,17 +13,23 @@ export function Preview() {
   const pagesRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
 
-  // Re-paginate whenever the committed resume changes.
+  // Re-paginate whenever the committed resume changes. Each run paginates
+  // into its own target element so a superseded (or StrictMode-doubled) run
+  // is removed on cleanup and cannot stack a stale copy of the pages.
   useEffect(() => {
     const container = pagesRef.current;
     if (container === null) return;
-    container.innerHTML = "";
+    const target = document.createElement("div");
+    container.replaceChildren(target);
     const previewer = new Previewer();
     void previewer
-      .preview(renderResumeHtml(resume), [{ "resume-page": pageStyles }], container)
+      .preview(renderResumeHtml(resume), [{ "resume-page": pageStyles }], target)
       .catch((error: unknown) => {
         console.error("Preview pagination failed", error);
       });
+    return () => {
+      target.remove();
+    };
   }, [resume]);
 
   // Fit the A4 page width to the available pane width.
