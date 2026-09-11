@@ -66,6 +66,13 @@ body {
   font: 400 var(--fs-micro) / 1 var(--font-mono);
 }
 
+/* Right side of the band: meta label + export action grouped together. */
+.app-header__actions {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
 .app-shell {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -267,6 +274,14 @@ body {
 
 .btn--secondary:hover {
   opacity: 0.5;
+}
+
+/* Inverted secondary for the black band: same shape and language as
+   .btn--secondary (padding, 1px border, hover fade) with ink flipped
+   to white. Font and padding come from the shared .btn classes. */
+.app-header__export {
+  border-color: var(--white);
+  color: var(--white);
 }
 
 .btn--text {
