@@ -100,10 +100,12 @@ test("scroll overflow/height come from CSS, not inline — only scale stays inli
       <Preview />
     </ResumeProvider>,
   );
-  const scrollStyle = container.querySelector<HTMLElement>(".preview-scroll")?.getAttribute("style") ?? "";
+  const scrollStyle =
+    container.querySelector<HTMLElement>(".preview-scroll")?.getAttribute("style") ?? "";
   expect(scrollStyle).not.toContain("overflow");
   expect(scrollStyle).not.toContain("height");
   // The dynamic fit-to-pane scale is runtime state and must remain inline.
-  const pagesStyle = container.querySelector<HTMLElement>(".preview-pages")?.getAttribute("style") ?? "";
+  const pagesStyle =
+    container.querySelector<HTMLElement>(".preview-pages")?.getAttribute("style") ?? "";
   expect(pagesStyle).toContain("transform");
 });
