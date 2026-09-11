@@ -44,7 +44,7 @@ export function RichTextField({ value, onChange, ariaLabel }: RichTextFieldProps
       <div role="toolbar" aria-label={`${ariaLabel} formatting`}>
         <button
           type="button"
-          aria-label="Bold"
+          aria-label={`${ariaLabel} bold`}
           aria-pressed={editor.isActive("bold")}
           onClick={() => editor.chain().focus().toggleBold().run()}
         >
@@ -52,7 +52,7 @@ export function RichTextField({ value, onChange, ariaLabel }: RichTextFieldProps
         </button>
         <button
           type="button"
-          aria-label="Italic"
+          aria-label={`${ariaLabel} italic`}
           aria-pressed={editor.isActive("italic")}
           onClick={() => editor.chain().focus().toggleItalic().run()}
         >
@@ -60,7 +60,7 @@ export function RichTextField({ value, onChange, ariaLabel }: RichTextFieldProps
         </button>
         <button
           type="button"
-          aria-label="Bullet list"
+          aria-label={`${ariaLabel} bullet list`}
           aria-pressed={editor.isActive("bulletList")}
           onClick={() => editor.chain().focus().toggleBulletList().run()}
         >
@@ -68,7 +68,7 @@ export function RichTextField({ value, onChange, ariaLabel }: RichTextFieldProps
         </button>
         <button
           type="button"
-          aria-label="Numbered list"
+          aria-label={`${ariaLabel} numbered list`}
           aria-pressed={editor.isActive("orderedList")}
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
         >

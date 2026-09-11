@@ -17,7 +17,7 @@ export function SummaryForm() {
         type="button"
         onClick={() => dispatch({ type: "SET_SUMMARY", summary: sanitizeSummaryText(draft) })}
       >
-        Save
+        Save summary
       </button>
     </section>
   );

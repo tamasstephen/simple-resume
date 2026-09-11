@@ -30,7 +30,7 @@ export function ContactForm() {
         </label>
       ))}
       <button type="button" onClick={() => dispatch({ type: "SET_CONTACT", contact: draft })}>
-        Save
+        Save contact
       </button>
     </section>
   );
