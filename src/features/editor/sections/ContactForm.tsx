@@ -17,8 +17,8 @@ export function ContactForm() {
   const [draft, setDraft] = useState<ContactHeader>(committed);
 
   return (
-    <section aria-label="Contact">
-      <h2>Contact</h2>
+    <section aria-label="Contact" className="section">
+      <h2 className="section__title">Contact</h2>
       {FIELDS.map(({ key, label, type }) => (
         <label key={key}>
           {label}
@@ -29,7 +29,11 @@ export function ContactForm() {
           />
         </label>
       ))}
-      <button type="button" onClick={() => dispatch({ type: "SET_CONTACT", contact: draft })}>
+      <button
+        type="button"
+        className="btn btn--primary"
+        onClick={() => dispatch({ type: "SET_CONTACT", contact: draft })}
+      >
         Save contact
       </button>
     </section>

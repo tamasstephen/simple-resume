@@ -10,11 +10,12 @@ export function SummaryForm() {
   const [draft, setDraft] = useState<string>(committed.text);
 
   return (
-    <section aria-label="Summary">
-      <h2>Summary</h2>
+    <section aria-label="Summary" className="section">
+      <h2 className="section__title">Summary</h2>
       <RichTextField value={draft} onChange={setDraft} ariaLabel="Summary text" />
       <button
         type="button"
+        className="btn btn--primary"
         onClick={() => dispatch({ type: "SET_SUMMARY", summary: sanitizeSummaryText(draft) })}
       >
         Save summary

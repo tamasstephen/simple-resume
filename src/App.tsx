@@ -1,5 +1,6 @@
 import { ResumeProvider } from "./features/resume/ResumeProvider";
 import { LocalStoragePersistence } from "./lib/persistence/LocalStoragePersistence";
+import { AppHeader } from "./AppHeader";
 import { Editor } from "./features/editor/Editor";
 import { Preview } from "./features/preview/Preview";
 
@@ -8,6 +9,7 @@ const persistence = new LocalStoragePersistence();
 export default function App() {
   return (
     <ResumeProvider persistence={persistence}>
+      <AppHeader />
       <main className="app-shell">
         <section aria-label="Editor" className="editor-pane">
           <Editor />

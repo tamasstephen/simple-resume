@@ -37,13 +37,16 @@ export function RichTextField({ value, onChange, ariaLabel }: RichTextFieldProps
     }
   }, [value, editor]);
 
-  if (!editor) return <div aria-label={ariaLabel} role="textbox" />;
+  if (!editor) {
+    return <div className="rich-text" aria-label={ariaLabel} role="textbox" />;
+  }
 
   return (
-    <div>
-      <div role="toolbar" aria-label={`${ariaLabel} formatting`}>
+    <div className="rich-text">
+      <div className="rich-text__toolbar" role="toolbar" aria-label={`${ariaLabel} formatting`}>
         <button
           type="button"
+          className="btn btn--toggle"
           aria-label={`${ariaLabel} bold`}
           aria-pressed={editor.isActive("bold")}
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -52,6 +55,7 @@ export function RichTextField({ value, onChange, ariaLabel }: RichTextFieldProps
         </button>
         <button
           type="button"
+          className="btn btn--toggle"
           aria-label={`${ariaLabel} italic`}
           aria-pressed={editor.isActive("italic")}
           onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -60,6 +64,7 @@ export function RichTextField({ value, onChange, ariaLabel }: RichTextFieldProps
         </button>
         <button
           type="button"
+          className="btn btn--toggle"
           aria-label={`${ariaLabel} bullet list`}
           aria-pressed={editor.isActive("bulletList")}
           onClick={() => editor.chain().focus().toggleBulletList().run()}
@@ -68,6 +73,7 @@ export function RichTextField({ value, onChange, ariaLabel }: RichTextFieldProps
         </button>
         <button
           type="button"
+          className="btn btn--toggle"
           aria-label={`${ariaLabel} numbered list`}
           aria-pressed={editor.isActive("orderedList")}
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
