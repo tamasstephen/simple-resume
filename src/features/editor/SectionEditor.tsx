@@ -1,4 +1,7 @@
+import { useState } from "react";
 import type { ReactNode } from "react";
+import { ItemDialog } from "./ItemDialog";
+import { KebabMenu } from "./KebabMenu";
 
 export interface SectionEditorProps<T extends { id: string }> {
   title: string;
@@ -30,44 +33,57 @@ export function SectionEditor<T extends { id: string }>({
   onSave,
   onCancel,
 }: SectionEditorProps<T>) {
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   return (
     <section aria-label={title} className="section">
       <div className="section__head">
         <h2 className="section__title">{title}</h2>
-        <span className="section__count" aria-hidden="true">
-          {items.length}
-        </span>
       </div>
 
-      <ul className="item-list">
-        {items.map((item) => (
-          <li key={item.id} className="item">
-            {renderSummary(item)}
-            <button type="button" className="btn btn--text" onClick={() => onEditItem(item)}>
-              Edit
-            </button>
-            <button type="button" className="btn btn--text" onClick={() => onDeleteItem(item.id)}>
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
-      {items.length === 0 && <p className="item-list__empty">— none yet</p>}
+      {items.length > 0 && (
+        <table className="item-table" aria-label={`${title} items`}>
+          <tbody>
+            {items.map((item) => (
+              <tr key={item.id}>
+                <td className="item__summary">
+                  <div className="item__truncate">{renderSummary(item)}</div>
+                </td>
+                <td className="item__actions">
+                  <KebabMenu
+                    isOpen={openMenuId === item.id}
+                    onToggle={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
+                    onClose={() => setOpenMenuId(null)}
+                    onEdit={() => {
+                      setOpenMenuId(null);
+                      onEditItem(item);
+                    }}
+                    onDelete={() => {
+                      setOpenMenuId(null);
+                      onDeleteItem(item.id);
+                    }}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {items.length === 0 && <p className="item-table__empty">— none yet</p>}
 
       {draft === null ? (
         <button type="button" className="btn btn--secondary" onClick={onAdd}>
           Add {title}
         </button>
       ) : (
-        <div className="section__draft">
+        <ItemDialog
+          title={title}
+          isEditing={isEditing}
+          canSave={canSave}
+          onSave={onSave}
+          onCancel={onCancel}
+        >
           {renderForm()}
-          <button type="button" className="btn btn--primary" onClick={onSave} disabled={!canSave}>
-            {isEditing ? "Save changes" : "Save"}
-          </button>
-          <button type="button" className="btn btn--text" onClick={onCancel}>
-            Cancel
-          </button>
-        </div>
+        </ItemDialog>
       )}
     </section>
   );

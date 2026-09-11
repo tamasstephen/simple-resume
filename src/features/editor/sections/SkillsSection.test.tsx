@@ -26,7 +26,8 @@ test("delete removes a saved skill", async () => {
   await userEvent.click(screen.getByRole("button", { name: /add skills/i }));
   await userEvent.type(screen.getByLabelText(/skill name/i), "Go");
   await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
-  await userEvent.click(screen.getByRole("button", { name: /delete/i }));
+  await userEvent.click(screen.getByRole("button", { name: "Item actions" }));
+  await userEvent.click(screen.getByRole("menuitem", { name: /delete/i }));
   expect(screen.queryByText("Go")).not.toBeInTheDocument();
 });
 

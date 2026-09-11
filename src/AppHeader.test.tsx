@@ -8,7 +8,7 @@ afterEach(() => {
 
 test("renders the wordmark, meta label, and Export PDF button", () => {
   render(<AppHeader />);
-  expect(screen.getByText("Resume Builder")).toBeInTheDocument();
+  expect(screen.getByText("Simple Resume")).toBeInTheDocument();
   expect(screen.getByText("A4 — ATS")).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Export PDF" })).toBeInTheDocument();
 });

@@ -23,7 +23,13 @@ export const printStyles = `
      page box past the bottom of the sheet, spilling a blank page and
      clipping the page number (verified via print-to-PDF reproduction). */
   .preview-scroll { overflow: visible; height: auto; padding: 0; }
-  .preview-pages { transform: none !important; }
+  /* Off-screen chunking stage (only attached mid-run): never printable. */
+  .preview-stage { display: none; }
+  /* The sizer carries the screen-only scaled dimensions inline (beaten only
+     by !important) and clips the pages layer; in print both must open up so
+     the unscaled page boxes flow across sheets. */
+  .preview-sizer { width: auto !important; height: auto !important; overflow: visible; }
+  .preview-pages { transform: none !important; position: static; }
   .pagedjs_page { box-shadow: none; }
   /* Paged.js forces a break after EVERY page box, including the last —
      the trailing forced break emits a blank final sheet. :last-child

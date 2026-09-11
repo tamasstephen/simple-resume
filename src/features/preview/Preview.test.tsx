@@ -39,7 +39,7 @@ function Rename() {
   );
 }
 
-test("renders the committed resume through Paged.js with the page styles", () => {
+test("renders the committed resume through Paged.js with the page styles", async () => {
   const persistence = new InMemoryPersistence();
   persistence.save({
     ...emptyResume(),
@@ -50,6 +50,9 @@ test("renders the committed resume through Paged.js with the page styles", () =>
       <Preview />
     </ResumeProvider>,
   );
+  // Runs execute on the serialization queue (a microtask chain), not
+  // synchronously inside the effect.
+  await vi.waitFor(() => expect(previewMock).toHaveBeenCalled());
   expect(previewMock).toHaveBeenCalledWith(
     expect.stringContaining("Ada Lovelace"),
     [{ "resume-page": pageStyles }],
@@ -75,23 +78,33 @@ test("re-renders the preview when committed state changes", async () => {
 test("a superseded pagination run cannot leave stale pages behind", async () => {
   const targets: HTMLElement[] = [];
   previewMock.mockImplementation((_html: unknown, _styles: unknown, target: HTMLElement) => {
+    target.dataset.run = String(targets.length + 1);
+    // simulate Paged.js mounting its pages root inside the target
+    const pagesRoot = document.createElement("div");
+    pagesRoot.className = "pagedjs_pages";
+    pagesRoot.dataset.run = target.dataset.run;
+    target.appendChild(pagesRoot);
     targets.push(target);
     return Promise.resolve({ total: 1 });
   });
-  render(
+  const { container: reactContainer } = render(
     <StrictMode>
       <ResumeProvider persistence={new InMemoryPersistence()}>
         <Preview />
       </ResumeProvider>
     </StrictMode>,
   );
-  // StrictMode double-mounts the effect: the first run's target must be
-  // removed by cleanup so its late async output cannot stack a second copy.
-  expect(targets).toHaveLength(2);
-  const [staleTarget, liveTarget] = targets;
-  expect(staleTarget?.isConnected).toBe(false);
-  expect(liveTarget?.isConnected).toBe(true);
-  expect(liveTarget?.parentElement?.children).toHaveLength(1);
+  // Serialized: StrictMode's first run completes off-screen, its stage is
+  // removed, and only then the second run chunks and moves its pages in.
+  await vi.waitFor(() => expect(targets).toHaveLength(2));
+  const pagesHolder = reactContainer.querySelector<HTMLElement>(".preview-pages");
+  const pagesRoot = pagesHolder?.querySelector<HTMLElement>(".pagedjs_pages");
+  expect(pagesRoot?.parentElement).toBe(pagesHolder);
+  // Only the LAST run's pages are live; both stages are gone entirely.
+  expect(pagesRoot?.dataset.run).toBe("2");
+  expect(pagesHolder?.querySelectorAll(".pagedjs_pages")).toHaveLength(1);
+  expect(targets[0]?.isConnected).toBe(false);
+  expect(targets[1]?.isConnected).toBe(false);
 });
 
 test("scroll overflow/height come from CSS, not inline — only scale stays inline", () => {
