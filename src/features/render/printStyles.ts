@@ -18,9 +18,16 @@ export const printStyles = `
   .preview-pane { overflow: visible; border: 0; background: none; }
   /* Class-vs-class overrides: this <style> renders inside #root, after
      index.css in <head>, so document order wins without !important. Only
-     the inline scale transform needs !important (inline beats stylesheets). */
-  .preview-scroll { overflow: visible; height: auto; }
+     the inline scale transform needs !important (inline beats stylesheets).
+     The pane's 24px block padding MUST also be reset: it offsets the first
+     page box past the bottom of the sheet, spilling a blank page and
+     clipping the page number (verified via print-to-PDF reproduction). */
+  .preview-scroll { overflow: visible; height: auto; padding: 0; }
   .preview-pages { transform: none !important; }
   .pagedjs_page { box-shadow: none; }
+  /* Paged.js forces a break after EVERY page box, including the last —
+     the trailing forced break emits a blank final sheet. :last-child
+     outranks Paged.js's .pagedjs_page rule, so no !important is needed. */
+  .pagedjs_page:last-child { page-break-after: auto; break-after: auto; }
 }
 `;
