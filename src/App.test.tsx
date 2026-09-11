@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import App from "./App";
+import { printStyles } from "./features/render/printStyles";
 
 // App now mounts Preview, which loads Paged.js; mock it so the smoke test stays
 // pristine and free of jsdom layout errors.
@@ -14,4 +15,10 @@ test("renders editor and preview panes", () => {
   render(<App />);
   expect(screen.getByRole("region", { name: "Editor" })).toBeInTheDocument();
   expect(screen.getByRole("region", { name: "Preview" })).toBeInTheDocument();
+});
+
+test("mounts the print stylesheet for native PDF export", () => {
+  const { container } = render(<App />);
+  const style = container.querySelector("style");
+  expect(style?.textContent).toBe(printStyles);
 });
