@@ -1,21 +1,18 @@
 import { render, screen, act } from "@testing-library/react";
 import { ResumeProvider } from "./ResumeProvider";
-import { useResume } from "./useResume";
+import { useResumeState, useResumeDispatch } from "./useResume";
 import { InMemoryPersistence } from "../../lib/persistence/InMemoryPersistence";
 import { emptyResume } from "../../lib/schema/resume";
 
 function Probe() {
-  const { state, dispatch } = useResume();
+  const state = useResumeState();
+  const dispatch = useResumeDispatch();
   return (
     <div>
       <span data-testid="skills">{state.committed.skills.length}</span>
       <button
         onClick={() =>
-          dispatch({
-            type: "SAVE_ITEM",
-            section: "experience",
-            item: { id: "1", company: "Acme", role: "Eng", startDate: "2020", endDate: "2021", current: false, location: "", description: "" },
-          })
+          dispatch({ type: "SAVE_ITEM", section: "skills", item: { id: "s1", name: "TS" } })
         }
       >
         add
@@ -26,31 +23,39 @@ function Probe() {
 
 test("loads initial state from persistence", () => {
   const persistence = new InMemoryPersistence();
-  persistence.save({ ...emptyResume(), skills: [{ id: "s1", name: "TS" }] });
+  persistence.save({ ...emptyResume(), skills: [{ id: "seed", name: "Go" }] });
   render(
     <ResumeProvider persistence={persistence}>
       <Probe />
     </ResumeProvider>,
   );
-  expect(screen.getByTestId("skills").textContent).toBe("1"); // seeded skill loaded from persistence
+  expect(screen.getByTestId("skills").textContent).toBe("1");
 });
 
-test("auto-saves committed changes to persistence", async () => {
+test("auto-saves committed changes to persistence", () => {
   const persistence = new InMemoryPersistence();
   render(
     <ResumeProvider persistence={persistence}>
       <Probe />
     </ResumeProvider>,
   );
-  await act(async () => {
+  act(() => {
     screen.getByText("add").click();
   });
-  expect(persistence.load()?.experience).toHaveLength(1);
+  expect(persistence.load()?.skills).toHaveLength(1);
 });
 
-test("useResume throws outside a provider", () => {
+test("useResumeState throws outside a provider", () => {
   function Orphan() {
-    useResume();
+    useResumeState();
+    return null;
+  }
+  expect(() => render(<Orphan />)).toThrow(/ResumeProvider/);
+});
+
+test("useResumeDispatch throws outside a provider", () => {
+  function Orphan() {
+    useResumeDispatch();
     return null;
   }
   expect(() => render(<Orphan />)).toThrow(/ResumeProvider/);

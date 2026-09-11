@@ -1,17 +1,21 @@
 import { createContext, useContext, type Dispatch } from "react";
 import type { ResumeState, ResumeAction } from "../../lib/store/resumeReducer";
 
-export interface ResumeContextValue {
-  state: ResumeState;
-  dispatch: Dispatch<ResumeAction>;
+export const ResumeStateContext = createContext<ResumeState | null>(null);
+export const ResumeDispatchContext = createContext<Dispatch<ResumeAction> | null>(null);
+
+export function useResumeState(): ResumeState {
+  const state = useContext(ResumeStateContext);
+  if (state === null) {
+    throw new Error("useResumeState must be used within a ResumeProvider");
+  }
+  return state;
 }
 
-export const ResumeContext = createContext<ResumeContextValue | null>(null);
-
-export function useResume(): ResumeContextValue {
-  const value = useContext(ResumeContext);
-  if (value === null) {
-    throw new Error("useResume must be used within a ResumeProvider");
+export function useResumeDispatch(): Dispatch<ResumeAction> {
+  const dispatch = useContext(ResumeDispatchContext);
+  if (dispatch === null) {
+    throw new Error("useResumeDispatch must be used within a ResumeProvider");
   }
-  return value;
+  return dispatch;
 }
