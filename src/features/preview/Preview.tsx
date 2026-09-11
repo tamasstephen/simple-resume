@@ -46,7 +46,7 @@ export function Preview() {
   }, []);
 
   return (
-    <div ref={scrollRef} className="preview-scroll" style={{ overflow: "auto", height: "100%" }}>
+    <div ref={scrollRef} className="preview-scroll">
       <div
         ref={pagesRef}
         className="preview-pages"

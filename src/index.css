@@ -331,8 +331,12 @@ body {
   background: var(--paper);
 }
 
-/* Block padding only: inline padding would shrink the fit-to-width scale. */
+/* Block padding only: inline padding would shrink the fit-to-width scale.
+   overflow/height are class rules (not inline) so the print stylesheet can
+   reset them by document order — only the dynamic scale stays inline. */
 .preview-scroll {
+  overflow: auto;
+  height: 100%;
   padding: var(--space-4) 0;
 }
 

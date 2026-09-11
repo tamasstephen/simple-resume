@@ -93,3 +93,17 @@ test("a superseded pagination run cannot leave stale pages behind", async () => 
   expect(liveTarget?.isConnected).toBe(true);
   expect(liveTarget?.parentElement?.children).toHaveLength(1);
 });
+
+test("scroll overflow/height come from CSS, not inline — only scale stays inline", () => {
+  const { container } = render(
+    <ResumeProvider persistence={new InMemoryPersistence()}>
+      <Preview />
+    </ResumeProvider>,
+  );
+  const scrollStyle = container.querySelector<HTMLElement>(".preview-scroll")?.getAttribute("style") ?? "";
+  expect(scrollStyle).not.toContain("overflow");
+  expect(scrollStyle).not.toContain("height");
+  // The dynamic fit-to-pane scale is runtime state and must remain inline.
+  const pagesStyle = container.querySelector<HTMLElement>(".preview-pages")?.getAttribute("style") ?? "";
+  expect(pagesStyle).toContain("transform");
+});
