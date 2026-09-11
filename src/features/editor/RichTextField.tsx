@@ -16,6 +16,8 @@ const starterKit = StarterKit.configure({
   code: false,
   horizontalRule: false,
   strike: false,
+  link: false,
+  underline: false,
 });
 
 /** Rich-text field limited to bold/italic/lists; emits HTML via onChange. */
