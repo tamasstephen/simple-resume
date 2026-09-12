@@ -122,3 +122,42 @@ test("scroll overflow/height come from CSS, not inline — only scale stays inli
     container.querySelector<HTMLElement>(".preview-pages")?.getAttribute("style") ?? "";
   expect(pagesStyle).toContain("transform");
 });
+
+/** Makes the mocked Paged.js run mount `count` page boxes in its target. */
+function mockRunWithPages(count: number) {
+  previewMock.mockImplementation((_html: unknown, _styles: unknown, target: HTMLElement) => {
+    for (let index = 0; index < count; index++) {
+      const page = document.createElement("div");
+      page.className = "pagedjs_page";
+      target.appendChild(page);
+    }
+    return Promise.resolve({ total: count });
+  });
+}
+
+test("reports how many pages a finished run produced", async () => {
+  mockRunWithPages(3);
+  const onPaginated = vi.fn();
+  render(
+    <ResumeProvider persistence={new InMemoryPersistence()}>
+      <Preview onPaginated={onPaginated} />
+    </ResumeProvider>,
+  );
+  await vi.waitFor(() => expect(onPaginated).toHaveBeenCalledWith(3));
+});
+
+test("a new callback identity does not trigger another pagination run", async () => {
+  mockRunWithPages(1);
+  const { rerender } = render(
+    <ResumeProvider persistence={new InMemoryPersistence()}>
+      <Preview onPaginated={() => {}} />
+    </ResumeProvider>,
+  );
+  await vi.waitFor(() => expect(previewMock).toHaveBeenCalledTimes(1));
+  rerender(
+    <ResumeProvider persistence={new InMemoryPersistence()}>
+      <Preview onPaginated={() => {}} />
+    </ResumeProvider>,
+  );
+  await vi.waitFor(() => expect(previewMock).toHaveBeenCalledTimes(1));
+});

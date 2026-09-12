@@ -15,7 +15,10 @@ const PAGE_WIDTH_PX = 794;
 // only after its run has settled.
 let paginationQueue: Promise<void> = Promise.resolve();
 
-export function Preview() {
+/** `onPaginated` reports the page count after each finished run — the app
+ *  header shows it. It is read through a ref so a caller passing an inline
+ *  function cannot re-trigger pagination on every render. */
+export function Preview({ onPaginated }: { onPaginated?: (pageCount: number) => void }) {
   const resume = useResumeState().committed;
   const scrollRef = useRef<HTMLDivElement>(null);
   const pagesRef = useRef<HTMLDivElement>(null);
@@ -25,6 +28,10 @@ export function Preview() {
   // transforms do not affect layout, so the bare scaled element would leave
   // a phantom (1-scale) dead zone at the bottom of the scroll pane.
   const [contentSize, setContentSize] = useState<{ width: number; height: number } | null>(null);
+  const onPaginatedRef = useRef(onPaginated);
+  useEffect(() => {
+    onPaginatedRef.current = onPaginated;
+  });
 
   // Re-paginate whenever the committed resume changes. Each run chunks
   // OFF-SCREEN and UNSCALED, then moves the finished pages into the scaled
@@ -47,7 +54,10 @@ export function Preview() {
         await previewer.preview(renderResumeHtml(resume), [{ "resume-page": pageStyles }], stage);
         container.replaceChildren(...stage.children);
         const el = pagesRef.current;
-        if (el !== null) setContentSize({ width: el.offsetWidth, height: el.offsetHeight });
+        if (el !== null) {
+          setContentSize({ width: el.offsetWidth, height: el.offsetHeight });
+          onPaginatedRef.current?.(el.querySelectorAll(".pagedjs_page").length);
+        }
       } catch (error) {
         console.error("Preview pagination failed", error);
       } finally {

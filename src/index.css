@@ -478,6 +478,9 @@ body {
 .preview-sizer {
   position: relative;
   overflow: hidden;
+  /* Centres the sheet once the pane is wider than an unscaled A4 page;
+     below that the sizer is exactly pane-wide and this is a no-op. */
+  margin-inline: auto;
 }
 
 .preview-pages {
@@ -489,6 +492,15 @@ body {
 .pagedjs_page {
   background: var(--white);
   box-shadow: 0 0 0 1px var(--hairline);
+}
+
+/* On screen the sheets are separate pieces of paper; without a gutter a
+   two-page resume reads as one continuous strip. Screen-only: in print the
+   page boxes ARE the sheets and any margin would push content off them. */
+@media screen {
+  .pagedjs_page + .pagedjs_page {
+    margin-top: var(--space-4);
+  }
 }
 
 /* Focus states. */
