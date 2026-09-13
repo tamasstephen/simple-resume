@@ -1,0 +1,5 @@
+# Simple Resume — a single-page app with one indexable URL.
+User-agent: *
+Allow: /
+
+Sitemap: https://cvpeers.com/sitemap.xml

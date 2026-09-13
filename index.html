@@ -10,12 +10,14 @@
       name="description"
       content="Build a resume in your browser and export a clean, automatically paginated A4 PDF. No account, no upload — your data never leaves your device."
     />
+    <link rel="canonical" href="https://cvpeers.com/" />
     <meta name="theme-color" content="#f6f6f4" />
     <meta name="color-scheme" content="light" />
 
-    <!-- Link previews. og:url and og:image are deliberately absent until the
-         app has a deployed address: a wrong absolute URL is worse than none. -->
+    <!-- Link previews. og:image is still absent: there is no card image yet,
+         and a broken one renders worse than none. -->
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://cvpeers.com/" />
     <meta property="og:site_name" content="Simple Resume" />
     <meta property="og:locale" content="en" />
     <meta property="og:title" content="Simple Resume" />
@@ -35,6 +37,7 @@
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "Simple Resume",
+        "url": "https://cvpeers.com/",
         "description": "Build a resume in your browser and export a clean, automatically paginated A4 PDF. The preview is the printed document, so pages never need manual break handling.",
         "applicationCategory": "BusinessApplication",
         "applicationSubCategory": "Resume builder",
