@@ -4,7 +4,58 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Resume Builder</title>
+
+    <title>Simple Resume</title>
+    <meta
+      name="description"
+      content="Build a resume in your browser and export a clean, automatically paginated A4 PDF. No account, no upload — your data never leaves your device."
+    />
+    <meta name="theme-color" content="#f6f6f4" />
+    <meta name="color-scheme" content="light" />
+
+    <!-- Link previews. og:url and og:image are deliberately absent until the
+         app has a deployed address: a wrong absolute URL is worse than none. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Simple Resume" />
+    <meta property="og:locale" content="en" />
+    <meta property="og:title" content="Simple Resume" />
+    <meta
+      property="og:description"
+      content="Build a resume in your browser and export a clean, automatically paginated A4 PDF. No account, no upload — your data never leaves your device."
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Simple Resume" />
+    <meta
+      name="twitter:description"
+      content="Build a resume in your browser and export a clean, automatically paginated A4 PDF. No account, no upload — your data never leaves your device."
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Simple Resume",
+        "description": "Build a resume in your browser and export a clean, automatically paginated A4 PDF. The preview is the printed document, so pages never need manual break handling.",
+        "applicationCategory": "BusinessApplication",
+        "applicationSubCategory": "Resume builder",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript",
+        "inLanguage": "en",
+        "isAccessibleForFree": true,
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "featureList": [
+          "Nine resume sections with rich-text descriptions",
+          "Automatic A4 pagination — no manual page breaks",
+          "Live preview that matches the exported PDF exactly",
+          "PDF export through the browser's own print pipeline",
+          "Local-first: data is stored in the browser, never uploaded"
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
