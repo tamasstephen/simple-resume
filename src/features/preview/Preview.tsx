@@ -6,6 +6,9 @@ import { pageStyles } from "../render/pageStyles";
 
 // A4 width at 96dpi (210mm) — used to scale the rendered page to fit the pane.
 const PAGE_WIDTH_PX = 794;
+// Breathing room either side of the sheet, so the document reads as paper on
+// a desk rather than a panel bleeding into the pane's edges.
+const PREVIEW_GUTTER_PX = 24;
 
 // Pagination runs are serialized app-wide. StrictMode double-mounts the
 // effect in dev, and a superseded Previewer keeps chunking inside its
@@ -79,7 +82,7 @@ export function Preview({ onPaginated }: { onPaginated?: (pageCount: number) => 
     const fit = () => {
       const scroll = scrollRef.current;
       if (scroll === null) return;
-      const width = scroll.clientWidth;
+      const width = scroll.clientWidth - PREVIEW_GUTTER_PX * 2;
       if (width > 0) setScale(Math.min(1, width / PAGE_WIDTH_PX));
     };
     fit();

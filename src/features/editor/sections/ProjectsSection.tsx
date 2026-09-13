@@ -12,8 +12,7 @@ const makeEmpty = (): ProjectItem => ({ id: newId(), name: "", url: "", descript
 export function ProjectsSection() {
   const items = useResumeState().committed.projects;
   const dispatch = useResumeDispatch();
-  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } =
-    useSectionDraft(makeEmpty);
+  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } = useSectionDraft(makeEmpty);
 
   const save = () => {
     if (draft === null) return;
@@ -24,11 +23,13 @@ export function ProjectsSection() {
   return (
     <SectionEditor<ProjectItem>
       title="Projects"
+      itemNoun="project"
       items={items}
       draft={draft}
       isEditing={isEditing}
       canSave={draft !== null && draft.name.trim().length > 0}
       renderSummary={(item) => <span>{item.name}</span>}
+      renderMeta={(item) => item.url}
       renderForm={() => (
         <>
           <label>

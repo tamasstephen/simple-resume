@@ -51,7 +51,7 @@ export function RichTextField({ value, onChange, ariaLabel }: RichTextFieldProps
           aria-pressed={editor.isActive("bold")}
           onClick={() => editor.chain().focus().toggleBold().run()}
         >
-          B
+          Bold
         </button>
         <button
           type="button"
@@ -60,7 +60,7 @@ export function RichTextField({ value, onChange, ariaLabel }: RichTextFieldProps
           aria-pressed={editor.isActive("italic")}
           onClick={() => editor.chain().focus().toggleItalic().run()}
         >
-          I
+          Italic
         </button>
         <button
           type="button"
@@ -69,7 +69,7 @@ export function RichTextField({ value, onChange, ariaLabel }: RichTextFieldProps
           aria-pressed={editor.isActive("bulletList")}
           onClick={() => editor.chain().focus().toggleBulletList().run()}
         >
-          • List
+          Bullets
         </button>
         <button
           type="button"
@@ -78,7 +78,7 @@ export function RichTextField({ value, onChange, ariaLabel }: RichTextFieldProps
           aria-pressed={editor.isActive("orderedList")}
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
         >
-          1. List
+          Numbers
         </button>
       </div>
       <EditorContent editor={editor} />

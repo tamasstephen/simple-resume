@@ -10,8 +10,7 @@ const makeEmpty = (): LinkItem => ({ id: newId(), label: "", url: "" });
 export function LinksSection() {
   const items = useResumeState().committed.links;
   const dispatch = useResumeDispatch();
-  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } =
-    useSectionDraft(makeEmpty);
+  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } = useSectionDraft(makeEmpty);
 
   const save = () => {
     if (draft === null) return;
@@ -22,14 +21,16 @@ export function LinksSection() {
   return (
     <SectionEditor<LinkItem>
       title="Links"
+      itemNoun="link"
       items={items}
       draft={draft}
       isEditing={isEditing}
       canSave={draft !== null && draft.url.trim().length > 0}
       renderSummary={(item) => <span>{item.label || item.url}</span>}
+      renderMeta={(item) => item.url}
       renderForm={() => (
         <>
-          <label>
+          <label className="field field--medium">
             Label
             <input
               value={draft?.label ?? ""}

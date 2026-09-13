@@ -10,8 +10,7 @@ const makeEmpty = (): SkillItem => ({ id: newId(), name: "" });
 export function SkillsSection() {
   const items = useResumeState().committed.skills;
   const dispatch = useResumeDispatch();
-  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } =
-    useSectionDraft(makeEmpty);
+  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } = useSectionDraft(makeEmpty);
 
   const save = () => {
     if (draft === null) return;
@@ -22,6 +21,9 @@ export function SkillsSection() {
   return (
     <SectionEditor<SkillItem>
       title="Skills"
+      itemNoun="skill"
+      layout="tags"
+      itemLabel={(item) => item.name}
       items={items}
       draft={draft}
       isEditing={isEditing}

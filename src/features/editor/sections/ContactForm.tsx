@@ -2,12 +2,19 @@ import { useState } from "react";
 import { useResumeState, useResumeDispatch } from "../../resume/useResume";
 import type { ContactHeader } from "../../../lib/schema/resume";
 
-const FIELDS: ReadonlyArray<{ key: keyof ContactHeader; label: string; type: string }> = [
+// `width` sizes the input to the thing it holds — a phone number in a
+// name-width box is what makes a form look generated.
+const FIELDS: ReadonlyArray<{
+  key: keyof ContactHeader;
+  label: string;
+  type: string;
+  width?: "short" | "medium";
+}> = [
   { key: "name", label: "Name", type: "text" },
   { key: "title", label: "Title", type: "text" },
-  { key: "email", label: "Email", type: "email" },
-  { key: "phone", label: "Phone", type: "tel" },
-  { key: "location", label: "Location", type: "text" },
+  { key: "email", label: "Email", type: "email", width: "medium" },
+  { key: "phone", label: "Phone", type: "tel", width: "short" },
+  { key: "location", label: "Location", type: "text", width: "medium" },
 ];
 
 /** Singleton Contact/Header form: edits a local draft, commits on Save. */
@@ -19,8 +26,8 @@ export function ContactForm() {
   return (
     <section aria-label="Contact" className="section">
       <h2 className="section__title">Contact</h2>
-      {FIELDS.map(({ key, label, type }) => (
-        <label key={key}>
+      {FIELDS.map(({ key, label, type, width }) => (
+        <label key={key} className={width === undefined ? "field" : `field field--${width}`}>
           {label}
           <input
             type={type}

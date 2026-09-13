@@ -29,3 +29,26 @@ test("Save is disabled until company or role is provided", async () => {
   await userEvent.type(screen.getByLabelText(/company/i), "Acme");
   expect(screen.getByRole("button", { name: /^save$/i })).toBeEnabled();
 });
+
+test("asks for the role before the company, the way the entry reads", async () => {
+  render(
+    <ResumeProvider persistence={new InMemoryPersistence()}>
+      <ExperienceSection />
+    </ResumeProvider>,
+  );
+  await userEvent.click(screen.getByRole("button", { name: "Add experience" }));
+  const labels = [...screen.getByRole("dialog").querySelectorAll("label")].map((l) =>
+    (l.textContent ?? "").trim(),
+  );
+  expect(labels.indexOf("Role")).toBeLessThan(labels.indexOf("Company"));
+});
+
+test("names the current-role checkbox the way a person would say it", async () => {
+  render(
+    <ResumeProvider persistence={new InMemoryPersistence()}>
+      <ExperienceSection />
+    </ResumeProvider>,
+  );
+  await userEvent.click(screen.getByRole("button", { name: "Add experience" }));
+  expect(screen.getByRole("checkbox", { name: "I work here now" })).toBeInTheDocument();
+});

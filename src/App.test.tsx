@@ -36,3 +36,8 @@ test("the header reports the page count the preview produced", async () => {
   render(<App />);
   expect(await screen.findByText("A4 — 2 pages")).toBeInTheDocument();
 });
+
+test("the preview pane is an anchor target for the header link", () => {
+  const { container } = render(<App />);
+  expect(container.querySelector("#preview")).toHaveAttribute("aria-label", "Preview");
+});

@@ -23,7 +23,7 @@ export default function App() {
         <section aria-label="Editor" className="editor-pane">
           <Editor />
         </section>
-        <section aria-label="Preview" className="preview-pane">
+        <section id="preview" aria-label="Preview" className="preview-pane">
           <Preview onPaginated={setPageCount} />
         </section>
       </main>

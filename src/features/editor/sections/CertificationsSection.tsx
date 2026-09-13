@@ -10,8 +10,7 @@ const makeEmpty = (): CertificationItem => ({ id: newId(), name: "", issuer: "",
 export function CertificationsSection() {
   const items = useResumeState().committed.certifications;
   const dispatch = useResumeDispatch();
-  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } =
-    useSectionDraft(makeEmpty);
+  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } = useSectionDraft(makeEmpty);
 
   const save = () => {
     if (draft === null) return;
@@ -22,6 +21,7 @@ export function CertificationsSection() {
   return (
     <SectionEditor<CertificationItem>
       title="Certifications"
+      itemNoun="certification"
       items={items}
       draft={draft}
       isEditing={isEditing}
@@ -32,6 +32,7 @@ export function CertificationsSection() {
           {item.issuer ? ` — ${item.issuer}` : ""}
         </span>
       )}
+      renderMeta={(item) => [item.issuer, item.date].filter(Boolean).join(", ")}
       renderForm={() => (
         <>
           <label>
@@ -41,14 +42,14 @@ export function CertificationsSection() {
               onChange={(e) => updateDraft({ name: e.target.value })}
             />
           </label>
-          <label>
+          <label className="field field--medium">
             Issuer
             <input
               value={draft?.issuer ?? ""}
               onChange={(e) => updateDraft({ issuer: e.target.value })}
             />
           </label>
-          <label>
+          <label className="field field--short">
             Date
             <input
               value={draft?.date ?? ""}

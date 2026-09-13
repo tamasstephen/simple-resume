@@ -29,3 +29,10 @@ test("Export PDF opens the browser's native print dialog exactly once", async ()
   await userEvent.click(screen.getByRole("button", { name: "Export PDF" }));
   expect(printSpy).toHaveBeenCalledTimes(1);
 });
+
+// On narrow screens the preview sits thousands of pixels below the editor;
+// the sticky header carries the only way back to it.
+test("offers a link to the preview", () => {
+  render(<AppHeader pageCount={2} />);
+  expect(screen.getByRole("link", { name: "Preview" })).toHaveAttribute("href", "#preview");
+});

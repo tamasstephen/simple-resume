@@ -14,7 +14,7 @@ function renderSection() {
 
 test("add flow: typing does not add to the list until Save", async () => {
   renderSection();
-  await userEvent.click(screen.getByRole("button", { name: /add skills/i }));
+  await userEvent.click(screen.getByRole("button", { name: /add skill/i }));
   await userEvent.type(screen.getByLabelText(/skill name/i), "TypeScript");
   expect(screen.queryByText("TypeScript")).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
@@ -23,17 +23,17 @@ test("add flow: typing does not add to the list until Save", async () => {
 
 test("delete removes a saved skill", async () => {
   renderSection();
-  await userEvent.click(screen.getByRole("button", { name: /add skills/i }));
+  await userEvent.click(screen.getByRole("button", { name: /add skill/i }));
   await userEvent.type(screen.getByLabelText(/skill name/i), "Go");
   await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
-  await userEvent.click(screen.getByRole("button", { name: "Item actions" }));
-  await userEvent.click(screen.getByRole("menuitem", { name: /delete/i }));
+  // Skills render as tags: each carries its own remove control.
+  await userEvent.click(screen.getByRole("button", { name: "Remove Go" }));
   expect(screen.queryByText("Go")).not.toBeInTheDocument();
 });
 
 test("Save is disabled until the name is non-empty", async () => {
   renderSection();
-  await userEvent.click(screen.getByRole("button", { name: /add skills/i }));
+  await userEvent.click(screen.getByRole("button", { name: /add skill/i }));
   expect(screen.getByRole("button", { name: /^save$/i })).toBeDisabled();
   await userEvent.type(screen.getByLabelText(/skill name/i), "Rust");
   expect(screen.getByRole("button", { name: /^save$/i })).toBeEnabled();

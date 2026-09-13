@@ -10,8 +10,7 @@ const makeEmpty = (): LanguageItem => ({ id: newId(), name: "", proficiency: "" 
 export function LanguagesSection() {
   const items = useResumeState().committed.languages;
   const dispatch = useResumeDispatch();
-  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } =
-    useSectionDraft(makeEmpty);
+  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } = useSectionDraft(makeEmpty);
 
   const save = () => {
     if (draft === null) return;
@@ -22,6 +21,11 @@ export function LanguagesSection() {
   return (
     <SectionEditor<LanguageItem>
       title="Languages"
+      itemNoun="language"
+      layout="tags"
+      itemLabel={(item) =>
+        item.proficiency.length > 0 ? `${item.name} (${item.proficiency})` : item.name
+      }
       items={items}
       draft={draft}
       isEditing={isEditing}
@@ -34,14 +38,14 @@ export function LanguagesSection() {
       )}
       renderForm={() => (
         <>
-          <label>
+          <label className="field field--medium">
             Language
             <input
               value={draft?.name ?? ""}
               onChange={(e) => updateDraft({ name: e.target.value })}
             />
           </label>
-          <label>
+          <label className="field field--medium">
             Proficiency
             <input
               value={draft?.proficiency ?? ""}

@@ -8,6 +8,11 @@ export function AppHeader({ pageCount }: { pageCount: number }) {
     <header className="app-header">
       <span className="app-header__wordmark">Simple Resume</span>
       <div className="app-header__actions">
+        {/* Stacked layout only: below 961px the preview is a long scroll away
+            from the editor, and the header is the only thing always in view. */}
+        <a className="btn btn--text app-header__jump" href="#preview">
+          Preview
+        </a>
         <span className="app-header__meta">{meta}</span>
         <button type="button" className="btn btn--primary" onClick={() => window.print()}>
           Export PDF

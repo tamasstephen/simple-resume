@@ -20,8 +20,7 @@ const makeEmpty = (): EducationItem => ({
 export function EducationSection() {
   const items = useResumeState().committed.education;
   const dispatch = useResumeDispatch();
-  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } =
-    useSectionDraft(makeEmpty);
+  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } = useSectionDraft(makeEmpty);
 
   const save = () => {
     if (draft === null) return;
@@ -32,6 +31,7 @@ export function EducationSection() {
   return (
     <SectionEditor<EducationItem>
       title="Education"
+      itemNoun="education"
       items={items}
       draft={draft}
       isEditing={isEditing}
@@ -42,6 +42,7 @@ export function EducationSection() {
           {item.institution ? ` — ${item.institution}` : ""}
         </span>
       )}
+      renderMeta={(item) => [item.startDate, item.endDate].filter(Boolean).join(" – ")}
       renderForm={() => (
         <>
           <label>
@@ -51,28 +52,28 @@ export function EducationSection() {
               onChange={(e) => updateDraft({ institution: e.target.value })}
             />
           </label>
-          <label>
+          <label className="field field--short">
             Degree
             <input
               value={draft?.degree ?? ""}
               onChange={(e) => updateDraft({ degree: e.target.value })}
             />
           </label>
-          <label>
+          <label className="field field--medium">
             Field of study
             <input
               value={draft?.field ?? ""}
               onChange={(e) => updateDraft({ field: e.target.value })}
             />
           </label>
-          <label>
+          <label className="field field--short">
             Start date
             <input
               value={draft?.startDate ?? ""}
               onChange={(e) => updateDraft({ startDate: e.target.value })}
             />
           </label>
-          <label>
+          <label className="field field--short">
             End date
             <input
               value={draft?.endDate ?? ""}

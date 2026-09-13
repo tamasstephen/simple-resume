@@ -21,8 +21,7 @@ const makeEmpty = (): ExperienceItem => ({
 export function ExperienceSection() {
   const items = useResumeState().committed.experience;
   const dispatch = useResumeDispatch();
-  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } =
-    useSectionDraft(makeEmpty);
+  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } = useSectionDraft(makeEmpty);
 
   const save = () => {
     if (draft === null) return;
@@ -33,27 +32,22 @@ export function ExperienceSection() {
   return (
     <SectionEditor<ExperienceItem>
       title="Experience"
+      itemNoun="experience"
       items={items}
       draft={draft}
       isEditing={isEditing}
-      canSave={
-        draft !== null && (draft.company.trim().length > 0 || draft.role.trim().length > 0)
-      }
+      canSave={draft !== null && (draft.company.trim().length > 0 || draft.role.trim().length > 0)}
       renderSummary={(item) => (
         <span>
           {item.role}
           {item.company ? ` @ ${item.company}` : ""}
         </span>
       )}
+      renderMeta={(item) =>
+        [item.startDate, item.current ? "Present" : item.endDate].filter(Boolean).join(" – ")
+      }
       renderForm={() => (
         <>
-          <label>
-            Company
-            <input
-              value={draft?.company ?? ""}
-              onChange={(e) => updateDraft({ company: e.target.value })}
-            />
-          </label>
           <label>
             Role
             <input
@@ -62,28 +56,35 @@ export function ExperienceSection() {
             />
           </label>
           <label>
+            Company
+            <input
+              value={draft?.company ?? ""}
+              onChange={(e) => updateDraft({ company: e.target.value })}
+            />
+          </label>
+          <label className="field field--short">
             Start date
             <input
               value={draft?.startDate ?? ""}
               onChange={(e) => updateDraft({ startDate: e.target.value })}
             />
           </label>
-          <label>
+          <label className="field field--short">
             End date
             <input
               value={draft?.endDate ?? ""}
               onChange={(e) => updateDraft({ endDate: e.target.value })}
             />
           </label>
-          <label>
-            Currently here
+          <label className="field">
+            I work here now
             <input
               type="checkbox"
               checked={draft?.current ?? false}
               onChange={(e) => updateDraft({ current: e.target.checked })}
             />
           </label>
-          <label>
+          <label className="field field--medium">
             Location
             <input
               value={draft?.location ?? ""}
