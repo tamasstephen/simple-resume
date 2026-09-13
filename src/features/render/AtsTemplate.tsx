@@ -16,38 +16,16 @@ function join(parts: readonly string[], sep: string): string {
   return parts.filter((p) => p.length > 0).join(sep);
 }
 
-// One meta line under the name: email, phone, location, then the links —
-// links print here, so they belong to this line rather than a row of their
-// own. Each link is a real anchor so it stays clickable in the preview and in
-// the exported PDF; a URL the safe-href check refuses keeps its text and
-// simply is not linked.
-function ContactLine({ contact, links }: { contact: ContactHeader; links: readonly LinkItem[] }) {
-  const parts: { key: string; node: ReactNode }[] = [
-    ...[contact.email, contact.phone, contact.location]
-      .filter((value) => value.length > 0)
-      .map((value) => ({ key: value, node: value })),
-    ...links
-      .filter((link) => link.label.length > 0 || link.url.length > 0)
-      .map((link) => {
-        const text = link.label.length > 0 ? link.label : link.url;
-        const href = toSafeHref(link.url);
-        return {
-          key: link.id,
-          node:
-            href === null ? (
-              text
-            ) : (
-              <a className="resume-link" href={href} target="_blank" rel="noreferrer">
-                {text}
-              </a>
-            ),
-        };
-      }),
-  ];
+type MetaPart = { key: string; node: ReactNode };
+
+// The header's meta lines: contact facts on one, links on the next. They share
+// one treatment in pageStyles and carry no margin, so the links read as a
+// second line of the same block rather than a row of their own.
+function MetaLine({ className, parts }: { className: string; parts: readonly MetaPart[] }) {
   if (parts.length === 0) return null;
 
   return (
-    <p className="resume-contact">
+    <p className={className}>
       {parts.map((part, index) => (
         <Fragment key={part.key}>
           {index > 0 ? META_SEPARATOR : null}
@@ -56,6 +34,35 @@ function ContactLine({ contact, links }: { contact: ContactHeader; links: readon
       ))}
     </p>
   );
+}
+
+function contactParts(contact: ContactHeader): MetaPart[] {
+  return [contact.email, contact.phone, contact.location]
+    .filter((value) => value.length > 0)
+    .map((value) => ({ key: value, node: value }));
+}
+
+// Each link is a real anchor so it stays clickable in the preview and in the
+// exported PDF; a URL the safe-href check refuses keeps its text and simply is
+// not linked.
+function linkParts(links: readonly LinkItem[]): MetaPart[] {
+  return links
+    .filter((link) => link.label.length > 0 || link.url.length > 0)
+    .map((link) => {
+      const text = link.label.length > 0 ? link.label : link.url;
+      const href = toSafeHref(link.url);
+      return {
+        key: link.id,
+        node:
+          href === null ? (
+            text
+          ) : (
+            <a className="resume-link" href={href} target="_blank" rel="noreferrer">
+              {text}
+            </a>
+          ),
+      };
+    });
 }
 
 export function AtsTemplate({ resume }: { resume: Resume }) {
@@ -76,7 +83,8 @@ export function AtsTemplate({ resume }: { resume: Resume }) {
       <header className="resume-header">
         {contact.name.length > 0 ? <h1 className="resume-name">{contact.name}</h1> : null}
         {contact.title.length > 0 ? <p className="resume-title">{contact.title}</p> : null}
-        <ContactLine contact={contact} links={links} />
+        <MetaLine className="resume-contact" parts={contactParts(contact)} />
+        <MetaLine className="resume-links" parts={linkParts(links)} />
       </header>
 
       {summary.text.length > 0 ? (
@@ -160,7 +168,7 @@ export function AtsTemplate({ resume }: { resume: Resume }) {
           <h2 className="resume-section-title">Certifications</h2>
           {certifications.map((c) => (
             <div key={c.id} className="resume-entry">
-              <span className="resume-entry-title">{c.name}</span>
+              <span className="resume-cert-name">{c.name}</span>
               {join([c.issuer, c.date], ", ").length > 0 ? (
                 <span className="resume-entry-sub"> — {join([c.issuer, c.date], ", ")}</span>
               ) : null}

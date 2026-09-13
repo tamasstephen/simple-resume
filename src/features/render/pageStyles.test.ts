@@ -43,3 +43,26 @@ test("spaces paragraphs tighter than entries, and entries tighter than sections"
   expect(paragraph).toBeLessThan(entry ?? 0);
   expect(entry).toBeLessThan(section ?? 0);
 });
+
+// The links line is a second line of the contact block, not a row of its own:
+// same size, same ink, no gap between them.
+test("gives the links line the contact line's treatment", () => {
+  const shared = /\.resume-contact,\s*\.resume-links\s*\{([^}]*)\}/.exec(pageStyles)?.[1] ?? "";
+  expect(shared).toContain("margin: 0");
+});
+
+// A user's bold inside a description renders at body size and weight 700.
+// Arial ships only 400 and 700, so an entry title cannot out-rank it by
+// weight — it has to be bigger.
+test("sets entry titles larger than body text so in-body bold cannot rival them", () => {
+  const body = declaredPt(".resume-root", "font-size");
+  const entryTitle = declaredPt(".resume-entry-title", "font-size");
+  expect(body).toBeGreaterThan(0);
+  expect(entryTitle).toBeGreaterThan(body ?? 0);
+});
+
+test("leaves a certification name at body size, bold only", () => {
+  const rule = /\.resume-cert-name\s*\{([^}]*)\}/.exec(pageStyles)?.[1] ?? "";
+  expect(rule).toContain("font-weight: 700");
+  expect(declaredPt(".resume-cert-name", "font-size")).toBeNull();
+});

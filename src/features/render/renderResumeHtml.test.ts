@@ -87,15 +87,29 @@ test("renders an unsafe link as plain text instead of an anchor", () => {
   expect(html).not.toContain("<a ");
 });
 
-test("puts links on the contact line instead of a row of their own", () => {
+test("puts links on their own line directly under the contact line", () => {
   const html = renderResumeHtml({
     ...emptyResume(),
     contact: { name: "Ada", title: "", email: "a@x.com", phone: "", location: "London" },
     links: [{ id: "k1", label: "linkedin", url: "linkedin.com/in/ada" }],
   });
-  const metaLines = html.match(/<p class="resume-contact">.*?<\/p>/g) ?? [];
-  expect(metaLines).toHaveLength(1);
-  expect(metaLines[0]).toContain("a@x.com");
-  expect(metaLines[0]).toContain("London");
-  expect(metaLines[0]).toContain(">linkedin</a>");
+  const contactLine = /<p class="resume-contact">(.*?)<\/p>/.exec(html);
+  const linksLine = /<p class="resume-links">(.*?)<\/p>/.exec(html);
+  expect(contactLine?.[1]).toBe("a@x.com · London");
+  expect(linksLine?.[1]).toContain(">linkedin</a>");
+  // Second line of the same block: links follow the contact line, in the header.
+  expect(linksLine?.index).toBeGreaterThan(contactLine?.index ?? 0);
+});
+
+// A certification is a one-line item: its name sits inline with the issuer, so
+// it must not take the promoted entry-title size (that exists to out-rank bold
+// on a heading line and here just jumps two sizes mid-sentence).
+test("renders a certification name as an inline item, not a promoted heading", () => {
+  const html = renderResumeHtml({
+    ...emptyResume(),
+    certifications: [{ id: "c1", name: "AWS Solutions Architect", issuer: "Amazon", date: "2023" }],
+  });
+  expect(html).toContain("AWS Solutions Architect");
+  expect(html).toContain('class="resume-cert-name"');
+  expect(html).not.toContain("resume-entry-title");
 });
