@@ -1,4 +1,4 @@
-# Simple Resume — a single-page app with one indexable URL.
+# Simple Resume — landing page + editor.
 User-agent: *
 Allow: /
 
