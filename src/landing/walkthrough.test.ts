@@ -160,3 +160,28 @@ test("focus-within pauses and a hidden tab pauses", () => {
   expect(controller.isPaused()).toBe(false);
   hidden.mockRestore();
 });
+
+test("moving focus between children inside the list keeps it paused", () => {
+  const { root, controller } = buildBoundControls();
+  const [first, second] = [...root.querySelectorAll<HTMLElement>("li")];
+  if (!first || !second) throw new Error("fixture missing");
+  first.tabIndex = 0;
+  second.tabIndex = 0;
+
+  root.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+  root.dispatchEvent(new FocusEvent("focusout", { bubbles: true, relatedTarget: second }));
+  expect(controller.isPaused()).toBe(true);
+
+  root.dispatchEvent(new FocusEvent("focusout", { bubbles: true, relatedTarget: null }));
+  expect(controller.isPaused()).toBe(false);
+});
+
+test("after stop() the controller is inert", () => {
+  const { root, steps, controller } = buildBoundControls();
+  controller.stop();
+  root.dispatchEvent(new MouseEvent("mouseenter"));
+  root.dispatchEvent(new MouseEvent("mouseleave"));
+  vi.advanceTimersByTime(20000);
+  expect(activeIndexes(steps)).toEqual([1]);
+  expect(vi.getTimerCount()).toBe(0);
+});

@@ -54,6 +54,7 @@ export function startWalkthrough({
   let timerId: number | undefined;
   let stepStartedAt = Date.now();
   let elapsedMs = 0;
+  let isStopped = false;
 
   const clearTimer = (): void => {
     if (timerId === undefined) return;
@@ -72,14 +73,14 @@ export function startWalkthrough({
   };
 
   const pause = (): void => {
-    if (timerId === undefined) return;
+    if (isStopped || timerId === undefined) return;
     elapsedMs = Date.now() - stepStartedAt;
     clearTimer();
     root.setAttribute(PAUSED_ATTRIBUTE, "");
   };
 
   const resume = (): void => {
-    if (timerId !== undefined) return;
+    if (isStopped || timerId !== undefined) return;
     root.removeAttribute(PAUSED_ATTRIBUTE);
     schedule(Math.max(intervalMs - elapsedMs, 0));
     elapsedMs = 0;
@@ -91,6 +92,7 @@ export function startWalkthrough({
     pause,
     resume,
     stop: () => {
+      isStopped = true;
       clearTimer();
       root.removeAttribute(PAUSED_ATTRIBUTE);
     },
@@ -136,7 +138,8 @@ export function bindWalkthroughControls({
     hasFocus = true;
     sync();
   });
-  root.addEventListener("focusout", () => {
+  root.addEventListener("focusout", (event) => {
+    if (event.relatedTarget instanceof Node && root.contains(event.relatedTarget)) return;
     hasFocus = false;
     sync();
   });

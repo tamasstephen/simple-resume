@@ -547,8 +547,10 @@ a:focus-visible {
 }
 
 .how__toggle {
+  min-width: 44px;
   min-height: 44px;
   padding: 0 4px;
+  text-align: center;
   border: 0;
   background: none;
   font-family: var(--font-mono);
