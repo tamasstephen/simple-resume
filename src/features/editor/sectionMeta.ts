@@ -85,9 +85,16 @@ export const SECTIONS: readonly SectionMeta[] = [
   },
 ];
 
+export class UnknownSectionError extends Error {
+  constructor(readonly sectionId: string) {
+    super(`Unknown section id: ${sectionId}`);
+    this.name = "UnknownSectionError";
+  }
+}
+
 export function getSectionMeta(id: SectionId): SectionMeta {
   const meta = SECTIONS.find((section) => section.id === id);
-  if (meta === undefined) throw new Error(`Unknown section id: ${id}`);
+  if (meta === undefined) throw new UnknownSectionError(id);
   return meta;
 }
 

@@ -2,6 +2,9 @@
 :root {
   color-scheme: light;
   --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --app-header-height: 64px;
+  /* 8px padding + 36px item + 8px padding + 1px border. */
+  --rail-strip-height: 53px;
 }
 
 /* Reset & base. Element resets are scoped to the app chrome only: the Paged.js
@@ -45,7 +48,6 @@ body {
 }
 
 .app-header {
-  --app-header-height: 64px;
   position: sticky;
   top: 0;
   z-index: 2;
@@ -227,16 +229,13 @@ body {
   border-top: 1px solid var(--color-border);
 }
 
-/* Jumping to a section (rail click) must land below the sticky chrome. */
-.section {
-  scroll-margin-top: 24px;
-}
+
 
 .section__head {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 24px;
+  margin-bottom: 40px;
 }
 
 .section__eyebrow {
@@ -245,7 +244,11 @@ body {
   letter-spacing: 0.06em;
 }
 
+/* Jumping to a section (rail click) must land below the sticky chrome. On
+   desktop the editor pane is its own scroll container and starts below the
+   header, so only breathing room is needed. */
 .section__title {
+  scroll-margin-top: 24px;
   color: var(--color-text);
   font: 700 32px / 36px var(--font-sans);
   letter-spacing: -0.035em;
@@ -782,6 +785,37 @@ body {
   outline-offset: 2px;
 }
 
+/* 961-1279px: a full rail would squeeze the preview below a readable
+   width, so it collapses to numbers. The names stay in the accessible name. */
+@media (min-width: 961px) and (max-width: 1279px) {
+  .app-shell {
+    grid-template-columns: 64px minmax(0, 600px) minmax(340px, 1fr);
+  }
+
+  .section-rail__label,
+  .section-rail__status {
+    display: none;
+  }
+
+  .section-rail__item {
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  .section-rail__number {
+    width: auto;
+  }
+
+  .section-rail__name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
 /* Below 960px: panes stack to one column (header, rail strip, editor,
    preview), the divider moves to the preview's top edge, and the page (body)
    scrolls instead of the editor pane. */
@@ -794,7 +828,7 @@ body {
   /* Rail becomes a horizontally scrolling strip pinned under the header. */
   .section-rail {
     position: sticky;
-    top: var(--app-header-height, 64px);
+    top: var(--app-header-height);
     z-index: 1;
     overflow: auto hidden;
     padding: 8px 16px;
@@ -825,8 +859,8 @@ body {
     height: 2px;
   }
 
-  .section {
-    scroll-margin-top: 128px;
+  .section__title {
+    scroll-margin-top: calc(var(--app-header-height) + var(--rail-strip-height) + 16px);
   }
 
   .editor-pane {
@@ -870,6 +904,10 @@ body {
   .section__title {
     font-size: 26px;
     line-height: 30px;
+  }
+
+  .section__head {
+    margin-bottom: 24px;
   }
 
   .preview-bar {
