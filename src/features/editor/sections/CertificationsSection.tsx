@@ -27,13 +27,9 @@ export function CertificationsSection() {
       draft={draft}
       isEditing={isEditing}
       canSave={draft !== null && draft.name.trim().length > 0}
-      renderSummary={(item) => (
-        <span>
-          {item.name}
-          {item.issuer ? ` — ${item.issuer}` : ""}
-        </span>
-      )}
-      renderMeta={(item) => [item.issuer, item.date].filter(Boolean).join(", ")}
+      renderSummary={(item) => <span>{item.name}</span>}
+      renderSubtitle={(item) => item.issuer}
+      renderMeta={(item) => item.date}
       renderForm={() => (
         <>
           <label>

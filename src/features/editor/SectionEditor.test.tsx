@@ -12,7 +12,10 @@ interface Foo {
 
 /** The default (table) layout; the tags layout has its own setup below. */
 type TableOverrides = Partial<
-  SectionEditorBaseProps<Foo> & { renderMeta: (item: Foo) => ReactNode }
+  SectionEditorBaseProps<Foo> & {
+    renderMeta: (item: Foo) => ReactNode;
+    renderSubtitle: (item: Foo) => ReactNode;
+  }
 >;
 
 function setup(overrides: TableOverrides = {}) {
@@ -147,15 +150,29 @@ test("saved items are list items in a named list, not a table", () => {
   expect(screen.queryByRole("table")).not.toBeInTheDocument();
 });
 
-test("an empty section shows a titled empty state with its description and Add", () => {
+test("an empty section shows a titled empty state with Add and no repeated description", () => {
   setup({ items: [] });
   expect(screen.getByText("No skills yet")).toBeInTheDocument();
   const emptyState = screen.getByText("No skills yet").closest(".empty-state");
   expect(emptyState).not.toBeNull();
   if (emptyState === null || !(emptyState instanceof HTMLElement)) return;
-  expect(within(emptyState).getByText(getSectionMeta("skills").description)).toBeInTheDocument();
+  expect(
+    within(emptyState).queryByText(getSectionMeta("skills").description),
+  ).not.toBeInTheDocument();
   expect(within(emptyState).getByRole("button", { name: "Add skill" })).toBeInTheDocument();
   expect(screen.queryByRole("list")).not.toBeInTheDocument();
+});
+
+test("renders the subtitle under the title in the same row", () => {
+  setup({ renderSubtitle: (item) => `${item.name} subtitle` });
+  const row = within(screen.getByRole("list", { name: "Skills items" })).getByRole("listitem");
+  expect(within(row).getByText("TS subtitle")).toBeInTheDocument();
+});
+
+test("omits the subtitle element when it is empty", () => {
+  setup({ renderSubtitle: () => "" });
+  const row = within(screen.getByRole("list", { name: "Skills items" })).getByRole("listitem");
+  expect(row.querySelector(".entry__subtitle")).toBeNull();
 });
 
 test("the dialog eyebrow names the section and whether the item is new", () => {

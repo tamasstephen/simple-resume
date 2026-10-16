@@ -33,9 +33,20 @@ export interface SectionEditorBaseProps<T extends { id: string }> {
  */
 export type SectionEditorProps<T extends { id: string }> = SectionEditorBaseProps<T> &
   (
-    | { layout?: "table"; renderMeta?: (item: T) => ReactNode }
+    | {
+        layout?: "table";
+        renderMeta?: (item: T) => ReactNode;
+        renderSubtitle?: (item: T) => ReactNode;
+      }
     | { layout: "tags"; itemLabel: (item: T) => string }
   );
+
+function renderEntrySubtitle(subtitle: ReactNode) {
+  if (subtitle === undefined || subtitle === null || subtitle === false || subtitle === "") {
+    return null;
+  }
+  return <div className="entry__subtitle">{subtitle}</div>;
+}
 
 /** Generic save-based section shell: saved-items list + add/edit/delete + draft form. */
 export function SectionEditor<T extends { id: string }>(props: SectionEditorProps<T>) {
@@ -56,7 +67,7 @@ export function SectionEditor<T extends { id: string }>(props: SectionEditorProp
     onCancel,
   } = props;
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-  const { number, name, description } = getSectionMeta(sectionId);
+  const { number, name } = getSectionMeta(sectionId);
   const addButton = (
     <button type="button" className="btn btn--secondary btn--add" onClick={onAdd}>
       <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
@@ -106,7 +117,10 @@ export function SectionEditor<T extends { id: string }>(props: SectionEditorProp
           <ul className="entry-list" aria-label={`${title} items`}>
             {items.map((item) => (
               <li key={item.id} className="entry">
-                <div className="entry__summary">{renderSummary(item)}</div>
+                <div className="entry__text">
+                  <div className="entry__summary">{renderSummary(item)}</div>
+                  {renderEntrySubtitle(props.renderSubtitle?.(item))}
+                </div>
                 {props.renderMeta !== undefined && (
                   <div className="entry__meta">{props.renderMeta(item)}</div>
                 )}
@@ -129,10 +143,7 @@ export function SectionEditor<T extends { id: string }>(props: SectionEditorProp
         ))}
       {items.length === 0 && draft === null && (
         <div className="empty-state">
-          <div className="empty-state__text">
-            <p className="empty-state__title">{`No ${title.toLowerCase()} yet`}</p>
-            <p className="empty-state__description">{description}</p>
-          </div>
+          <p className="empty-state__title">{`No ${title.toLowerCase()} yet`}</p>
           {addButton}
         </div>
       )}

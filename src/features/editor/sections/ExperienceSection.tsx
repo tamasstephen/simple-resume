@@ -1,6 +1,7 @@
 import { useResumeState, useResumeDispatch } from "../../resume/useResume";
 import { useSectionDraft } from "../useSectionDraft";
 import { SectionEditor } from "../SectionEditor";
+import { joinSubtitle } from "../joinSubtitle";
 import { RichTextField } from "../RichTextField";
 import { sanitizeDescription } from "../sanitizeFields";
 import { newId } from "../../../lib/id";
@@ -38,12 +39,8 @@ export function ExperienceSection() {
       draft={draft}
       isEditing={isEditing}
       canSave={draft !== null && (draft.company.trim().length > 0 || draft.role.trim().length > 0)}
-      renderSummary={(item) => (
-        <span>
-          {item.role}
-          {item.company ? ` @ ${item.company}` : ""}
-        </span>
-      )}
+      renderSummary={(item) => <span>{item.role || item.company}</span>}
+      renderSubtitle={(item) => joinSubtitle([item.role ? item.company : "", item.location])}
       renderMeta={(item) =>
         [item.startDate, item.current ? "Present" : item.endDate].filter(Boolean).join(" – ")
       }

@@ -1,6 +1,7 @@
 import { useResumeState, useResumeDispatch } from "../../resume/useResume";
 import { useSectionDraft } from "../useSectionDraft";
 import { SectionEditor } from "../SectionEditor";
+import { joinSubtitle } from "../joinSubtitle";
 import { RichTextField } from "../RichTextField";
 import { sanitizeDescription } from "../sanitizeFields";
 import { newId } from "../../../lib/id";
@@ -37,12 +38,8 @@ export function EducationSection() {
       draft={draft}
       isEditing={isEditing}
       canSave={draft !== null && draft.institution.trim().length > 0}
-      renderSummary={(item) => (
-        <span>
-          {item.degree || item.field || "Education"}
-          {item.institution ? ` — ${item.institution}` : ""}
-        </span>
-      )}
+      renderSummary={(item) => <span>{item.degree || item.institution}</span>}
+      renderSubtitle={(item) => joinSubtitle([item.degree ? item.institution : "", item.field])}
       renderMeta={(item) => [item.startDate, item.endDate].filter(Boolean).join(" – ")}
       renderForm={() => (
         <>

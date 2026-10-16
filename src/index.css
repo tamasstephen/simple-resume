@@ -281,14 +281,29 @@ body {
   border-top: 1px solid var(--color-border);
 }
 
-.entry__summary {
+.entry__text {
+  display: flex;
   flex: 1;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
+}
+
+.entry__summary,
+.entry__subtitle {
   overflow: hidden;
-  color: var(--color-text);
-  font: 600 14px / 18px var(--font-sans);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.entry__summary {
+  color: var(--color-text);
+  font: 600 14px / 18px var(--font-sans);
+}
+
+.entry__subtitle {
+  color: var(--color-text-secondary);
+  font: 400 13px / 1.4 var(--font-sans);
 }
 
 .entry__meta {
@@ -444,26 +459,10 @@ body {
   border-radius: var(--radius-md);
 }
 
-.empty-state__text {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.empty-state__title,
-.empty-state__description {
-  margin: 0;
-}
-
 .empty-state__title {
+  margin: 0;
   color: var(--color-text);
   font: 600 14px / 18px var(--font-sans);
-}
-
-.empty-state__description {
-  color: var(--color-text-secondary);
-  font: 400 13px / 1.4 var(--font-sans);
 }
 
 /* Forms: 14px/600 labels 8px above 44px boxed inputs, 16px field rhythm. */
@@ -625,10 +624,18 @@ body {
 .rich-text__toolbar {
   display: flex;
   gap: 4px;
-  padding: 8px;
+  padding: 6px;
   border-bottom: 1px solid var(--color-border);
   border-radius: var(--radius-control) var(--radius-control) 0 0;
   background: var(--color-surface);
+}
+
+.rich-text__separator {
+  align-self: center;
+  width: 1px;
+  height: 16px;
+  margin-inline: 4px;
+  background: var(--color-border-strong);
 }
 
 .rich-text .tiptap {
@@ -748,9 +755,9 @@ body {
 }
 
 .btn--toggle {
-  width: 32px;
+  min-width: 32px;
   height: 28px;
-  padding: 0;
+  padding: 0 8px;
   border: 1px solid transparent;
   border-radius: 4px;
   background: transparent;

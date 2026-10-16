@@ -62,6 +62,7 @@ export function RichTextField({ value, onChange, ariaLabel }: RichTextFieldProps
         >
           Italic
         </button>
+        <span className="rich-text__separator" aria-hidden="true" />
         <button
           type="button"
           className="btn btn--toggle"

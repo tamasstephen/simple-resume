@@ -30,7 +30,7 @@ export function ProjectsSection() {
       isEditing={isEditing}
       canSave={draft !== null && draft.name.trim().length > 0}
       renderSummary={(item) => <span>{item.name}</span>}
-      renderMeta={(item) => item.url}
+      renderSubtitle={(item) => item.url}
       renderForm={() => (
         <>
           <label>

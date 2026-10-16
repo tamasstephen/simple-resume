@@ -28,7 +28,7 @@ export function LinksSection() {
       isEditing={isEditing}
       canSave={draft !== null && draft.url.trim().length > 0}
       renderSummary={(item) => <span>{item.label || item.url}</span>}
-      renderMeta={(item) => item.url}
+      renderSubtitle={(item) => (item.label ? item.url : "")}
       renderForm={() => (
         <>
           <label className="field field--medium">
