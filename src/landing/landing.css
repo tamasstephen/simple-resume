@@ -608,6 +608,18 @@ a:focus-visible {
   color: var(--color-text-secondary);
 }
 
+.step--active .step__number {
+  color: var(--color-primary);
+}
+
+.step--active .step__visual {
+  background: var(--color-primary-surface);
+}
+
+.step--active .step__arrow {
+  color: var(--color-primary);
+}
+
 .chip {
   display: flex;
   align-items: center;
@@ -639,11 +651,13 @@ a:focus-visible {
 }
 
 .chip--count {
+  border-color: var(--color-primary);
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 500;
   line-height: 16px;
   letter-spacing: 0.06em;
+  color: var(--color-primary);
 }
 
 .chip__dot {
@@ -651,7 +665,7 @@ a:focus-visible {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--color-text);
+  background: var(--color-primary);
 }
 
 .file__icon {
@@ -778,6 +792,57 @@ a:focus-visible {
   line-height: 18px;
   color: var(--color-text-secondary);
   text-decoration: none;
+}
+
+/* Fixed-width desktop columns (hero 640 + 64 + 560, privacy 520 + 96 + table)
+   need about 1240px of viewport. Below that, stack the sections and keep the
+   desktop type sizes. */
+@media (max-width: 1239px) {
+  .hero {
+    flex-direction: column;
+    gap: 56px;
+    padding-block: 56px 96px;
+  }
+
+  .hero__copy {
+    width: 100%;
+  }
+
+  .hero__title,
+  .hero__lede {
+    width: auto;
+  }
+
+  .demo-card {
+    left: 0;
+  }
+
+  .how__head {
+    flex-wrap: wrap;
+  }
+
+  .steps {
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  .step {
+    flex: none;
+    width: 100%;
+  }
+
+  .privacy {
+    flex-direction: column;
+    gap: 56px;
+  }
+
+  .privacy__copy {
+    width: 100%;
+  }
+
+  .section-title--closing {
+    width: auto;
+  }
 }
 
 @media (max-width: 767px) {
