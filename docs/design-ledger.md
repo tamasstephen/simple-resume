@@ -28,28 +28,8 @@
 
 ## Tokens
 
-Live in `src/index.css` `:root`:
-
-```css
---paper: #f6f6f4;
---ink: #242424; /* soft black — user correction */
---ink-50: rgb(0 0 0 / 50%);
---hairline: rgb(0 0 0 / 15%);
---white: #fff;
---danger: #b00020; /* delete only — user-sanctioned monochrome exception */
---font-sans: "Inter", system-ui, sans-serif; /* self-hosted @fontsource 400/500/600 */
---font-serif: "IBM Plex Serif", Georgia, serif; /* self-hosted @fontsource 300 */
---fs-micro: 12px;
---fs-body: 12px;
---fs-lead: 14px;
---fs-title: 22px;
---lh-tight: 1.05;
---lh-body: 1.5;
---ease-out: cubic-bezier(0.4, 0, 0.2, 1);
---space-1..6: 4/8/16/24/32/48px;
---header-h: 52px;
-color-scheme: light; /* light-only by design */
-```
+Live in `src/styles/tokens.css` (shared with the landing page). `src/index.css`
+adds only `--color-focus` (20% primary, the input focus halo) and `--ease-out`.
 
 ## Type roles
 
@@ -243,6 +223,10 @@ ItemDialog.tsx`, native `<dialog>` + `showModal`: top layer, focus
   `#root` is block flow (shell height auto, body scrolls) as before; the
   print revert stays. Header vertical padding reduced 40px → 24px
   (inline stays 48px, matching the pane); header is now ~79px.
+- 2026-10-16 — Redesign adopted from the personal design system (Paper):
+  numbers 01–09 kept, Inter titles, radius 6/8/12, dialog and menu
+  shadows, full-width entry rows. Supersedes the zero-radius, no-shadow,
+  IBM Plex Serif, hugging-table and no-numbers corrections above.
 
 ## Open decisions
 
