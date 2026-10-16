@@ -6,7 +6,9 @@ import { sectionAnchor, type SectionId } from "./sectionMeta";
 // on screen.
 const OBSERVER_MARGIN = "-72px 0px -60% 0px";
 
-function findNearestTop(entries: ReadonlyMap<SectionId, IntersectionObserverEntry>): SectionId | null {
+function findNearestTop(
+  entries: ReadonlyMap<SectionId, IntersectionObserverEntry>,
+): SectionId | null {
   let nearest: SectionId | null = null;
   let nearestTop = Infinity;
   for (const [id, entry] of entries) {

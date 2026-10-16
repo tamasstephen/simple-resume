@@ -16,7 +16,15 @@ test("lists the sections in the editor's document order", () => {
 
 test("numbers the sections 01 to 09", () => {
   expect(SECTIONS.map((section) => section.number)).toEqual([
-    "01", "02", "03", "04", "05", "06", "07", "08", "09",
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
   ]);
 });
 

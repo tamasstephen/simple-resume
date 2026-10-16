@@ -229,8 +229,6 @@ body {
   border-top: 1px solid var(--color-border);
 }
 
-
-
 .section__head {
   display: flex;
   flex-direction: column;
@@ -854,7 +852,9 @@ body {
 
 .pagedjs_page {
   background: var(--color-background);
-  box-shadow: 0 0 0 1px rgb(0 0 0 / 6%), 0 12px 32px rgb(0 0 0 / 6%);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 6%),
+    0 12px 32px rgb(0 0 0 / 6%);
 }
 
 /* On screen the sheets are separate pieces of paper; without a gutter a
