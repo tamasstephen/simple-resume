@@ -21,7 +21,7 @@ function redirectCreate(
   const location = getCreateRedirect(request.url ?? "");
   if (location === null) return next();
 
-  response.statusCode = 301;
+  response.statusCode = 302;
   response.setHeader("Location", location);
   response.end();
 }

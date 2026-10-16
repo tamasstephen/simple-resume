@@ -122,7 +122,6 @@ export function bindWalkthroughControls({
 
   button.addEventListener("click", () => {
     isPausedByUser = !isPausedByUser;
-    button.setAttribute("aria-pressed", String(isPausedByUser));
     button.textContent = isPausedByUser ? "Play" : "Pause";
     sync();
   });

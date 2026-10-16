@@ -127,7 +127,7 @@ a:focus-visible {
 }
 
 .section-title--closing {
-  width: 960px;
+  width: 900px;
   max-width: 100%;
   font-size: 96px;
   line-height: 92px;
@@ -837,6 +837,7 @@ a:focus-visible {
 
 .footer__links {
   display: flex;
+  align-items: center;
   gap: 28px;
 }
 
@@ -1017,7 +1018,8 @@ a:focus-visible {
   }
 
   .sheet-page--back {
-    left: 64px;
+    left: auto;
+    right: 0;
     top: 44px;
     padding: 36px;
   }
@@ -1035,6 +1037,7 @@ a:focus-visible {
     left: -4px;
     top: 262px;
     width: 300px;
+    max-width: 100%;
   }
 
   .copy--wide {
@@ -1132,5 +1135,12 @@ a:focus-visible {
 
   .footer__links {
     gap: 24px;
+  }
+}
+
+@media (max-width: 359px) {
+  .step__visual {
+    gap: 8px;
+    padding-inline: 12px;
   }
 }

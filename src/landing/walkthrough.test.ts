@@ -107,24 +107,23 @@ function buildBoundControls() {
   const { root, steps } = buildDom();
   const button = document.createElement("button");
   button.textContent = "Pause";
-  button.setAttribute("aria-pressed", "false");
   document.body.append(button);
   const controller = startWalkthrough({ root, intervalMs: 4000, prefersReducedMotion: false });
   bindWalkthroughControls({ root, button, controller });
   return { root, steps, button, controller };
 }
 
-test("the button toggles aria-pressed, label and playback", () => {
+test("the button toggles the label and playback", () => {
   const { steps, button, controller } = buildBoundControls();
   button.click();
-  expect(button.getAttribute("aria-pressed")).toBe("true");
+  expect(button.hasAttribute("aria-pressed")).toBe(false);
   expect(button.textContent).toBe("Play");
   expect(controller.isPaused()).toBe(true);
   vi.advanceTimersByTime(20000);
   expect(activeIndexes(steps)).toEqual([1]);
 
   button.click();
-  expect(button.getAttribute("aria-pressed")).toBe("false");
+  expect(button.hasAttribute("aria-pressed")).toBe(false);
   expect(button.textContent).toBe("Pause");
   expect(controller.isPaused()).toBe(false);
 });

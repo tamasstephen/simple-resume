@@ -37,7 +37,7 @@
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "Simple Resume",
-        "url": "https://cvpeers.com/",
+        "url": "https://cvpeers.com/create/",
         "description": "Build a resume in your browser and export a clean, automatically paginated A4 PDF. The preview is the printed document, so pages never need manual break handling.",
         "applicationCategory": "BusinessApplication",
         "applicationSubCategory": "Resume builder",
@@ -202,7 +202,6 @@
                 type="button"
                 class="how__toggle"
                 data-walkthrough-toggle
-                aria-pressed="false"
                 aria-controls="walkthrough-steps"
               >
                 Pause
@@ -317,10 +316,12 @@
       </main>
 
       <footer class="footer">
-        <nav class="footer__links" aria-label="Footer">
-          <a href="#privacy">Privacy</a>
+        <div class="footer__links">
+          <nav aria-label="Footer">
+            <a href="#privacy">Privacy</a>
+          </nav>
           <span>© 2026</span>
-        </nav>
+        </div>
         <p class="eyebrow footer__brand">SIMPLE RESUME · CVPEERS.COM</p>
       </footer>
     </div>
