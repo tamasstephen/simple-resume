@@ -2,92 +2,68 @@
 
 ## Identity
 
-- Narrative archetype: print catalog / editorial index — the app frames a
-  working document, not a dashboard.
-- Primary constraint: ink-on-paper monochrome. Soft black `#242424` on warm
-  paper `#f6f6f4`, opacity variants for hierarchy, zero color (sole
-  exception: `--danger` red on Delete). `border-radius: 0`
-  everywhere; no shadows except a 1px hairline ring on preview page sheets.
-- Tactile metaphor: a printed catalog on warm stock — small, precise type;
-  hairline rules; light serif titles (IBM Plex Serif 300) over an Inter
-  body.
-- Interaction tone: noble and unhurried — 150ms fades to 50% opacity and
-  underline sweeps, no springs or bounces.
-- References: https://andmade.jp/ — adopted its paper/ink palette, small
-  precise type scale (12px body, 22px titles at 1.05), Courier Prime mono
-  as the editorial accent, zero radius, underline-sweep hovers, black band
-  header (band since removed — see Corrections). Akzidenz-Grotesk
-  (commercial) substituted with Inter.
-  Pass 2 (2026-09-11, computed-style extraction): titles 22px, wordmark
-  14px/1.5 w500, item rows whitespace-separated (8px gap, no hairlines —
-  site uses zero rules in lists), 0.7s wipe-through underline sweep copied
-  verbatim from the site's keyframes, 150ms cubic-bezier(0.4,0,0.2,1)
-  easing. Same-day user corrections reshaped the type system — see
-  Corrections; current state: IBM Plex Serif 300 lives ONLY in section
-  titles (the single non-sans voice), everything else is Inter.
+- Narrative archetype: a calm working document — the app frames a resume,
+  not a dashboard.
+- Primary constraint: personal design system. White stock, black ink
+  (`--color-text`), grey secondary text and `--color-border` hairlines.
+  Cobalt (`--color-primary`) only for focus rings and the active rail
+  marker. Radius 6 (controls) / 8 (entry list) / 12 (dialog). Shadows only
+  on the dialog, the kebab menu and the preview sheets.
+- Type: Inter for UI and titles, IBM Plex Mono for eyebrows, meta and the
+  preview bar.
+- Interaction tone: unhurried — 150ms fades, no springs or bounces.
+- References: https://andmade.jp/ — original source of the underline-sweep
+  and easing; its palette, serif and zero-radius language were superseded
+  (see Corrections).
 
 ## Tokens
 
 Live in `src/styles/tokens.css` (shared with the landing page). `src/index.css`
-defines only `--ease-out`.
+defines only `--ease-out`, `--app-header-height` (64px) and
+`--rail-strip-height` (53px, the sticky strip under the header below 960px).
 
 ## Type roles
 
-| Role                           | Family / size / weight / line-height    |
-| ------------------------------ | --------------------------------------- |
-| Wordmark ("Simple Resume")     | serif 300 22px / 1.05, ink              |
-| Header meta                    | sans 400 12px / 1, ink-50               |
-| Empty states                   | sans 400 12px / 1.05, ink-50            |
-| Form labels                    | sans 400 12px, ink-50, sentence-case    |
-| Section titles                 | serif 300 22px / 1.05, ink              |
-| Item summaries / inputs        | sans 400 12px / 1.5                     |
-| Boxed buttons                  | sans 500 12px / 1.2                     |
-| Toolbar toggles                | sans 400 12px / 1                       |
-| Kebab menu items (Edit/Delete) | sans 400 12px / 1.5; Delete in --danger |
+| Role                    | Family / size / weight / line-height                |
+| ----------------------- | --------------------------------------------------- |
+| Wordmark                | Inter 700 16px / 20px, -0.02em                      |
+| Section eyebrow         | mono 400 12px / 16px, 0.06em, secondary             |
+| Section title (h2)      | Inter 700 32px / 36px, -0.035em (26px below 600px)  |
+| Body / inputs           | Inter 400 14px / 1.5                                |
+| Labels                  | Inter 600 14px                                      |
+| Entry row title         | Inter 600 14px / 18px                               |
+| Entry row subtitle      | Inter 400 13px, secondary                           |
+| Entry meta, preview bar | mono 400 12px / 16px, secondary                     |
 
 ## Component language
 
-- **Buttons** (commit strength ladder): `btn--primary` black solid, white
-  text — the only solid fill, reserved for Save/commit actions (dialog
-  Save + header Export PDF; hover 50%, disabled pinned 50% + default
-  cursor). `btn--secondary` 1px ink border, transparent — invitations
-  (Add). `btn--text` borderless underline-sweep — dismissals and
-  micro-actions (Cancel). `btn--toggle` inverts to a black box when
-  `aria-pressed="true"` (ink density = state).
-- **Fields**: sans sentence-case micro labels (12px, ink-50) above white
-  boxed inputs with 1px hairline borders; focus-visible = 1px ink
-  outline, 2px offset; checkboxes render inline-row with
-  `accent-color: var(--ink)`.
-- **Item table**: rows in a bordered grid (`<table>`, hairline row
-  separators + outer frame, no vertical rule between name and kebab;
-  `width: fit-content` — never the full column width); names
-  truncate at 420px with an ellipsis; row hover fades the name to 50%
-  (the kebab keeps its own language — never compound opacity); "— none
-  yet" sans empty state. Each row carries a kebab menu (KebabMenu.tsx):
-  borderless 24×24 ink trigger (SVG dots, hover fades 50%); menu = white
-  stock, 1px ink border, zero radius, no shadow, min-width 128px; items
-  are sans 12px/1.5 with 150ms fade hover; Delete in `--danger` red.
-- **Text buttons** (`btn--text`): permanently carry a 1px currentColor
-  underline (::after, bottom -0.15em); on hover it plays the site's
-  signature wipe-through (line exits right, re-enters left) while the label
-  fades to 50%. Used for Cancel in the draft form (row Edit/Delete moved
-  into the kebab menu 2026-09-11).
-- **Add/edit dialog** (`ItemDialog`): native `<dialog>` popup for the
-  repeatable sections — white card, 1px ink border, 480px, zero radius,
-  ink scrim 32%; serif 300 title "Add/Edit {Section}"; first field
-  autofocuses; 24px between the last field and the Save/Cancel row
-  (Save = primary — disabled until valid, Cancel = text button); Esc and
-  backdrop clicks cancel the draft, clicks on the card's own padding do
-  not. Sits in `.editor-pane` DOM-wise, so print strips it.
-- **Chrome**: opaque paper band with a 1px hairline bottom divider,
-  auto height (~79px) — items vertically centered with `padding: 24px
-var(--space-6)` (inline padding mirrors the editor pane): serif 300
-  "Simple Resume" wordmark left; sans ink-50 meta + primary (black
-  solid) Export PDF right. Frame: `#root` = flex column ONLY
-  `@media screen and (min-width: 961px)`, shell `flex: 1` (no viewport-
-  height math; ≤960px stacked mode keeps block flow + body scroll).
-  Hairline top dividers between sections; editor content column max
-  640px.
+- **Buttons**: `btn--primary` black solid, the commit action (dialog Save,
+  header Export PDF); `btn--secondary` outlined, invitations (Add);
+  `btn--text` underline-sweep, dismissals; `btn--toggle` inverts on
+  `aria-pressed`.
+- **Header**: identity (wordmark), `SAVED LOCALLY` status and Export PDF;
+  64px, sticky, hairline bottom divider.
+- **Section rail** (`SectionRail`, `useActiveSection`): numbered jump list
+  with a scroll-spy active marker (cobalt, `aria-current="location"`).
+  Full (number + name) at >=1280px; numbers-only 64px column at 961-1279px
+  (names stay in the accessible name and `title`); horizontal sticky strip
+  below 960px. Click focuses the section's heading.
+- **Section heading**: mono eyebrow ("01 / CONTACT"), 32px h2 headline,
+  secondary description; sections separated by a hairline.
+- **Entry rows**: full-width bordered list (radius 8); title + optional
+  subtitle left (ellipsis), mono meta in a 128px right-aligned slot, kebab
+  at the end.
+- **Kebab menu**: 32px trigger; menu is a shadowed white card with Edit and
+  Delete (Delete in danger red).
+- **Tags** (Skills, Languages): 32px pills with an edit label and a 24px
+  remove target.
+- **Empty state**: text left, Add right; wraps under 480px.
+- **Dialog** (`ItemDialog`): native `<dialog>`, 560px, radius 12, shadow,
+  scrim; mono eyebrow, h2 title (labels the dialog), Close button; first
+  field focused on open; focus returns to the opener on close; Esc and
+  backdrop click cancel. Sits in `.editor-pane`, so print strips it.
+- **Preview bar**: mono page count above the sheets; screen-only.
+- **Fields**: white boxed inputs, radius 6, focus ring in cobalt.
 
 ## Motion
 
@@ -100,18 +76,12 @@ sweep (our a11y addition; the reference lacks it).
 
 ## Adopted patterns / Excluded patterns
 
-- Adopted: self-hosted fonts via `@fontsource` (zero external font
-  requests); scoped element resets (app chrome only); IBM Plex Serif 300 as
-  the single non-sans voice, reserved for section titles (user-directed);
-  the verbatim wipe-through sweep; whitespace-separated item rows.
-- Excluded: gradients, glassmorphism, rounded corners, shadows (except the
-  preview page hairline ring), decorative color, dark mode.
-  Reference pass 2 exclusions (user-confirmed 2026-09-11): the site's
-  single blue accent `#0022ff` (pills + statement text) — strict
-  monochrome retained; the site's rounded 30px pill chips; the 500ms
-  wordmark fade and scroll-driven fixed layers (marketing-site patterns).
-  Corrected out same day (see Corrections): CSS-counter 01–09 section
-  indices; Courier in labels/meta/actions; tracking tokens.
+- Adopted: self-hosted fonts via `@fontsource` (Inter, IBM Plex Mono);
+  scoped element resets (app chrome only); the wipe-through underline sweep
+  on `btn--text`; numbered section rail with scroll-spy; full-width entry
+  rows.
+- Excluded: gradients, decorative colour (cobalt is functional only; danger
+  red on Delete), dark mode.
 - **Out of scope by design**: the resume document layer
   (`src/features/render/pageStyles.ts`) is a print artifact with its own
   Arial/pt system — never restyle it with app-chrome tokens.
