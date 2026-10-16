@@ -30,6 +30,7 @@ export function EducationSection() {
 
   return (
     <SectionEditor<EducationItem>
+      sectionId="education"
       title="Education"
       itemNoun="education"
       items={items}

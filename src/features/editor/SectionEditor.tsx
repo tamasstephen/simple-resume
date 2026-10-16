@@ -2,8 +2,11 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { ItemDialog } from "./ItemDialog";
 import { KebabMenu } from "./KebabMenu";
+import { SectionHeading } from "./SectionHeading";
+import { sectionAnchor, type SectionId } from "./sectionMeta";
 
 export interface SectionEditorBaseProps<T extends { id: string }> {
+  sectionId: SectionId;
   title: string;
   /** Singular name of one item ("skill"), used by the add action and dialog. */
   itemNoun: string;
@@ -37,6 +40,7 @@ export type SectionEditorProps<T extends { id: string }> = SectionEditorBaseProp
 /** Generic save-based section shell: saved-items list + add/edit/delete + draft form. */
 export function SectionEditor<T extends { id: string }>(props: SectionEditorProps<T>) {
   const {
+    sectionId,
     title,
     itemNoun,
     items,
@@ -54,10 +58,8 @@ export function SectionEditor<T extends { id: string }>(props: SectionEditorProp
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   return (
-    <section aria-label={title} className="section">
-      <div className="section__head">
-        <h2 className="section__title">{title}</h2>
-      </div>
+    <section aria-label={title} className="section" id={sectionAnchor(sectionId)}>
+      <SectionHeading sectionId={sectionId} />
 
       {items.length > 0 &&
         (props.layout === "tags" ? (

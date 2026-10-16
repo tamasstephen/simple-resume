@@ -34,7 +34,7 @@ test("mounts the print stylesheet for native PDF export", () => {
 
 test("the header reports the page count the preview produced", async () => {
   render(<App />);
-  expect(await screen.findByText("A4 — 2 pages")).toBeInTheDocument();
+  expect(await screen.findByText("PREVIEW · A4 · 2 PAGES")).toBeInTheDocument();
 });
 
 test("the preview pane is an anchor target for the header link", () => {

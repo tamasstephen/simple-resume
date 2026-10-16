@@ -12,15 +12,15 @@ test("renders every section heading in order", () => {
     </ResumeProvider>,
   );
   const expected = [
-    "Contact",
-    "Links",
-    "Summary",
-    "Experience",
-    "Education",
-    "Skills",
-    "Projects",
-    "Certifications",
-    "Languages",
+    "How to reach you",
+    "Where to find you online",
+    "Your story in brief",
+    "Where you’ve worked",
+    "What you studied",
+    "What you’re good at",
+    "Things you’ve built",
+    "Proof on paper",
+    "Languages you speak",
   ];
   const headings = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
   expect(headings).toEqual(expected);

@@ -20,6 +20,7 @@ export function CertificationsSection() {
 
   return (
     <SectionEditor<CertificationItem>
+      sectionId="certifications"
       title="Certifications"
       itemNoun="certification"
       items={items}

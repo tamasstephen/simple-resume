@@ -20,6 +20,7 @@ export function LinksSection() {
 
   return (
     <SectionEditor<LinkItem>
+      sectionId="links"
       title="Links"
       itemNoun="link"
       items={items}

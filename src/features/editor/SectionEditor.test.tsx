@@ -24,6 +24,7 @@ function setup(overrides: TableOverrides = {}) {
   };
   render(
     <SectionEditor<Foo>
+      sectionId="skills"
       title="Skills"
       itemNoun="skill"
       items={[{ id: "1", name: "TS" }]}
@@ -41,7 +42,7 @@ function setup(overrides: TableOverrides = {}) {
 
 test("renders the section title and saved items", () => {
   setup();
-  expect(screen.getByRole("heading", { name: "Skills" })).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: "What you’re good at" })).toBeInTheDocument();
   expect(screen.getByText("TS")).toBeInTheDocument();
 });
 
@@ -149,6 +150,7 @@ function setupTags() {
   };
   render(
     <SectionEditor<Foo>
+      sectionId="skills"
       title="Skills"
       itemNoun="skill"
       layout="tags"

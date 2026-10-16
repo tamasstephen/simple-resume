@@ -20,6 +20,7 @@ export function SkillsSection() {
 
   return (
     <SectionEditor<SkillItem>
+      sectionId="skills"
       title="Skills"
       itemNoun="skill"
       layout="tags"

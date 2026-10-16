@@ -22,6 +22,7 @@ export function ProjectsSection() {
 
   return (
     <SectionEditor<ProjectItem>
+      sectionId="projects"
       title="Projects"
       itemNoun="project"
       items={items}

@@ -5,7 +5,7 @@ test("declares a full-bleed A4 sheet and hides the app chrome", () => {
   expect(printStyles).toContain("@page");
   expect(printStyles).toContain("size: A4");
   expect(printStyles).toContain("margin: 0");
-  expect(printStyles).toContain(".app-header, .editor-pane");
+  expect(printStyles).toContain(".app-header, .editor-pane, .section-rail");
   expect(printStyles).toContain("display: none");
   expect(printStyles).toContain(".app-shell");
   expect(printStyles).toContain("display: block");

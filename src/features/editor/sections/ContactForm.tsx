@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { SectionHeading } from "../SectionHeading";
+import { sectionAnchor } from "../sectionMeta";
 import { useResumeState, useResumeDispatch } from "../../resume/useResume";
 import type { ContactHeader } from "../../../lib/schema/resume";
 
@@ -24,8 +26,8 @@ export function ContactForm() {
   const [draft, setDraft] = useState<ContactHeader>(committed);
 
   return (
-    <section aria-label="Contact" className="section">
-      <h2 className="section__title">Contact</h2>
+    <section aria-label="Contact" className="section" id={sectionAnchor("contact")}>
+      <SectionHeading sectionId="contact" />
       {FIELDS.map(({ key, label, type, width }) => (
         <label key={key} className={width === undefined ? "field" : `field field--${width}`}>
           {label}

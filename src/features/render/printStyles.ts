@@ -13,7 +13,7 @@ export const printStyles = `
      fit the page. */
   @page { size: A4; margin: 0; }
   body { background: #fff; }
-  .app-header, .editor-pane { display: none; }
+  .app-header, .editor-pane, .section-rail { display: none; }
   .app-shell { display: block; height: auto; }
   .preview-pane { overflow: visible; border: 0; background: none; }
   /* Class-vs-class overrides: this <style> renders inside #root, after

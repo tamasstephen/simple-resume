@@ -20,6 +20,7 @@ export function LanguagesSection() {
 
   return (
     <SectionEditor<LanguageItem>
+      sectionId="languages"
       title="Languages"
       itemNoun="language"
       layout="tags"

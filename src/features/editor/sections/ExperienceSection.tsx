@@ -31,6 +31,7 @@ export function ExperienceSection() {
 
   return (
     <SectionEditor<ExperienceItem>
+      sectionId="experience"
       title="Experience"
       itemNoun="experience"
       items={items}
