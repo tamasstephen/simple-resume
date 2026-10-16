@@ -10,6 +10,13 @@
   --color-primary-surface: #EEF5FF;
   --color-success: #00A86B;
   --color-danger-text: #CD2B31;
+  --color-text-disabled: #999999;
+  --color-focus: var(--color-primary);
+  --color-danger: #E5484D;
+  --color-danger-surface: #FFF1F1;
+  --color-warning: #B7791F;
+  --color-warning-surface: #FFF8E6;
+  --color-scrim: rgb(0 0 0 / 32%);
 
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;

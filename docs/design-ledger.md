@@ -29,7 +29,7 @@
 ## Tokens
 
 Live in `src/styles/tokens.css` (shared with the landing page). `src/index.css`
-adds only `--color-focus` (20% primary, the input focus halo) and `--ease-out`.
+defines only `--ease-out`.
 
 ## Type roles
 

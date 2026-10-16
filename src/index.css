@@ -1,7 +1,6 @@
 /* Colours, fonts and radii come from styles/tokens.css, shared with the landing page. */
 :root {
   color-scheme: light;
-  --color-focus: color-mix(in srgb, var(--color-primary) 20%, transparent);
   --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -213,7 +212,7 @@ body {
 
 .kebab__trigger:focus-visible,
 .kebab__item:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 
@@ -299,7 +298,7 @@ body {
 
 .tag__edit:focus-visible,
 .tag__remove:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 
@@ -332,14 +331,14 @@ body {
 
 .section input:not([type="checkbox"]):focus,
 .rich-text:focus-within {
-  border-color: var(--color-primary);
+  border-color: var(--color-focus);
   outline: none;
-  box-shadow: 0 0 0 3px var(--color-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus) 20%, transparent);
 }
 
 .section input:not([type="checkbox"]):disabled {
   background: var(--color-surface);
-  color: var(--color-text-continuation);
+  color: var(--color-text-disabled);
 }
 
 /* Field widths carry meaning: a date is not as wide as a job title. */
@@ -381,7 +380,7 @@ body {
 }
 
 .modal::backdrop {
-  background: rgb(0 0 0 / 32%);
+  background: var(--color-scrim);
 }
 
 /* Scoped under .modal to outspecify the editor-pane heading reset —
@@ -482,7 +481,7 @@ body {
 
 .btn--primary:disabled {
   background: var(--color-surface);
-  color: var(--color-text-continuation);
+  color: var(--color-text-disabled);
   cursor: default;
 }
 
@@ -565,7 +564,8 @@ body {
   color: var(--color-background);
 }
 
-/* Preview chrome: divider, surface pane, white page sheets with a soft shadow. The resume document inside the pages keeps its own print styling. */
+/* Preview chrome: divider, surface pane, white page sheets with a soft
+   shadow. The resume document inside the pages keeps its own print styling. */
 .preview-pane {
   overflow: hidden;
   border-left: 1px solid var(--color-border);
@@ -615,7 +615,7 @@ body {
 
 /* Focus states. */
 :focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 
