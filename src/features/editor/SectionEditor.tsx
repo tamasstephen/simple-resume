@@ -68,8 +68,14 @@ export function SectionEditor<T extends { id: string }>(props: SectionEditorProp
   } = props;
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const { number, name } = getSectionMeta(sectionId);
+  // Stays mounted (hidden) while the dialog is open so focus can return to it.
   const addButton = (
-    <button type="button" className="btn btn--secondary btn--add" onClick={onAdd}>
+    <button
+      type="button"
+      className="btn btn--secondary btn--add"
+      hidden={draft !== null}
+      onClick={onAdd}
+    >
       <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
         <path d="M7 2v10M2 7h10" fill="none" stroke="currentColor" strokeWidth="1.5" />
       </svg>
@@ -141,13 +147,13 @@ export function SectionEditor<T extends { id: string }>(props: SectionEditorProp
             ))}
           </ul>
         ))}
-      {items.length === 0 && draft === null && (
-        <div className="empty-state">
+      {items.length === 0 && (
+        <div className="empty-state" hidden={draft !== null}>
           <p className="empty-state__title">{`No ${title.toLowerCase()} yet`}</p>
           {addButton}
         </div>
       )}
-      {items.length > 0 && draft === null && addButton}
+      {items.length > 0 && addButton}
 
       {draft !== null && (
         <ItemDialog

@@ -422,12 +422,20 @@ body {
 
 .tag__remove {
   display: grid;
+  position: relative;
   place-items: center;
   width: 20px;
   height: 20px;
   margin-right: 6px;
   padding: 0;
   color: var(--color-text-secondary);
+}
+
+/* Hit extender: a 24x24 target (WCAG 2.5.8) around the 20px glyph. */
+.tag__remove::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
 }
 
 .tag__edit:hover,
@@ -439,6 +447,11 @@ body {
 .tag__remove:focus-visible {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
+}
+
+.empty-state[hidden],
+.btn--add[hidden] {
+  display: none;
 }
 
 .btn--add {
@@ -943,6 +956,7 @@ body {
   }
 
   .preview-pane {
+    scroll-margin-top: calc(var(--app-header-height) + var(--rail-strip-height));
     border-left: none;
     border-top: 1px solid var(--color-border);
   }

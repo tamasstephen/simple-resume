@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { sectionAnchor, type SectionId } from "./sectionMeta";
 
 // A section counts as "current" while it crosses the band just under the
@@ -18,10 +18,33 @@ function findNearestTop(entries: ReadonlyMap<SectionId, IntersectionObserverEntr
   return nearest;
 }
 
+const USER_SCROLL_EVENTS: readonly string[] = ["wheel", "touchmove", "keydown"];
+
 /** Scroll-spy: the id of the section nearest the top of the viewport, or null
- *  before any is seen (and wherever IntersectionObserver does not exist). */
-export function useActiveSection(ids: readonly SectionId[]): SectionId | null {
+ *  before any is seen (and wherever IntersectionObserver does not exist).
+ *  `selectSection` pins a rail click as active — the jump's own scroll (or a
+ *  pane that cannot scroll that far) must not hand it back to the observer —
+ *  until the user scrolls or types again. */
+export function useActiveSection(
+  ids: readonly SectionId[],
+): [SectionId | null, (id: SectionId) => void] {
   const [activeId, setActiveId] = useState<SectionId | null>(null);
+  const isPinnedRef = useRef(false);
+
+  const selectSection = useCallback((id: SectionId) => {
+    isPinnedRef.current = true;
+    setActiveId(id);
+  }, []);
+
+  useEffect(() => {
+    const unpin = () => {
+      isPinnedRef.current = false;
+    };
+    for (const name of USER_SCROLL_EVENTS) window.addEventListener(name, unpin, true);
+    return () => {
+      for (const name of USER_SCROLL_EVENTS) window.removeEventListener(name, unpin, true);
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
@@ -34,7 +57,7 @@ export function useActiveSection(ids: readonly SectionId[]): SectionId | null {
           if (id !== undefined) latest.set(id, entry);
         }
         const nearest = findNearestTop(latest);
-        if (nearest !== null) setActiveId(nearest);
+        if (nearest !== null && !isPinnedRef.current) setActiveId(nearest);
       },
       { rootMargin: OBSERVER_MARGIN },
     );
@@ -47,5 +70,5 @@ export function useActiveSection(ids: readonly SectionId[]): SectionId | null {
     return () => observer.disconnect();
   }, [ids]);
 
-  return activeId;
+  return [activeId, selectSection];
 }

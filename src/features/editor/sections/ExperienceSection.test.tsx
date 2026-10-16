@@ -81,3 +81,15 @@ test("without a role the company becomes the title and no subtitle is shown", as
   expect(row).toHaveTextContent("Acme");
   expect(row.querySelector(".entry__subtitle")).toBeNull();
 });
+
+test("cancelling the dialog returns focus to the Add button", async () => {
+  render(
+    <ResumeProvider persistence={new InMemoryPersistence()}>
+      <ExperienceSection />
+    </ResumeProvider>,
+  );
+  const addButton = screen.getByRole("button", { name: "Add experience" });
+  await userEvent.click(addButton);
+  await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
+  expect(addButton).toHaveFocus();
+});

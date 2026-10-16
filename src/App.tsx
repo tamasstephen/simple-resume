@@ -17,7 +17,7 @@ export default function App() {
   // The preview bar shows how many A4 pages the current resume makes; only
   // the preview's pagination run knows, so App holds the number between them.
   const [pageCount, setPageCount] = useState(0);
-  const activeSectionId = useActiveSection(SECTION_IDS);
+  const [activeSectionId, selectSection] = useActiveSection(SECTION_IDS);
 
   return (
     <ResumeProvider persistence={persistence}>
@@ -26,7 +26,7 @@ export default function App() {
       <style>{printStyles}</style>
       <AppHeader />
       <main className="app-shell">
-        <SectionRail activeId={activeSectionId} />
+        <SectionRail activeId={activeSectionId} onSelect={selectSection} />
         <section aria-label="Editor" className="editor-pane">
           <Editor />
         </section>

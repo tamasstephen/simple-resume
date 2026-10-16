@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 import type { MouseEvent, ReactNode, SyntheticEvent } from "react";
 
 interface ItemDialogProps {
@@ -25,14 +25,19 @@ export function ItemDialog({
   children,
 }: ItemDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
 
   useEffect(() => {
     const dialog = dialogRef.current;
     if (dialog === null || dialog.open) return;
+    const opener = document.activeElement;
     dialog.showModal();
     // showModal focuses the first focusable element, which is now the Close
     // button; the form's first field is where a user starts typing.
     dialog.querySelector<HTMLElement>(".modal__form :is(input, textarea)")?.focus();
+    return () => {
+      if (opener instanceof HTMLElement && opener.isConnected) opener.focus();
+    };
   }, []);
 
   const handleCancelRequest = (event: SyntheticEvent<HTMLDialogElement>) => {
@@ -58,14 +63,14 @@ export function ItemDialog({
     <dialog
       ref={dialogRef}
       className="modal"
-      aria-label={`${isEditing ? "Edit" : "Add"} ${title}`}
+      aria-labelledby={titleId}
       onCancel={handleCancelRequest}
       onClick={handleBackdropClick}
     >
       <header className="modal__header">
         <div>
           <p className="modal__eyebrow">{eyebrow}</p>
-          <h2 className="modal__title">
+          <h2 className="modal__title" id={titleId}>
             {isEditing ? "Edit" : "Add"} {title}
           </h2>
         </div>

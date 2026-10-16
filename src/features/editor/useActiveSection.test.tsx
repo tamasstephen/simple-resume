@@ -5,7 +5,7 @@ import type { SectionId } from "./sectionMeta";
 const IDS: readonly SectionId[] = ["contact", "links"];
 
 function Probe() {
-  return <span data-testid="active">{useActiveSection(IDS) ?? "none"}</span>;
+  return <span data-testid="active">{useActiveSection(IDS)[0] ?? "none"}</span>;
 }
 
 function renderSections() {
@@ -87,6 +87,35 @@ test("the intersecting section nearest the top wins", () => {
       intersecting({ id: "section-links", top: 300 }),
       intersecting({ id: "section-contact", top: 40 }),
     ]);
+  });
+  expect(screen.getByTestId("active")).toHaveTextContent("contact");
+});
+
+function SelectProbe() {
+  const [activeId, selectSection] = useActiveSection(IDS);
+  return (
+    <>
+      <span data-testid="active">{activeId ?? "none"}</span>
+      <button onClick={() => selectSection("links")}>pick</button>
+    </>
+  );
+}
+
+test("a selected section stays active against the observer until the user scrolls", () => {
+  vi.stubGlobal("IntersectionObserver", FakeObserver);
+  render(
+    <>
+      <section id="section-contact" />
+      <section id="section-links" />
+      <SelectProbe />
+    </>,
+  );
+  act(() => screen.getByText("pick").click());
+  act(() => FakeObserver.latest?.emit([intersecting({ id: "section-contact", top: 10 })]));
+  expect(screen.getByTestId("active")).toHaveTextContent("links");
+  act(() => {
+    window.dispatchEvent(new Event("wheel"));
+    FakeObserver.latest?.emit([intersecting({ id: "section-contact", top: 10 })]);
   });
   expect(screen.getByTestId("active")).toHaveTextContent("contact");
 });
