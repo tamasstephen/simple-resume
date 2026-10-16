@@ -1,6 +1,7 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SectionEditor } from "./SectionEditor";
+import { getSectionMeta } from "./sectionMeta";
 import type { SectionEditorBaseProps } from "./SectionEditor";
 import type { ReactNode } from "react";
 
@@ -135,7 +136,59 @@ test("does not show the Add button while a draft is open", () => {
 // the dates, so a row shows its meta, not just a name.
 test("shows each item's meta next to its name when the section provides one", () => {
   setup({ renderMeta: (item) => <span>{item.name} meta</span> });
-  expect(screen.getByText("TS meta")).toBeInTheDocument();
+  const row = within(screen.getByRole("list", { name: "Skills items" })).getByRole("listitem");
+  expect(within(row).getByText("TS meta")).toBeInTheDocument();
+});
+
+test("saved items are list items in a named list, not a table", () => {
+  setup();
+  const list = screen.getByRole("list", { name: "Skills items" });
+  expect(within(list).getAllByRole("listitem")).toHaveLength(1);
+  expect(screen.queryByRole("table")).not.toBeInTheDocument();
+});
+
+test("an empty section shows a titled empty state with its description and Add", () => {
+  setup({ items: [] });
+  expect(screen.getByText("No skills yet")).toBeInTheDocument();
+  const emptyState = screen.getByText("No skills yet").closest(".empty-state");
+  expect(emptyState).not.toBeNull();
+  if (emptyState === null || !(emptyState instanceof HTMLElement)) return;
+  expect(within(emptyState).getByText(getSectionMeta("skills").description)).toBeInTheDocument();
+  expect(within(emptyState).getByRole("button", { name: "Add skill" })).toBeInTheDocument();
+  expect(screen.queryByRole("list")).not.toBeInTheDocument();
+});
+
+test("the dialog eyebrow names the section and whether the item is new", () => {
+  setup({ draft: { id: "new", name: "" } });
+  expect(screen.getByText("06 / SKILLS / NEW")).toBeInTheDocument();
+});
+
+test("the dialog eyebrow says EDIT when editing", () => {
+  setup({ draft: { id: "1", name: "TS" }, isEditing: true });
+  expect(screen.getByText("06 / SKILLS / EDIT")).toBeInTheDocument();
+});
+
+test("the dialog heading and Save label follow add versus edit", () => {
+  setup({ draft: { id: "new", name: "" } });
+  expect(screen.getByRole("heading", { name: "Add skill" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
+});
+
+test("the dialog heading and Save label say Edit and Save changes when editing", () => {
+  setup({ draft: { id: "1", name: "TS" }, isEditing: true });
+  expect(screen.getByRole("heading", { name: "Edit skill" })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Save changes" })).toBeInTheDocument();
+});
+
+test("the dialog opens with the form's first field focused, not Close", () => {
+  setup({ draft: { id: "new", name: "" } });
+  expect(screen.getByLabelText("name")).toHaveFocus();
+});
+
+test("the dialog's Close button calls onCancel", async () => {
+  const h = setup({ draft: { id: "new", name: "" } });
+  await userEvent.click(screen.getByRole("button", { name: "Close" }));
+  expect(h.onCancel).toHaveBeenCalledOnce();
 });
 
 // Single-field sections (skills, languages) print as an inline list; a table
@@ -167,9 +220,10 @@ function setupTags() {
   return handlers;
 }
 
-test("renders a single-field section as tags rather than a table", () => {
+test("renders a single-field section as tags rather than a list of rows", () => {
   setupTags();
   expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  expect(screen.queryByRole("list", { name: "Skills items" })?.className).toBe("tag-list");
   expect(screen.getByRole("button", { name: "Edit TS" })).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Remove TS" })).toBeInTheDocument();
 });

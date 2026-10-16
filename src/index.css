@@ -259,91 +259,71 @@ body {
   font: 400 15px / 1.5 var(--font-sans);
 }
 
-/* Item table: hugs its content (never the full column width), divider
-   grid; long names truncate with an ellipsis. */
-.item-table {
-  border-collapse: collapse;
-  width: fit-content;
-  max-width: 100%;
-}
-
-.item-table td {
-  padding: 8px;
+/* Entry list: full-width rows, one per saved item. The text column takes the
+   slack and truncates; meta and kebab keep fixed slots so rows align. */
+.entry-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
   border: 1px solid var(--color-border);
-  vertical-align: middle;
+  border-radius: var(--radius-md);
+  background: var(--color-background);
 }
 
-/* No vertical rule between the name and the kebab (user correction); with
-   border-collapse both sides of the shared edge must declare none. Row
-   separators and the outer frame stay. Scoped under .item-table to
-   outspecify the td rule below. */
-.item-table .item__summary {
-  border-right: 0;
-  color: var(--color-text);
-  font: 400 14px / 1.5 var(--font-sans);
+.entry {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 12px 14px 16px;
 }
 
-/* Ellipsis lives on the wrapper div, not the td — table cells ignore
-   max-width for overflow purposes. */
-.item__truncate {
-  max-width: 420px;
+.entry + .entry {
+  border-top: 1px solid var(--color-border);
+}
+
+.entry__summary {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
+  color: var(--color-text);
+  font: 600 14px / 18px var(--font-sans);
   text-overflow: ellipsis;
   white-space: nowrap;
-  transition: opacity 150ms var(--ease-out);
 }
 
-/* Row hover fades the name; the kebab keeps its own hover language
-   instead of compounding opacity inside a faded row. */
-.item-table tr:hover .item__truncate {
-  opacity: 0.5;
-}
-
-/* Meta cell (dates, issuer, URL): right-aligned muted micro type, and it
-   joins the no-vertical-rules language the name/kebab edge established. */
-.item-table .item__meta {
-  border-inline: 0;
+.entry__meta {
+  flex-shrink: 0;
+  width: 128px;
   color: var(--color-text-secondary);
-  font: 400 12px / 1.5 var(--font-sans);
+  font: 400 12px / 16px var(--font-mono);
   text-align: right;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
-/* Kebab cell: joins the shared edge removal (see .item__summary). */
-.item-table .item__actions {
-  border-left: 0;
-}
-
-/* Row kebab: borderless trigger; menu is a white card with a 1px border. */
+/* Row kebab: 32px slot; the menu is a shadowed card. */
 .kebab {
   position: relative;
   flex-shrink: 0;
 }
 
 .kebab__trigger {
-  position: relative;
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: 0;
+  border-radius: var(--radius-control);
   background: transparent;
-  color: var(--color-text);
+  color: var(--color-text-secondary);
   cursor: pointer;
-  transition: opacity 150ms var(--ease-out);
+  transition: background-color 150ms var(--ease-out);
 }
 
-/* 24px visible, 40px of target: the kebab is the only route to Edit/Delete
-   and it is thumb-sized on touch without changing the row's rhythm. */
-.kebab__trigger::before {
-  content: "";
-  position: absolute;
-  inset: -8px;
-}
-
-.kebab__trigger:hover {
-  opacity: 0.5;
+.kebab__trigger:hover,
+.kebab__trigger[aria-expanded="true"] {
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
 .kebab__trigger:focus-visible,
@@ -359,36 +339,41 @@ body {
   z-index: 2;
   display: flex;
   flex-direction: column;
-  min-width: 128px;
-  padding: 4px 0;
+  width: 176px;
+  padding: 4px;
   background: var(--color-background);
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
 }
 
 .kebab__item {
-  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding-inline: 10px;
   border: 0;
+  border-radius: 4px;
   background: transparent;
   color: var(--color-text);
-  font: 400 14px / 1.5 var(--font-sans);
+  font: 400 14px / 18px var(--font-sans);
   text-align: left;
   cursor: pointer;
-  transition: opacity 150ms var(--ease-out);
 }
 
-.kebab__item:hover {
-  opacity: 0.5;
+.kebab__item:hover,
+.kebab__item:focus-visible {
+  background: var(--color-surface);
 }
 
-/* Delete is the single sanctioned color exception (user correction). */
 .kebab__item--danger {
   color: var(--color-danger-text);
+  font-weight: 500;
 }
 
 /* Tag list: single-value items (skills, languages) print as an inline list,
-   so the editor models them the same way — a row each turned eleven skills
-   into half a screen. Each tag carries its own edit and remove controls. */
+   so the editor models them the same way. Each tag carries its own edit and
+   remove controls. */
 .tag-list {
   display: flex;
   flex-wrap: wrap;
@@ -401,7 +386,9 @@ body {
 .tag {
   display: flex;
   align-items: center;
+  height: 32px;
   border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
   background: var(--color-background);
 }
 
@@ -409,27 +396,28 @@ body {
 .tag__remove {
   border: 0;
   background: transparent;
-  color: var(--color-text);
   cursor: pointer;
-  transition: opacity 150ms var(--ease-out);
 }
 
 .tag__edit {
-  padding: 6px 8px;
-  font: 400 14px / 1.5 var(--font-sans);
+  padding: 0 6px 0 12px;
+  color: var(--color-text);
+  font: 400 14px / 18px var(--font-sans);
 }
 
 .tag__remove {
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
   padding: 0;
+  color: var(--color-text-secondary);
 }
 
 .tag__edit:hover,
 .tag__remove:hover {
-  opacity: 0.5;
+  color: var(--color-text);
 }
 
 .tag__edit:focus-visible,
@@ -438,9 +426,44 @@ body {
   outline-offset: 2px;
 }
 
-.item-table__empty {
+.btn--add {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Empty state: text left, Add right; wraps under 480px. */
+.empty-state {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+}
+
+.empty-state__text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.empty-state__title,
+.empty-state__description {
+  margin: 0;
+}
+
+.empty-state__title {
+  color: var(--color-text);
+  font: 600 14px / 18px var(--font-sans);
+}
+
+.empty-state__description {
   color: var(--color-text-secondary);
-  font: 400 12px / 1.5 var(--font-sans);
+  font: 400 13px / 1.4 var(--font-sans);
 }
 
 /* Forms: 14px/600 labels 8px above 44px boxed inputs, 16px field rhythm. */
@@ -503,46 +526,90 @@ body {
 /* Add/edit popup: native <dialog> card over a dark scrim. The top layer
    escapes the pane's overflow AND the print stylesheet (the dialog lives
    in .editor-pane DOM-wise, so it is display:none in print — no stray
-   dialogs in exported PDFs). */
+   dialogs in exported PDFs). Padding lives on the parts so the footer can
+   stick edge to edge. */
 .modal {
-  width: min(480px, calc(100vw - 2 * 48px));
-  max-height: calc(100dvh - 2 * 48px);
-  padding: 32px;
+  width: min(560px, calc(100vw - 2 * 16px));
+  max-height: calc(100dvh - 2 * 32px);
+  padding: 0;
   overflow-y: auto;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-md);
+  border: 0;
+  border-radius: 12px;
   background: var(--color-background);
   color: var(--color-text);
+  box-shadow: 0 24px 64px rgb(0 0 0 / 18%);
 }
 
 .modal::backdrop {
   background: var(--color-scrim);
 }
 
-/* Scoped under .modal to outspecify the editor-pane heading reset —
-   the bare class lost margin-bottom to it (gap rendered as 0). */
-.modal .modal__title {
-  margin: 0 0 8px;
-  font: 600 22px / 1.2 var(--font-sans);
+.modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 24px 0;
 }
 
-/* 16px field rhythm inside the dialog (it sits in .section DOM-wise, so
-   the shared label/input styles above still apply). */
+.modal .modal__eyebrow,
+.modal .modal__title {
+  margin: 0;
+}
+
+.modal__eyebrow {
+  color: var(--color-text-secondary);
+  font: 400 12px / 16px var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
+.modal .modal__title {
+  margin-top: 6px;
+  font: 600 20px / 26px var(--font-sans);
+  letter-spacing: -0.01em;
+}
+
+.modal__close {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.modal__close:hover {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.modal__close:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.modal__form {
+  padding: 20px 24px 24px;
+}
+
 .modal__form > * + * {
   margin-top: 16px;
 }
 
-/* Action row: 24px from the last field (user-specified: 8px margin + 16px
-   of its own padding), 8px between Save and Cancel. Sticky to the dialog's
-   bottom padding edge — the card scrolls on short viewports and Save must
-   never scroll out of reach. */
+/* Sticky to the card's bottom edge: the card scrolls on short viewports and
+   Save must never scroll out of reach. */
 .modal__actions {
   position: sticky;
-  bottom: -32px;
+  bottom: 0;
   display: flex;
+  justify-content: flex-end;
   gap: 8px;
-  margin-top: 8px;
-  padding-block: 16px;
+  padding: 16px 24px;
   background: var(--color-background);
   border-top: 1px solid var(--color-border);
 }
@@ -820,8 +887,9 @@ body {
    preview), the divider moves to the preview's top edge, and the page (body)
    scrolls instead of the editor pane. */
 @media (max-width: 960px) {
+  /* minmax(0, ...) so a long truncated entry title cannot widen the track. */
   .app-shell {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     height: auto;
   }
 
@@ -912,15 +980,6 @@ body {
 
   .preview-bar {
     padding-inline: 16px;
-  }
-
-  /* fit-content leaves a 102px box adrift in a 324px column. */
-  .item-table {
-    width: 100%;
-  }
-
-  .item__truncate {
-    max-width: none;
   }
 
   .field--short input:not([type="checkbox"]),

@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { ItemDialog } from "./ItemDialog";
 import { KebabMenu } from "./KebabMenu";
 import { SectionHeading } from "./SectionHeading";
-import { sectionAnchor, type SectionId } from "./sectionMeta";
+import { getSectionMeta, sectionAnchor, type SectionId } from "./sectionMeta";
 
 export interface SectionEditorBaseProps<T extends { id: string }> {
   sectionId: SectionId;
@@ -56,6 +56,15 @@ export function SectionEditor<T extends { id: string }>(props: SectionEditorProp
     onCancel,
   } = props;
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const { number, name, description } = getSectionMeta(sectionId);
+  const addButton = (
+    <button type="button" className="btn btn--secondary btn--add" onClick={onAdd}>
+      <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+        <path d="M7 2v10M2 7h10" fill="none" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+      Add {itemNoun}
+    </button>
+  );
 
   return (
     <section aria-label={title} className="section" id={sectionAnchor(sectionId)}>
@@ -80,53 +89,59 @@ export function SectionEditor<T extends { id: string }>(props: SectionEditorProp
                   aria-label={`Remove ${props.itemLabel(item)}`}
                   onClick={() => onDeleteItem(item.id)}
                 >
-                  <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true">
-                    <path d="M0 0L8 8M8 0L0 8" stroke="currentColor" strokeWidth="1" />
+                  <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+                    <path
+                      d="M7 7l6 6M13 7l-6 6"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.4"
+                      strokeLinecap="round"
+                    />
                   </svg>
                 </button>
               </li>
             ))}
           </ul>
         ) : (
-          <table className="item-table" aria-label={`${title} items`}>
-            <tbody>
-              {items.map((item) => (
-                <tr key={item.id}>
-                  <td className="item__summary">
-                    <div className="item__truncate">{renderSummary(item)}</div>
-                  </td>
-                  {props.renderMeta !== undefined && (
-                    <td className="item__meta">{props.renderMeta(item)}</td>
-                  )}
-                  <td className="item__actions">
-                    <KebabMenu
-                      isOpen={openMenuId === item.id}
-                      onToggle={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
-                      onClose={() => setOpenMenuId(null)}
-                      onEdit={() => {
-                        setOpenMenuId(null);
-                        onEditItem(item);
-                      }}
-                      onDelete={() => {
-                        setOpenMenuId(null);
-                        onDeleteItem(item.id);
-                      }}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <ul className="entry-list" aria-label={`${title} items`}>
+            {items.map((item) => (
+              <li key={item.id} className="entry">
+                <div className="entry__summary">{renderSummary(item)}</div>
+                {props.renderMeta !== undefined && (
+                  <div className="entry__meta">{props.renderMeta(item)}</div>
+                )}
+                <KebabMenu
+                  isOpen={openMenuId === item.id}
+                  onToggle={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
+                  onClose={() => setOpenMenuId(null)}
+                  onEdit={() => {
+                    setOpenMenuId(null);
+                    onEditItem(item);
+                  }}
+                  onDelete={() => {
+                    setOpenMenuId(null);
+                    onDeleteItem(item.id);
+                  }}
+                />
+              </li>
+            ))}
+          </ul>
         ))}
-      {items.length === 0 && <p className="item-table__empty">— none yet</p>}
+      {items.length === 0 && draft === null && (
+        <div className="empty-state">
+          <div className="empty-state__text">
+            <p className="empty-state__title">{`No ${title.toLowerCase()} yet`}</p>
+            <p className="empty-state__description">{description}</p>
+          </div>
+          {addButton}
+        </div>
+      )}
+      {items.length > 0 && draft === null && addButton}
 
-      {draft === null ? (
-        <button type="button" className="btn btn--secondary" onClick={onAdd}>
-          Add {itemNoun}
-        </button>
-      ) : (
+      {draft !== null && (
         <ItemDialog
           title={itemNoun}
+          eyebrow={`${number} / ${name.toUpperCase()} / ${isEditing ? "EDIT" : "NEW"}`}
           isEditing={isEditing}
           canSave={canSave}
           onSave={onSave}

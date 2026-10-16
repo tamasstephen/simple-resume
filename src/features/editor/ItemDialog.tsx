@@ -3,6 +3,8 @@ import type { MouseEvent, ReactNode, SyntheticEvent } from "react";
 
 interface ItemDialogProps {
   title: string;
+  /** Mono line above the heading, e.g. "04 / EXPERIENCE / NEW". */
+  eyebrow: string;
   isEditing: boolean;
   canSave: boolean;
   onSave: () => void;
@@ -15,6 +17,7 @@ interface ItemDialogProps {
     (the native close is prevented and the draft unmounts via onCancel). */
 export function ItemDialog({
   title,
+  eyebrow,
   isEditing,
   canSave,
   onSave,
@@ -27,6 +30,9 @@ export function ItemDialog({
     const dialog = dialogRef.current;
     if (dialog === null || dialog.open) return;
     dialog.showModal();
+    // showModal focuses the first focusable element, which is now the Close
+    // button; the form's first field is where a user starts typing.
+    dialog.querySelector<HTMLElement>(".modal__form :is(input, textarea)")?.focus();
   }, []);
 
   const handleCancelRequest = (event: SyntheticEvent<HTMLDialogElement>) => {
@@ -56,16 +62,32 @@ export function ItemDialog({
       onCancel={handleCancelRequest}
       onClick={handleBackdropClick}
     >
-      <h2 className="modal__title">
-        {isEditing ? "Edit" : "Add"} {title}
-      </h2>
+      <header className="modal__header">
+        <div>
+          <p className="modal__eyebrow">{eyebrow}</p>
+          <h2 className="modal__title">
+            {isEditing ? "Edit" : "Add"} {title}
+          </h2>
+        </div>
+        <button type="button" className="modal__close" aria-label="Close" onClick={onCancel}>
+          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+            <path
+              d="M6 6l8 8M14 6l-8 8"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
+      </header>
       <div className="modal__form">{children}</div>
       <div className="modal__actions">
+        <button type="button" className="btn btn--secondary" onClick={onCancel}>
+          Cancel
+        </button>
         <button type="button" className="btn btn--primary" onClick={onSave} disabled={!canSave}>
           {isEditing ? "Save changes" : "Save"}
-        </button>
-        <button type="button" className="btn btn--text" onClick={onCancel}>
-          Cancel
         </button>
       </div>
     </dialog>
