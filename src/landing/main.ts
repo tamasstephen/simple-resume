@@ -6,14 +6,19 @@ import "@fontsource/ibm-plex-mono/400.css";
 import "@fontsource/ibm-plex-mono/500.css";
 import "../styles/tokens.css";
 import "./landing.css";
-import { startWalkthrough } from "./walkthrough";
+import { bindWalkthroughControls, startWalkthrough } from "./walkthrough";
 
 const walkthroughRoot = document.querySelector<HTMLElement>("[data-walkthrough]");
+const walkthroughButton = document.querySelector<HTMLButtonElement>("[data-walkthrough-toggle]");
 
 if (walkthroughRoot) {
-  startWalkthrough({
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const controller = startWalkthrough({
     root: walkthroughRoot,
     intervalMs: 4000,
-    prefersReducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    prefersReducedMotion,
   });
+  if (walkthroughButton && !prefersReducedMotion) {
+    bindWalkthroughControls({ root: walkthroughRoot, button: walkthroughButton, controller });
+  }
 }

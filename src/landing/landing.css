@@ -540,6 +540,31 @@ a:focus-visible {
   gap: 24px;
 }
 
+.how__label {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.how__toggle {
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.how__toggle:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
 .steps {
   display: flex;
   gap: 40px;
@@ -580,9 +605,17 @@ a:focus-visible {
   }
 }
 
+[data-walkthrough][data-paused] .step--active::before {
+  animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .step--active::before {
     animation: none;
+  }
+
+  .how__toggle {
+    display: none;
   }
 }
 

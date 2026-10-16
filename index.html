@@ -196,10 +196,21 @@
               <span class="tone">Three steps.</span>
               <span class="tone tone--continuation">No page-break maths, ever.</span>
             </h2>
-            <p class="eyebrow">HOW IT WORKS</p>
+            <div class="how__label">
+              <p class="eyebrow">HOW IT WORKS</p>
+              <button
+                type="button"
+                class="how__toggle"
+                data-walkthrough-toggle
+                aria-pressed="false"
+                aria-controls="walkthrough-steps"
+              >
+                Pause
+              </button>
+            </div>
           </div>
 
-          <ol class="steps" data-walkthrough>
+          <ol class="steps" id="walkthrough-steps" data-walkthrough>
             <li class="step">
               <p class="step__number">01</p>
               <h3 class="step__title">Fill in nine sections</h3>
