@@ -4,9 +4,8 @@ Logged 2026-10-17 from manual testing of the restyled editor at `/create/` (bran
 
 1. ~~**Section rail scroll position.**~~ Done 2026-10-17 (d4d9713): scroll-spy by reading line plus desktop bottom room.
 2. ~~**Clear button.**~~ Done 2026-10-17 (10fe687): header Clear clears the whole resume after a confirmation.
-3. **Form validation is missing.** Invalid values are accepted. For example, the email field accepts `yep@`, and phone numbers aren't checked.
-   - This is the planned **Wave 3** (validation + error states). The designs are in Paper: page "Resume Builder Redesign", artboard "Editor — Edit dialog, validation", and the "Form states" and "Feedback & messages" sections of the design system.
-   - It covers email format, phone characters, the YYYY-MM date format with month 01–12, start date ≤ end date, and URLs. Errors show inline under the field (red border, icon, message on how to fix it), as a summary alert in the dialog, and as an error badge on the rail.
+3. ~~**Form validation.**~~ Done 2026-10-17 (349a25e, 0531f4b, 45d6d69): email, phone, en-US month/year dates (03/2020, Mar 2020) with start ≤ end, web addresses; a role needs a start date. Dialog summary + inline errors; saved entries flagged in rows and on the rail.
+   - Open: the rail badge is hidden in the collapsed rail (961–1279px) and the phone strip, where only the row error shows.
 
 ## Future improvements
 
