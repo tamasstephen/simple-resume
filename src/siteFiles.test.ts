@@ -1,6 +1,8 @@
 import html from "../index.html?raw";
 import robots from "../public/robots.txt?raw";
 import sitemap from "../public/sitemap.xml?raw";
+import createHtml from "../create/index.html?raw";
+import favicon from "../public/favicon.svg?raw";
 
 const SITE_URL = "https://cvpeers.com/";
 
@@ -27,4 +29,22 @@ test("the canonical link agrees with the sitemap", () => {
 
   const doc = new DOMParser().parseFromString(sitemap, "application/xml");
   expect(doc.querySelector("url > loc")?.textContent).toBe(canonical);
+});
+
+// Both pages share one icon set: the project's own mark, not the Vite logo
+// the scaffold shipped with.
+test.each([
+  ["landing", html],
+  ["editor", createHtml],
+])("the %s page links the favicon and the home-screen icon", (_page, source) => {
+  expect(source).toContain('<link rel="icon" type="image/svg+xml" href="/favicon.svg" />');
+  expect(source).toContain('<link rel="apple-touch-icon" href="/apple-touch-icon.png" />');
+});
+
+test("the favicon is the resume-sheet mark in the design-system colours", () => {
+  const doc = new DOMParser().parseFromString(favicon, "image/svg+xml");
+  expect(doc.querySelector("parsererror")).toBeNull();
+  expect(doc.documentElement.getAttribute("viewBox")).toBe("0 0 32 32");
+  expect(favicon).toContain("#0070f3");
+  expect(favicon).not.toMatch(/863bff|filter/);
 });
