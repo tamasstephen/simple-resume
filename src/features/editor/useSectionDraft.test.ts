@@ -48,3 +48,36 @@ test("cancel discards the draft", () => {
   act(() => result.current.cancel());
   expect(result.current.draft).toBeNull();
 });
+
+const requireName = (item: Foo) => ({ name: item.name.length > 0 ? null : "Add a name." });
+
+test("trySave commits a valid draft and closes it", () => {
+  const { result } = renderHook(() => useSectionDraft(makeEmpty, requireName));
+  const commit = vi.fn();
+  act(() => result.current.startEdit({ id: "1", name: "Ada" }));
+  act(() => result.current.trySave(commit));
+  expect(commit).toHaveBeenCalledWith({ id: "1", name: "Ada" });
+  expect(result.current.draft).toBeNull();
+});
+
+test("errors stay hidden until a save is blocked, then follow the edits", () => {
+  const { result } = renderHook(() => useSectionDraft(makeEmpty, requireName));
+  const commit = vi.fn();
+  act(() => result.current.startAdd());
+  expect(result.current.errors).toEqual({});
+  act(() => result.current.trySave(commit));
+  expect(commit).not.toHaveBeenCalled();
+  expect(result.current.errors).toEqual({ name: "Add a name." });
+  expect(result.current.blockedSaveCount).toBe(1);
+  act(() => result.current.updateDraft({ name: "Ada" }));
+  expect(result.current.errors).toEqual({ name: null });
+});
+
+test("opening another draft forgets the blocked save", () => {
+  const { result } = renderHook(() => useSectionDraft(makeEmpty, requireName));
+  act(() => result.current.startAdd());
+  act(() => result.current.trySave(vi.fn()));
+  act(() => result.current.startAdd());
+  expect(result.current.blockedSaveCount).toBe(0);
+  expect(result.current.errors).toEqual({});
+});

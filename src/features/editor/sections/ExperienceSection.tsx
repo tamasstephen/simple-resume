@@ -1,5 +1,8 @@
 import { useResumeState, useResumeDispatch } from "../../resume/useResume";
 import { useSectionDraft } from "../useSectionDraft";
+import { TextField } from "../TextField";
+import { listErrorLabels } from "../errorLabels";
+import { validateExperience } from "../../../lib/validation/sectionRules";
 import { SectionEditor } from "../SectionEditor";
 import { joinSubtitle } from "../joinSubtitle";
 import { RichTextField } from "../RichTextField";
@@ -18,17 +21,28 @@ const makeEmpty = (): ExperienceItem => ({
   description: "",
 });
 
+const LABELS = { startDate: "Start date", endDate: "End date" };
+
 /** Repeatable Experience section with a rich-text description. */
 export function ExperienceSection() {
   const items = useResumeState().committed.experience;
   const dispatch = useResumeDispatch();
-  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } = useSectionDraft(makeEmpty);
+  const {
+    draft,
+    isEditing,
+    errors,
+    blockedSaveCount,
+    startAdd,
+    startEdit,
+    updateDraft,
+    trySave,
+    cancel,
+  } = useSectionDraft(makeEmpty, validateExperience);
 
-  const save = () => {
-    if (draft === null) return;
-    dispatch({ type: "SAVE_ITEM", section: "experience", item: sanitizeDescription(draft) });
-    cancel();
-  };
+  const save = () =>
+    trySave((item) =>
+      dispatch({ type: "SAVE_ITEM", section: "experience", item: sanitizeDescription(item) }),
+    );
 
   return (
     <SectionEditor<ExperienceItem>
@@ -38,6 +52,8 @@ export function ExperienceSection() {
       items={items}
       draft={draft}
       isEditing={isEditing}
+      errorLabels={listErrorLabels({ errors, labels: LABELS })}
+      blockedSaveCount={blockedSaveCount}
       canSave={draft !== null && (draft.company.trim().length > 0 || draft.role.trim().length > 0)}
       renderSummary={(item) => <span>{item.role || item.company}</span>}
       renderSubtitle={(item) => joinSubtitle([item.role ? item.company : "", item.location])}
@@ -60,20 +76,22 @@ export function ExperienceSection() {
               onChange={(e) => updateDraft({ company: e.target.value })}
             />
           </label>
-          <label className="field field--short">
-            Start date
-            <input
-              value={draft?.startDate ?? ""}
-              onChange={(e) => updateDraft({ startDate: e.target.value })}
-            />
-          </label>
-          <label className="field field--short">
-            End date
-            <input
-              value={draft?.endDate ?? ""}
-              onChange={(e) => updateDraft({ endDate: e.target.value })}
-            />
-          </label>
+          <TextField
+            label={LABELS.startDate}
+            width="short"
+            placeholder="MM/YYYY"
+            value={draft?.startDate ?? ""}
+            error={errors.startDate}
+            onChange={(startDate) => updateDraft({ startDate })}
+          />
+          <TextField
+            label={LABELS.endDate}
+            width="short"
+            placeholder="MM/YYYY"
+            value={draft?.endDate ?? ""}
+            error={errors.endDate}
+            onChange={(endDate) => updateDraft({ endDate })}
+          />
           <label className="field">
             I work here now
             <input

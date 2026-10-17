@@ -1,22 +1,34 @@
 import { useResumeState, useResumeDispatch } from "../../resume/useResume";
 import { useSectionDraft } from "../useSectionDraft";
+import { TextField } from "../TextField";
+import { listErrorLabels } from "../errorLabels";
+import { validateLink } from "../../../lib/validation/sectionRules";
 import { SectionEditor } from "../SectionEditor";
 import { newId } from "../../../lib/id";
 import type { LinkItem } from "../../../lib/schema/resume";
 
 const makeEmpty = (): LinkItem => ({ id: newId(), label: "", url: "" });
 
+const LABELS = { url: "URL" };
+
 /** Repeatable Social/Portfolio Links section. */
 export function LinksSection() {
   const items = useResumeState().committed.links;
   const dispatch = useResumeDispatch();
-  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } = useSectionDraft(makeEmpty);
+  const {
+    draft,
+    isEditing,
+    errors,
+    blockedSaveCount,
+    startAdd,
+    startEdit,
+    updateDraft,
+    trySave,
+    cancel,
+  } = useSectionDraft(makeEmpty, validateLink);
 
-  const save = () => {
-    if (draft === null) return;
-    dispatch({ type: "SAVE_ITEM", section: "links", item: draft });
-    cancel();
-  };
+  const save = () =>
+    trySave((item) => dispatch({ type: "SAVE_ITEM", section: "links", item: item }));
 
   return (
     <SectionEditor<LinkItem>
@@ -26,6 +38,8 @@ export function LinksSection() {
       items={items}
       draft={draft}
       isEditing={isEditing}
+      errorLabels={listErrorLabels({ errors, labels: LABELS })}
+      blockedSaveCount={blockedSaveCount}
       canSave={draft !== null && draft.url.trim().length > 0}
       renderSummary={(item) => <span>{item.label || item.url}</span>}
       renderSubtitle={(item) => (item.label ? item.url : "")}
@@ -38,13 +52,12 @@ export function LinksSection() {
               onChange={(e) => updateDraft({ label: e.target.value })}
             />
           </label>
-          <label>
-            URL
-            <input
-              value={draft?.url ?? ""}
-              onChange={(e) => updateDraft({ url: e.target.value })}
-            />
-          </label>
+          <TextField
+            label={LABELS.url}
+            value={draft?.url ?? ""}
+            error={errors.url}
+            onChange={(url) => updateDraft({ url })}
+          />
         </>
       )}
       onAdd={startAdd}

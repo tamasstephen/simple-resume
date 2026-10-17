@@ -1,5 +1,8 @@
 import { useResumeState, useResumeDispatch } from "../../resume/useResume";
 import { useSectionDraft } from "../useSectionDraft";
+import { TextField } from "../TextField";
+import { listErrorLabels } from "../errorLabels";
+import { validateEducation } from "../../../lib/validation/sectionRules";
 import { SectionEditor } from "../SectionEditor";
 import { joinSubtitle } from "../joinSubtitle";
 import { RichTextField } from "../RichTextField";
@@ -17,17 +20,28 @@ const makeEmpty = (): EducationItem => ({
   description: "",
 });
 
+const LABELS = { startDate: "Start date", endDate: "End date" };
+
 /** Repeatable Education section with a rich-text description. */
 export function EducationSection() {
   const items = useResumeState().committed.education;
   const dispatch = useResumeDispatch();
-  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } = useSectionDraft(makeEmpty);
+  const {
+    draft,
+    isEditing,
+    errors,
+    blockedSaveCount,
+    startAdd,
+    startEdit,
+    updateDraft,
+    trySave,
+    cancel,
+  } = useSectionDraft(makeEmpty, validateEducation);
 
-  const save = () => {
-    if (draft === null) return;
-    dispatch({ type: "SAVE_ITEM", section: "education", item: sanitizeDescription(draft) });
-    cancel();
-  };
+  const save = () =>
+    trySave((item) =>
+      dispatch({ type: "SAVE_ITEM", section: "education", item: sanitizeDescription(item) }),
+    );
 
   return (
     <SectionEditor<EducationItem>
@@ -37,6 +51,8 @@ export function EducationSection() {
       items={items}
       draft={draft}
       isEditing={isEditing}
+      errorLabels={listErrorLabels({ errors, labels: LABELS })}
+      blockedSaveCount={blockedSaveCount}
       canSave={draft !== null && draft.institution.trim().length > 0}
       renderSummary={(item) => <span>{item.degree || item.institution}</span>}
       renderSubtitle={(item) => joinSubtitle([item.degree ? item.institution : "", item.field])}
@@ -64,20 +80,22 @@ export function EducationSection() {
               onChange={(e) => updateDraft({ field: e.target.value })}
             />
           </label>
-          <label className="field field--short">
-            Start date
-            <input
-              value={draft?.startDate ?? ""}
-              onChange={(e) => updateDraft({ startDate: e.target.value })}
-            />
-          </label>
-          <label className="field field--short">
-            End date
-            <input
-              value={draft?.endDate ?? ""}
-              onChange={(e) => updateDraft({ endDate: e.target.value })}
-            />
-          </label>
+          <TextField
+            label={LABELS.startDate}
+            width="short"
+            placeholder="MM/YYYY"
+            value={draft?.startDate ?? ""}
+            error={errors.startDate}
+            onChange={(startDate) => updateDraft({ startDate })}
+          />
+          <TextField
+            label={LABELS.endDate}
+            width="short"
+            placeholder="MM/YYYY"
+            value={draft?.endDate ?? ""}
+            error={errors.endDate}
+            onChange={(endDate) => updateDraft({ endDate })}
+          />
           <RichTextField
             value={draft?.description ?? ""}
             onChange={(html) => updateDraft({ description: html })}

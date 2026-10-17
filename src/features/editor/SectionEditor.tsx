@@ -14,6 +14,9 @@ export interface SectionEditorBaseProps<T extends { id: string }> {
   draft: T | null;
   isEditing: boolean;
   canSave: boolean;
+  /** Labels of the draft's invalid fields, for the dialog's summary alert. */
+  errorLabels?: readonly string[];
+  blockedSaveCount?: number;
   renderSummary: (item: T) => ReactNode;
   renderForm: () => ReactNode;
   onAdd: () => void;
@@ -58,6 +61,8 @@ export function SectionEditor<T extends { id: string }>(props: SectionEditorProp
     draft,
     isEditing,
     canSave,
+    errorLabels = [],
+    blockedSaveCount = 0,
     renderSummary,
     renderForm,
     onAdd,
@@ -161,6 +166,8 @@ export function SectionEditor<T extends { id: string }>(props: SectionEditorProp
           eyebrow={`${number} / ${name.toUpperCase()} / ${isEditing ? "EDIT" : "NEW"}`}
           isEditing={isEditing}
           canSave={canSave}
+          errorLabels={errorLabels}
+          blockedSaveCount={blockedSaveCount}
           onSave={onSave}
           onCancel={onCancel}
         >

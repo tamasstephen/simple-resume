@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef } from "react";
 import type { MouseEvent, ReactNode, SyntheticEvent } from "react";
+import { ErrorIcon } from "./TextField";
 
 interface ItemDialogProps {
   title: string;
@@ -7,9 +8,18 @@ interface ItemDialogProps {
   eyebrow: string;
   isEditing: boolean;
   canSave: boolean;
+  /** Labels of the fields blocking Save; empty hides the summary alert. */
+  errorLabels: readonly string[];
+  /** Bumps on each blocked save; focus then moves to the first invalid field. */
+  blockedSaveCount: number;
   onSave: () => void;
   onCancel: () => void;
   children: ReactNode;
+}
+
+function describeErrors(labels: readonly string[]): string {
+  const count = labels.length === 1 ? "1 field needs" : `${labels.length} fields need`;
+  return `${count} attention: ${labels.join(", ")}`;
 }
 
 /** Add/edit popup: native <dialog> — top layer, focus trap, Esc = cancel.
@@ -20,6 +30,8 @@ export function ItemDialog({
   eyebrow,
   isEditing,
   canSave,
+  errorLabels,
+  blockedSaveCount,
   onSave,
   onCancel,
   children,
@@ -39,6 +51,11 @@ export function ItemDialog({
       if (opener instanceof HTMLElement && opener.isConnected) opener.focus();
     };
   }, []);
+
+  useEffect(() => {
+    if (blockedSaveCount === 0) return;
+    dialogRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+  }, [blockedSaveCount]);
 
   const handleCancelRequest = (event: SyntheticEvent<HTMLDialogElement>) => {
     event.preventDefault();
@@ -86,7 +103,15 @@ export function ItemDialog({
           </svg>
         </button>
       </header>
-      <div className="modal__form">{children}</div>
+      <div className="modal__form">
+        {errorLabels.length > 0 && (
+          <p className="alert alert--danger" role="alert">
+            <ErrorIcon size={16} />
+            {describeErrors(errorLabels)}
+          </p>
+        )}
+        {children}
+      </div>
       <div className="modal__actions">
         <button type="button" className="btn btn--secondary" onClick={onCancel}>
           Cancel

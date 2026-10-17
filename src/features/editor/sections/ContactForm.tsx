@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SectionHeading } from "../SectionHeading";
+import { TextField } from "../TextField";
+import { hasErrors, validateContact } from "../../../lib/validation/sectionRules";
 import { sectionAnchor } from "../sectionMeta";
 import { useResumeState, useResumeDispatch } from "../../resume/useResume";
 import type { ContactHeader } from "../../../lib/schema/resume";
@@ -9,7 +11,7 @@ import type { ContactHeader } from "../../../lib/schema/resume";
 const FIELDS: ReadonlyArray<{
   key: keyof ContactHeader;
   label: string;
-  type: string;
+  type: "text" | "email" | "tel";
   width?: "short" | "medium";
 }> = [
   { key: "name", label: "Name", type: "text" },
@@ -24,25 +26,44 @@ export function ContactForm() {
   const committed = useResumeState().committed.contact;
   const dispatch = useResumeDispatch();
   const [draft, setDraft] = useState<ContactHeader>(committed);
+  // Same contract as the dialogs: quiet until a save is blocked, then live.
+  const [blockedSaveCount, setBlockedSaveCount] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const errors = blockedSaveCount > 0 ? validateContact(draft) : {};
+
+  useEffect(() => {
+    if (blockedSaveCount === 0) return;
+    sectionRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+  }, [blockedSaveCount]);
+
+  const save = () => {
+    if (hasErrors(validateContact(draft))) {
+      setBlockedSaveCount((count) => count + 1);
+      return;
+    }
+    dispatch({ type: "SET_CONTACT", contact: draft });
+  };
 
   return (
-    <section aria-label="Contact" className="section" id={sectionAnchor("contact")}>
+    <section
+      ref={sectionRef}
+      aria-label="Contact"
+      className="section"
+      id={sectionAnchor("contact")}
+    >
       <SectionHeading sectionId="contact" />
       {FIELDS.map(({ key, label, type, width }) => (
-        <label key={key} className={width === undefined ? "field" : `field field--${width}`}>
-          {label}
-          <input
-            type={type}
-            value={draft[key]}
-            onChange={(e) => setDraft((d) => ({ ...d, [key]: e.target.value }))}
-          />
-        </label>
+        <TextField
+          key={key}
+          label={label}
+          type={type}
+          width={width}
+          value={draft[key]}
+          error={errors[key]}
+          onChange={(value) => setDraft((current) => ({ ...current, [key]: value }))}
+        />
       ))}
-      <button
-        type="button"
-        className="btn btn--primary"
-        onClick={() => dispatch({ type: "SET_CONTACT", contact: draft })}
-      >
+      <button type="button" className="btn btn--primary" onClick={save}>
         Save contact
       </button>
     </section>
