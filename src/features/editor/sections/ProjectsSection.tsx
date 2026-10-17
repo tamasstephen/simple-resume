@@ -44,6 +44,9 @@ export function ProjectsSection() {
       isEditing={isEditing}
       errorLabels={listErrorLabels({ errors, labels: LABELS })}
       blockedSaveCount={blockedSaveCount}
+      getItemErrorLabels={(item) =>
+        listErrorLabels({ errors: validateProject(item), labels: LABELS })
+      }
       canSave={draft !== null && draft.name.trim().length > 0}
       renderSummary={(item) => <span>{item.name}</span>}
       renderSubtitle={(item) => item.url}

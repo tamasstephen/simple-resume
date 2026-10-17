@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { ItemDialog } from "./ItemDialog";
 import { KebabMenu } from "./KebabMenu";
+import { ErrorIcon } from "./TextField";
 import { SectionHeading } from "./SectionHeading";
 import { getSectionMeta, sectionAnchor, type SectionId } from "./sectionMeta";
 
@@ -40,9 +41,25 @@ export type SectionEditorProps<T extends { id: string }> = SectionEditorBaseProp
         layout?: "table";
         renderMeta?: (item: T) => ReactNode;
         renderSubtitle?: (item: T) => ReactNode;
+        /** Labels of a saved item's fields that break a rule; a non-empty
+         *  list flags the row and replaces its subtitle with what to check. */
+        getItemErrorLabels?: (item: T) => readonly string[];
       }
     | { layout: "tags"; itemLabel: (item: T) => string }
   );
+
+function describeItemErrors(labels: readonly string[]): string {
+  return `Check the ${labels.map((label) => label.toLowerCase()).join(" and ")}`;
+}
+
+function renderEntryError(labels: readonly string[]) {
+  return (
+    <div className="entry__error">
+      <ErrorIcon size={13} />
+      {describeItemErrors(labels)}
+    </div>
+  );
+}
 
 function renderEntrySubtitle(subtitle: ReactNode) {
   if (subtitle === undefined || subtitle === null || subtitle === false || subtitle === "") {
@@ -126,30 +143,36 @@ export function SectionEditor<T extends { id: string }>(props: SectionEditorProp
           </ul>
         ) : (
           <ul className="entry-list" aria-label={`${title} items`}>
-            {items.map((item) => (
-              <li key={item.id} className="entry">
-                <div className="entry__text">
-                  <div className="entry__summary">{renderSummary(item)}</div>
-                  {renderEntrySubtitle(props.renderSubtitle?.(item))}
-                </div>
-                {props.renderMeta !== undefined && (
-                  <div className="entry__meta">{props.renderMeta(item)}</div>
-                )}
-                <KebabMenu
-                  isOpen={openMenuId === item.id}
-                  onToggle={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
-                  onClose={() => setOpenMenuId(null)}
-                  onEdit={() => {
-                    setOpenMenuId(null);
-                    onEditItem(item);
-                  }}
-                  onDelete={() => {
-                    setOpenMenuId(null);
-                    onDeleteItem(item.id);
-                  }}
-                />
-              </li>
-            ))}
+            {items.map((item) => {
+              const errorLabels = props.getItemErrorLabels?.(item) ?? [];
+              const isInvalid = errorLabels.length > 0;
+              return (
+                <li key={item.id} className={isInvalid ? "entry entry--invalid" : "entry"}>
+                  <div className="entry__text">
+                    <div className="entry__summary">{renderSummary(item)}</div>
+                    {isInvalid
+                      ? renderEntryError(errorLabels)
+                      : renderEntrySubtitle(props.renderSubtitle?.(item))}
+                  </div>
+                  {props.renderMeta !== undefined && (
+                    <div className="entry__meta">{props.renderMeta(item)}</div>
+                  )}
+                  <KebabMenu
+                    isOpen={openMenuId === item.id}
+                    onToggle={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
+                    onClose={() => setOpenMenuId(null)}
+                    onEdit={() => {
+                      setOpenMenuId(null);
+                      onEditItem(item);
+                    }}
+                    onDelete={() => {
+                      setOpenMenuId(null);
+                      onDeleteItem(item.id);
+                    }}
+                  />
+                </li>
+              );
+            })}
           </ul>
         ))}
       {items.length === 0 && (

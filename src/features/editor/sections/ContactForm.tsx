@@ -27,9 +27,12 @@ export function ContactForm() {
   const dispatch = useResumeDispatch();
   const [draft, setDraft] = useState<ContactHeader>(committed);
   // Same contract as the dialogs: quiet until a save is blocked, then live.
+  // Saved details that already break a rule (the rail flags them) show
+  // their errors straight away so the badge has an explanation.
   const [blockedSaveCount, setBlockedSaveCount] = useState(0);
+  const [isSavedInvalid] = useState(() => hasErrors(validateContact(committed)));
   const sectionRef = useRef<HTMLElement>(null);
-  const errors = blockedSaveCount > 0 ? validateContact(draft) : {};
+  const errors = blockedSaveCount > 0 || isSavedInvalid ? validateContact(draft) : {};
 
   useEffect(() => {
     if (blockedSaveCount === 0) return;

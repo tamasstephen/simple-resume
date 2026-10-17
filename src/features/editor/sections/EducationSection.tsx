@@ -53,6 +53,9 @@ export function EducationSection() {
       isEditing={isEditing}
       errorLabels={listErrorLabels({ errors, labels: LABELS })}
       blockedSaveCount={blockedSaveCount}
+      getItemErrorLabels={(item) =>
+        listErrorLabels({ errors: validateEducation(item), labels: LABELS })
+      }
       canSave={draft !== null && draft.institution.trim().length > 0}
       renderSummary={(item) => <span>{item.degree || item.institution}</span>}
       renderSubtitle={(item) => joinSubtitle([item.degree ? item.institution : "", item.field])}

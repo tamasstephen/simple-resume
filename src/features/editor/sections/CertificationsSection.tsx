@@ -40,6 +40,9 @@ export function CertificationsSection() {
       isEditing={isEditing}
       errorLabels={listErrorLabels({ errors, labels: LABELS })}
       blockedSaveCount={blockedSaveCount}
+      getItemErrorLabels={(item) =>
+        listErrorLabels({ errors: validateCertification(item), labels: LABELS })
+      }
       canSave={draft !== null && draft.name.trim().length > 0}
       renderSummary={(item) => <span>{item.name}</span>}
       renderSubtitle={(item) => item.issuer}

@@ -1,4 +1,6 @@
 import { SECTIONS, sectionAnchor, type SectionId } from "./sectionMeta";
+import { countSectionErrors } from "./sectionErrors";
+import { useResumeState } from "../resume/useResume";
 
 function focusSectionTitle(id: SectionId) {
   const title = document.getElementById(`${sectionAnchor(id)}-title`);
@@ -12,8 +14,22 @@ interface SectionRailProps {
   onSelect: (id: SectionId) => void;
 }
 
-/** Numbered jump list for the editor sections; `activeId` is the one in view. */
+function ErrorBadge({ count }: { count: number }) {
+  if (count === 0) return null;
+  const noun = count === 1 ? "field needs" : "fields need";
+  return (
+    <span className="section-rail__badge">
+      <span aria-hidden="true">{count}</span>
+      <span className="visually-hidden">{`, ${count} ${noun} attention`}</span>
+    </span>
+  );
+}
+
+/** Numbered jump list for the editor sections; `activeId` is the one in view.
+ *  A badge counts the saved fields in a section that break a rule. */
 export function SectionRail({ activeId, onSelect }: SectionRailProps) {
+  const errorCounts = countSectionErrors(useResumeState().committed);
+
   return (
     <nav aria-label="Sections" className="section-rail">
       <p className="section-rail__label">SECTIONS</p>
@@ -33,7 +49,9 @@ export function SectionRail({ activeId, onSelect }: SectionRailProps) {
             >
               <span className="section-rail__number">{number}</span>
               <span className="section-rail__name">{name}</span>
-              <span className="section-rail__status" aria-hidden="true" />
+              <span className="section-rail__status">
+                <ErrorBadge count={errorCounts[id] ?? 0} />
+              </span>
             </a>
           </li>
         ))}

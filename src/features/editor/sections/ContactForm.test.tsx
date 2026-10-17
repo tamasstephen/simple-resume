@@ -4,6 +4,7 @@ import { ContactForm } from "./ContactForm";
 import { ResumeProvider } from "../../resume/ResumeProvider";
 import { useResumeState } from "../../resume/useResume";
 import { InMemoryPersistence } from "../../../lib/persistence/InMemoryPersistence";
+import { emptyResume } from "../../../lib/schema/resume";
 
 function CommittedName() {
   return <span data-testid="committed-name">{useResumeState().committed.contact.name}</span>;
@@ -53,4 +54,18 @@ test("a phone number with letters is flagged", async () => {
   expect(screen.getByLabelText("Phone")).toHaveAccessibleDescription(
     "Use digits, spaces and + ( ) - . only.",
   );
+});
+
+test("contact details saved before the rules existed show their errors at once", () => {
+  const persistence = new InMemoryPersistence();
+  const resume = emptyResume();
+  resume.contact.email = "yep@";
+  persistence.save(resume);
+  render(
+    <ResumeProvider persistence={persistence}>
+      <ContactForm />
+    </ResumeProvider>,
+  );
+  expect(screen.getByLabelText("Email")).toHaveAttribute("aria-invalid", "true");
+  expect(screen.getByLabelText("Email")).not.toHaveFocus();
 });

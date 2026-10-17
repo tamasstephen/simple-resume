@@ -205,10 +205,35 @@ body {
   flex-grow: 1;
 }
 
-/* Reserved for per-section status; empty until sections report any. */
+/* Per-section status slot: holds the attention badge when saved fields
+   break a rule. */
 .section-rail__status {
+  display: flex;
   flex-shrink: 0;
-  width: 20px;
+  justify-content: flex-end;
+  min-width: 20px;
+}
+
+.section-rail__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding-inline: 6px;
+  border-radius: 10px;
+  background: var(--color-danger-surface);
+  color: var(--color-danger-text);
+  font: 600 11px / 12px var(--font-mono);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 /* Editor pane & sections: dividers. */
@@ -312,6 +337,36 @@ body {
 .entry__subtitle {
   color: var(--color-text-secondary);
   font: 400 13px / 1.4 var(--font-sans);
+}
+
+/* A saved entry with fields that break a rule: tinted row, and the
+   subtitle gives way to what to check. */
+.entry--invalid {
+  background: var(--color-danger-surface);
+}
+
+/* Rounded to the list's inner edge; the list cannot clip (kebab menus
+   overflow it). */
+.entry--invalid:first-child {
+  border-top-left-radius: calc(var(--radius-md) - 1px);
+  border-top-right-radius: calc(var(--radius-md) - 1px);
+}
+
+.entry--invalid:last-child {
+  border-bottom-left-radius: calc(var(--radius-md) - 1px);
+  border-bottom-right-radius: calc(var(--radius-md) - 1px);
+}
+
+.entry__error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-danger-text);
+  font: 500 13px / 1.4 var(--font-sans);
+}
+
+.entry__error svg {
+  flex-shrink: 0;
 }
 
 .entry__meta {

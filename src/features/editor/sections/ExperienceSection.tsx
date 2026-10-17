@@ -54,6 +54,9 @@ export function ExperienceSection() {
       isEditing={isEditing}
       errorLabels={listErrorLabels({ errors, labels: LABELS })}
       blockedSaveCount={blockedSaveCount}
+      getItemErrorLabels={(item) =>
+        listErrorLabels({ errors: validateExperience(item), labels: LABELS })
+      }
       canSave={draft !== null && (draft.company.trim().length > 0 || draft.role.trim().length > 0)}
       renderSummary={(item) => <span>{item.role || item.company}</span>}
       renderSubtitle={(item) => joinSubtitle([item.role ? item.company : "", item.location])}

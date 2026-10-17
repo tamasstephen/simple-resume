@@ -6,9 +6,18 @@ import { Editor } from "./Editor";
 import { SECTIONS, type SectionId } from "./sectionMeta";
 import { ResumeProvider } from "../resume/ResumeProvider";
 import { InMemoryPersistence } from "../../lib/persistence/InMemoryPersistence";
+import { emptyResume } from "../../lib/schema/resume";
+
+function renderRail({ activeId = null }: { activeId?: SectionId | null } = {}) {
+  return render(
+    <ResumeProvider persistence={new InMemoryPersistence()}>
+      <SectionRail activeId={activeId} onSelect={() => {}} />
+    </ResumeProvider>,
+  );
+}
 
 test("lists the nine sections as anchor links with number and name", () => {
-  render(<SectionRail activeId={null} onSelect={() => {}} />);
+  renderRail();
   const links = within(screen.getByRole("navigation", { name: "Sections" })).getAllByRole("link");
   expect(links).toHaveLength(9);
   SECTIONS.forEach((section, index) => {
@@ -18,7 +27,7 @@ test("lists the nine sections as anchor links with number and name", () => {
 });
 
 test("marks only the active section as the current location", () => {
-  render(<SectionRail activeId="experience" onSelect={() => {}} />);
+  renderRail({ activeId: "experience" });
   const current = screen.getAllByRole("link").filter((link) => link.hasAttribute("aria-current"));
   expect(current).toHaveLength(1);
   expect(current[0]).toHaveAttribute("aria-current", "location");
@@ -54,6 +63,22 @@ test("clicking a link makes that section the current one", async () => {
 });
 
 test("each link carries its name as a title for the collapsed rail", () => {
-  render(<SectionRail activeId={null} onSelect={() => {}} />);
+  renderRail();
   expect(screen.getByRole("link", { name: /Languages/ })).toHaveAttribute("title", "Languages");
+});
+
+test("a section with saved fields that break a rule carries a count", () => {
+  const persistence = new InMemoryPersistence();
+  const resume = emptyResume();
+  resume.contact.email = "yep@";
+  persistence.save(resume);
+  render(
+    <ResumeProvider persistence={persistence}>
+      <SectionRail activeId={null} onSelect={() => {}} />
+    </ResumeProvider>,
+  );
+  expect(screen.getByRole("link", { name: /Contact/ })).toHaveAccessibleName(
+    "01Contact, 1 field needs attention",
+  );
+  expect(screen.getByRole("link", { name: /Links/ })).toHaveAccessibleName("02Links");
 });

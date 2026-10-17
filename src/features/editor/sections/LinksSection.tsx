@@ -40,6 +40,7 @@ export function LinksSection() {
       isEditing={isEditing}
       errorLabels={listErrorLabels({ errors, labels: LABELS })}
       blockedSaveCount={blockedSaveCount}
+      getItemErrorLabels={(item) => listErrorLabels({ errors: validateLink(item), labels: LABELS })}
       canSave={draft !== null && draft.url.trim().length > 0}
       renderSummary={(item) => <span>{item.label || item.url}</span>}
       renderSubtitle={(item) => (item.label ? item.url : "")}

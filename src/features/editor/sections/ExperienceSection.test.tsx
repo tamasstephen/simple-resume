@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { ExperienceSection } from "./ExperienceSection";
 import { ResumeProvider } from "../../resume/ResumeProvider";
 import { InMemoryPersistence } from "../../../lib/persistence/InMemoryPersistence";
+import { emptyResume } from "../../../lib/schema/resume";
 
 test("add flow: fill text fields, Save commits the entry to the list", async () => {
   render(
@@ -131,4 +132,31 @@ test("fixing the field clears its error before saving again", async () => {
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
   expect(screen.getByRole("listitem")).toHaveTextContent("Engineer");
+});
+
+test("a saved role that breaks a rule is flagged in the list with what to check", () => {
+  const persistence = new InMemoryPersistence();
+  const resume = emptyResume();
+  resume.experience = [
+    {
+      id: "1",
+      company: "Lumen Studio",
+      role: "Frontend Developer",
+      startDate: "",
+      endDate: "06/2018",
+      current: false,
+      location: "",
+      description: "",
+    },
+  ];
+  persistence.save(resume);
+  render(
+    <ResumeProvider persistence={persistence}>
+      <ExperienceSection />
+    </ResumeProvider>,
+  );
+  const row = screen.getByRole("listitem");
+  expect(row).toHaveClass("entry--invalid");
+  expect(row).toHaveTextContent("Check the start date");
+  expect(row).not.toHaveTextContent("Lumen Studio");
 });
