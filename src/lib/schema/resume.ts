@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-export const SCHEMA_VERSION = 1 as const;
+export const SCHEMA_VERSION = 2 as const;
 
-export const templateSchema = z.enum(["ats", "designed"]);
+export const templateSchema = z.enum(["minimal", "executive", "ats"]);
 export type Template = z.infer<typeof templateSchema>;
 
 const idSchema = z.string().min(1);
@@ -14,6 +14,8 @@ export const contactHeaderSchema = z.object({
   email: z.string(),
   phone: z.string(),
   location: z.string(),
+  // Optional and defaulted: contacts saved before the field existed still parse.
+  website: z.string().default(""),
 });
 export type ContactHeader = z.infer<typeof contactHeaderSchema>;
 
@@ -90,8 +92,8 @@ export type Resume = z.infer<typeof resumeSchema>;
 export function emptyResume(): Resume {
   return {
     schemaVersion: SCHEMA_VERSION,
-    template: "ats",
-    contact: { name: "", title: "", email: "", phone: "", location: "" },
+    template: "minimal",
+    contact: { name: "", title: "", email: "", phone: "", location: "", website: "" },
     summary: { text: "" },
     experience: [],
     education: [],

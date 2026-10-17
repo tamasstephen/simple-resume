@@ -8,6 +8,7 @@ import { useActiveSection } from "./features/editor/useActiveSection";
 import { SECTIONS } from "./features/editor/sectionMeta";
 import { Preview } from "./features/preview/Preview";
 import { PreviewBar } from "./features/preview/PreviewBar";
+import { TemplatePicker } from "./features/preview/TemplatePicker";
 import { printStyles } from "./features/render/printStyles";
 
 const persistence = new LocalStoragePersistence();
@@ -34,7 +35,9 @@ export default function App() {
           <Editor key={editorKey} />
         </section>
         <section id="preview" aria-label="Preview" className="preview-pane">
-          <PreviewBar pageCount={pageCount} />
+          <PreviewBar pageCount={pageCount}>
+            <TemplatePicker />
+          </PreviewBar>
           <Preview onPaginated={setPageCount} />
         </section>
       </main>

@@ -89,7 +89,9 @@ Derived from `docs/PRD.md`. Stories are grouped by epic and ordered so each can 
 **Acceptance (PRD FR7, AC "preview matches export"):** preview updates only on commit/template switch and, being the same DOM the print path uses, matches exported output.
 **Depends on:** S8
 
-### S10 — T2 (designed two-column) template
+### S10 — T2 (designed two-column) template — ⛔ Superseded 2026-10-17
+Replaced by two one-column templates (Minimal, Executive; Paper page "Resume Templates"): multi-column layouts did not paginate reliably, so no template uses columns or grids. SP-2 is no longer needed.
+
 **As a** user **I want** a modern two-column template **so that** I have a designed option.
 - Sidebar (contact, skills, languages, links) + main column (summary, experience, education, projects).
 - Must paginate under Paged.js.
@@ -98,7 +100,7 @@ Derived from `docs/PRD.md`. Stories are grouped by epic and ordered so each can 
 **Acceptance (PRD Templates T2, edge case "column exceeds one page"):** same data renders in T2 and paginates automatically without manual math.
 **Depends on:** S8 (spike first)
 
-### S11 — Template switcher
+### S11 — Template switcher ✅ Shipped 2026-10-17 (three templates: Minimal (default), Executive, ATS Classic; picker in the preview bar; schema v2 migrates v1 resumes to Minimal)
 **As a** user **I want** to switch templates **so that** I can compare layouts.
 - UI to select T1/T2; default T1; re-render same data; persist selection (S2).
 

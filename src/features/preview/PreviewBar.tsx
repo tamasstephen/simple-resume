@@ -1,9 +1,17 @@
+import type { ReactNode } from "react";
+
 function formatPreviewLabel(pageCount: number): string {
   if (pageCount <= 0) return "PREVIEW · A4";
   return `PREVIEW · A4 · ${pageCount} ${pageCount === 1 ? "PAGE" : "PAGES"}`;
 }
 
-/** Mono caption above the sheets: format, plus the page count once known. */
-export function PreviewBar({ pageCount }: { pageCount: number }) {
-  return <div className="preview-bar">{formatPreviewLabel(pageCount)}</div>;
+/** Bar above the sheets: format and page count on the left, controls that
+ *  shape the preview (the template picker) on the right. */
+export function PreviewBar({ pageCount, children }: { pageCount: number; children?: ReactNode }) {
+  return (
+    <div className="preview-bar">
+      <span className="preview-bar__label">{formatPreviewLabel(pageCount)}</span>
+      {children}
+    </div>
+  );
 }

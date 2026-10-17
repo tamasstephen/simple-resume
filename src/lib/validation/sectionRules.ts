@@ -66,6 +66,7 @@ function validateDateRange({
 export const validateContact: Validator<ContactHeader> = (contact) => ({
   email: validateEmail(contact.email),
   phone: validatePhone(contact.phone),
+  website: validateWebAddress(contact.website),
 });
 
 export const validateExperience: Validator<ExperienceItem> = (item) => ({

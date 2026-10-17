@@ -69,3 +69,33 @@ test("contact details saved before the rules existed show their errors at once",
   expect(screen.getByLabelText("Email")).toHaveAttribute("aria-invalid", "true");
   expect(screen.getByLabelText("Email")).not.toHaveFocus();
 });
+
+function CommittedWebsite() {
+  return <span data-testid="committed-website">{useResumeState().committed.contact.website}</span>;
+}
+
+test("an optional website is saved with the contact details", async () => {
+  render(
+    <ResumeProvider persistence={new InMemoryPersistence()}>
+      <ContactForm />
+      <CommittedWebsite />
+    </ResumeProvider>,
+  );
+  await userEvent.type(screen.getByLabelText(/^Website/), "ada.dev");
+  await userEvent.click(screen.getByRole("button", { name: "Save contact" }));
+  expect(screen.getByTestId("committed-website").textContent).toBe("ada.dev");
+});
+
+test("a website that is not a web address blocks Save", async () => {
+  render(
+    <ResumeProvider persistence={new InMemoryPersistence()}>
+      <ContactForm />
+      <CommittedWebsite />
+    </ResumeProvider>,
+  );
+  const website = screen.getByLabelText(/^Website/);
+  await userEvent.type(website, "adadev");
+  await userEvent.click(screen.getByRole("button", { name: "Save contact" }));
+  expect(screen.getByTestId("committed-website").textContent).toBe("");
+  expect(website).toHaveAccessibleDescription("Enter a web address, like github.com/you.");
+});
