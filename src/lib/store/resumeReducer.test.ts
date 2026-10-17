@@ -97,6 +97,7 @@ test("SET_CONTACT replaces the contact header and preserves other sections", () 
     email: "ada@example.com",
     phone: "",
     location: "",
+    website: "",
   };
   const next = resumeReducer(state, { type: "SET_CONTACT", contact });
   expect(next.committed.contact).toEqual(contact);

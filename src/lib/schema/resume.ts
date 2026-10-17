@@ -14,6 +14,8 @@ export const contactHeaderSchema = z.object({
   email: z.string(),
   phone: z.string(),
   location: z.string(),
+  // Optional and defaulted: contacts saved before the field existed still parse.
+  website: z.string().default(""),
 });
 export type ContactHeader = z.infer<typeof contactHeaderSchema>;
 
@@ -91,7 +93,7 @@ export function emptyResume(): Resume {
   return {
     schemaVersion: SCHEMA_VERSION,
     template: "minimal",
-    contact: { name: "", title: "", email: "", phone: "", location: "" },
+    contact: { name: "", title: "", email: "", phone: "", location: "", website: "" },
     summary: { text: "" },
     experience: [],
     education: [],

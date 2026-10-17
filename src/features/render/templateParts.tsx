@@ -57,33 +57,37 @@ export function MetaLine({ className, parts }: { className: string; parts: reado
   );
 }
 
-export function contactParts(contact: ContactHeader): MetaPart[] {
-  return [contact.email, contact.phone, contact.location]
-    .filter((value) => value.length > 0)
-    .map((value) => ({ key: value, node: value }));
+// A real anchor, so it stays clickable in the preview and in the exported
+// PDF; a URL the safe-href check refuses keeps its text and is not linked.
+function linkNode({ text, url }: { text: string; url: string }): ReactNode {
+  const href = toSafeHref(url);
+  if (href === null) return text;
+  return (
+    <a className="resume-link" href={href} target="_blank" rel="noreferrer">
+      {text}
+    </a>
+  );
 }
 
-// Each link is a real anchor so it stays clickable in the preview and in the
-// exported PDF; a URL the safe-href check refuses keeps its text and simply is
-// not linked.
+/** Email, phone, location and the personal website, in that order. */
+export function contactParts(contact: ContactHeader): MetaPart[] {
+  const facts = [contact.email, contact.phone, contact.location]
+    .filter((value) => value.length > 0)
+    .map((value) => ({ key: value, node: value }));
+  if (contact.website.length === 0) return facts;
+  return [
+    ...facts,
+    { key: "website", node: linkNode({ text: contact.website, url: contact.website }) },
+  ];
+}
+
 export function linkParts(links: readonly LinkItem[]): MetaPart[] {
   return links
     .filter((link) => link.label.length > 0 || link.url.length > 0)
-    .map((link) => {
-      const text = link.label.length > 0 ? link.label : link.url;
-      const href = toSafeHref(link.url);
-      return {
-        key: link.id,
-        node:
-          href === null ? (
-            text
-          ) : (
-            <a className="resume-link" href={href} target="_blank" rel="noreferrer">
-              {text}
-            </a>
-          ),
-      };
-    });
+    .map((link) => ({
+      key: link.id,
+      node: linkNode({ text: link.label.length > 0 ? link.label : link.url, url: link.url }),
+    }));
 }
 
 /** Items separated by middle dots that wrap as whole items: a two-word skill

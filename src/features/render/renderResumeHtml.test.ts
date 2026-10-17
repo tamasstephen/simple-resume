@@ -20,6 +20,7 @@ test.each(TEMPLATE_IDS)(
         email: "a@x.com",
         phone: "",
         location: "London",
+        website: "",
       },
       summary: { text: "<p>Builder of engines</p>" },
       experience: [
@@ -49,7 +50,14 @@ test.each(TEMPLATE_IDS)("%s escapes plain-text fields (no raw HTML injection)", 
   const html = renderResumeHtml({
     ...emptyResume(),
     template,
-    contact: { name: "<script>alert(1)</script>", title: "", email: "", phone: "", location: "" },
+    contact: {
+      name: "<script>alert(1)</script>",
+      title: "",
+      email: "",
+      phone: "",
+      location: "",
+      website: "",
+    },
   });
   expect(html).not.toContain("<script>alert(1)</script>");
   expect(html).toContain("&lt;script&gt;");
@@ -111,7 +119,14 @@ test.each(TEMPLATE_IDS)(
 test("ATS puts links on their own line directly under the contact line", () => {
   const html = renderResumeHtml({
     ...atsResume(),
-    contact: { name: "Ada", title: "", email: "a@x.com", phone: "", location: "London" },
+    contact: {
+      name: "Ada",
+      title: "",
+      email: "a@x.com",
+      phone: "",
+      location: "London",
+      website: "",
+    },
     links: [{ id: "k1", label: "linkedin", url: "linkedin.com/in/ada" }],
   });
   const contactLine = /<p class="resume-contact">(.*?)<\/p>/.exec(html);
@@ -215,4 +230,22 @@ test("executive heads the section with Skills when there is no summary", () => {
   });
   expect(html).toContain('<h2 class="resume-section-title">Skills</h2>');
   expect(html).not.toContain("resume-skills-label");
+});
+
+test.each(TEMPLATE_IDS)("%s shows the website with the contact details as a link", (template) => {
+  const html = renderResumeHtml({
+    ...emptyResume(),
+    template,
+    contact: { ...emptyResume().contact, email: "a@x.com", website: "ada.dev" },
+  });
+  expect(html).toContain('<a class="resume-link" href="https://ada.dev/"');
+  expect(html).toContain(">ada.dev</a>");
+});
+
+test("an unsafe website stays plain text", () => {
+  const html = renderResumeHtml({
+    ...emptyResume(),
+    contact: { ...emptyResume().contact, website: "javascript:alert(1)" },
+  });
+  expect(html).not.toContain("<a ");
 });

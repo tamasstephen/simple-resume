@@ -59,11 +59,26 @@ test("contact flags an unfinished email and a phone with letters", () => {
     email: "yep@",
     phone: "call me",
     location: "",
+    website: "",
   });
-  expect(errors).toEqual({ email: MESSAGES.email, phone: MESSAGES.phoneCharacters });
+  expect(errors).toEqual({ email: MESSAGES.email, phone: MESSAGES.phoneCharacters, website: null });
   expect(countErrors(errors)).toBe(2);
 });
 
 test("a link needs a real web address", () => {
   expect(validateLink({ id: "1", label: "GitHub", url: "github" }).url).toBe(MESSAGES.webAddress);
+});
+
+test("contact accepts an empty website and flags one that is not a web address", () => {
+  const contact = {
+    name: "Ada",
+    title: "",
+    email: "",
+    phone: "",
+    location: "",
+    website: "",
+  };
+  expect(hasErrors(validateContact(contact))).toBe(false);
+  expect(validateContact({ ...contact, website: "adadev" }).website).toBe(MESSAGES.webAddress);
+  expect(validateContact({ ...contact, website: "ada.dev" }).website).toBeNull();
 });

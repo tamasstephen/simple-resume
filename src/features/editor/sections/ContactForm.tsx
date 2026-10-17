@@ -11,14 +11,17 @@ import type { ContactHeader } from "../../../lib/schema/resume";
 const FIELDS: ReadonlyArray<{
   key: keyof ContactHeader;
   label: string;
-  type: "text" | "email" | "tel";
+  type: "text" | "email" | "tel" | "url";
   width?: "short" | "medium";
+  isOptional?: boolean;
 }> = [
   { key: "name", label: "Name", type: "text" },
   { key: "title", label: "Title", type: "text" },
   { key: "email", label: "Email", type: "email", width: "medium" },
   { key: "phone", label: "Phone", type: "tel", width: "short" },
   { key: "location", label: "Location", type: "text", width: "medium" },
+  // Not everyone has a site; marked optional so an empty box reads as fine.
+  { key: "website", label: "Website", type: "url", width: "medium", isOptional: true },
 ];
 
 /** Singleton Contact/Header form: edits a local draft, commits on Save. */
@@ -55,12 +58,13 @@ export function ContactForm() {
       id={sectionAnchor("contact")}
     >
       <SectionHeading sectionId="contact" />
-      {FIELDS.map(({ key, label, type, width }) => (
+      {FIELDS.map(({ key, label, type, width, isOptional }) => (
         <TextField
           key={key}
           label={label}
           type={type}
           width={width}
+          isOptional={isOptional}
           value={draft[key]}
           error={errors[key]}
           onChange={(value) => setDraft((current) => ({ ...current, [key]: value }))}

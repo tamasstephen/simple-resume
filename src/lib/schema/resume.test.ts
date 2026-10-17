@@ -36,3 +36,11 @@ test("accepts a populated experience item", () => {
   };
   expect(resumeSchema.safeParse(resume).success).toBe(true);
 });
+
+// Website was added without a schema bump: contacts saved before it existed
+// still load, with an empty website, rather than failing validation.
+test("a contact saved without a website loads with an empty one", () => {
+  const contactWithoutWebsite = { name: "Ada", title: "", email: "", phone: "", location: "" };
+  const parsed = resumeSchema.parse({ ...emptyResume(), contact: contactWithoutWebsite });
+  expect(parsed.contact.website).toBe("");
+});

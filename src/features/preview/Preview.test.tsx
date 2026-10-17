@@ -38,7 +38,14 @@ function Rename() {
       onClick={() =>
         dispatch({
           type: "SET_CONTACT",
-          contact: { name: "Grace Hopper", title: "", email: "", phone: "", location: "" },
+          contact: {
+            name: "Grace Hopper",
+            title: "",
+            email: "",
+            phone: "",
+            location: "",
+            website: "",
+          },
         })
       }
     >
@@ -51,7 +58,7 @@ test("renders the committed resume through Paged.js with the page styles", async
   const persistence = new InMemoryPersistence();
   persistence.save({
     ...emptyResume(),
-    contact: { name: "Ada Lovelace", title: "", email: "", phone: "", location: "" },
+    contact: { name: "Ada Lovelace", title: "", email: "", phone: "", location: "", website: "" },
   });
   render(
     <ResumeProvider persistence={persistence}>
