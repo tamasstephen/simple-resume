@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-export const SCHEMA_VERSION = 1 as const;
+export const SCHEMA_VERSION = 2 as const;
 
-export const templateSchema = z.enum(["ats", "designed"]);
+export const templateSchema = z.enum(["minimal", "executive", "ats"]);
 export type Template = z.infer<typeof templateSchema>;
 
 const idSchema = z.string().min(1);
@@ -90,7 +90,7 @@ export type Resume = z.infer<typeof resumeSchema>;
 export function emptyResume(): Resume {
   return {
     schemaVersion: SCHEMA_VERSION,
-    template: "ats",
+    template: "minimal",
     contact: { name: "", title: "", email: "", phone: "", location: "" },
     summary: { text: "" },
     experience: [],
