@@ -10,11 +10,11 @@ test("robots.txt lets crawlers in and points at the sitemap", () => {
   expect(robots).toContain(`Sitemap: ${SITE_URL}sitemap.xml`);
 });
 
-test("the sitemap is valid XML listing the one page this app has", () => {
+test("the sitemap is valid XML listing the landing page and the editor", () => {
   const doc = new DOMParser().parseFromString(sitemap, "application/xml");
   expect(doc.querySelector("parsererror")).toBeNull();
   const locations = [...doc.querySelectorAll("url > loc")].map((node) => node.textContent);
-  expect(locations).toEqual([SITE_URL]);
+  expect(locations).toEqual([SITE_URL, `${SITE_URL}create/`]);
 });
 
 // The sitemap and the canonical link must name the same URL: disagreeing

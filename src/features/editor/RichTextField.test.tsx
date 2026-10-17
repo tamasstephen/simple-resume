@@ -10,15 +10,17 @@ test("renders a labelled editor with formatting toolbar buttons", () => {
   expect(screen.getByLabelText("Description")).toBeInTheDocument();
 });
 
-// Four buttons, one vocabulary: "B / I / • List / 1. List" mixed single
-// letters with glyph-prefixed words and read like debug labels.
-test("labels every formatting control with a word", () => {
+// The refined toolbar shows glyphs (B, I, list icons); each still needs a
+// spoken name.
+test("names every formatting control, whatever glyph it shows", () => {
   render(<RichTextField value="" onChange={() => {}} ariaLabel="Description" />);
   const toolbar = screen.getByRole("toolbar", { name: "Description formatting" });
-  expect([...toolbar.querySelectorAll("button")].map((b) => b.textContent)).toEqual([
-    "Bold",
-    "Italic",
-    "Bullets",
-    "Numbers",
+  expect(
+    [...toolbar.querySelectorAll("button")].map((button) => button.getAttribute("aria-label")),
+  ).toEqual([
+    "Description bold",
+    "Description italic",
+    "Description bullet list",
+    "Description numbered list",
   ]);
 });

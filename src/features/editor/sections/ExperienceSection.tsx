@@ -1,6 +1,11 @@
 import { useResumeState, useResumeDispatch } from "../../resume/useResume";
 import { useSectionDraft } from "../useSectionDraft";
+import { CheckboxField, TextField } from "../TextField";
+import { MonthField } from "../MonthField";
+import { listErrorLabels } from "../errorLabels";
+import { validateExperience } from "../../../lib/validation/sectionRules";
 import { SectionEditor } from "../SectionEditor";
+import { joinSubtitle } from "../joinSubtitle";
 import { RichTextField } from "../RichTextField";
 import { sanitizeDescription } from "../sanitizeFields";
 import { newId } from "../../../lib/id";
@@ -17,81 +22,113 @@ const makeEmpty = (): ExperienceItem => ({
   description: "",
 });
 
+const LABELS = {
+  role: "Job title",
+  company: "Company",
+  startDate: "Start date",
+  endDate: "End date",
+};
+
 /** Repeatable Experience section with a rich-text description. */
 export function ExperienceSection() {
   const items = useResumeState().committed.experience;
   const dispatch = useResumeDispatch();
-  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } = useSectionDraft(makeEmpty);
+  const {
+    draft,
+    isEditing,
+    isDirty,
+    errors,
+    blockedSaveCount,
+    startAdd,
+    startEdit,
+    updateDraft,
+    touch,
+    trySave,
+    cancel,
+  } = useSectionDraft(makeEmpty, validateExperience);
 
-  const save = () => {
-    if (draft === null) return;
-    dispatch({ type: "SAVE_ITEM", section: "experience", item: sanitizeDescription(draft) });
-    cancel();
-  };
+  const save = () =>
+    trySave((item) =>
+      dispatch({ type: "SAVE_ITEM", section: "experience", item: sanitizeDescription(item) }),
+    );
+  const isCurrent = draft?.current ?? false;
 
   return (
     <SectionEditor<ExperienceItem>
+      sectionId="experience"
       title="Experience"
       itemNoun="experience"
+      dialogNoun="work experience"
+      dialogDescription="Tell employers about your role and what you achieved."
       items={items}
       draft={draft}
       isEditing={isEditing}
-      canSave={draft !== null && (draft.company.trim().length > 0 || draft.role.trim().length > 0)}
-      renderSummary={(item) => (
-        <span>
-          {item.role}
-          {item.company ? ` @ ${item.company}` : ""}
-        </span>
-      )}
+      isDirty={isDirty}
+      errorLabels={listErrorLabels({ errors, labels: LABELS })}
+      blockedSaveCount={blockedSaveCount}
+      getItemErrorLabels={(item) =>
+        listErrorLabels({ errors: validateExperience(item), labels: LABELS })
+      }
+      renderSummary={(item) => <span>{item.role || item.company}</span>}
+      renderSubtitle={(item) => joinSubtitle([item.role ? item.company : "", item.location])}
       renderMeta={(item) =>
         [item.startDate, item.current ? "Present" : item.endDate].filter(Boolean).join(" – ")
       }
       renderForm={() => (
         <>
-          <label>
-            Role
-            <input
+          <div className="form-row">
+            <TextField
+              label={LABELS.role}
+              isRequired
               value={draft?.role ?? ""}
-              onChange={(e) => updateDraft({ role: e.target.value })}
+              error={errors.role}
+              onChange={(role) => updateDraft({ role })}
+              onBlur={() => touch("role")}
             />
-          </label>
-          <label>
-            Company
-            <input
+            <TextField
+              label={LABELS.company}
+              isRequired
               value={draft?.company ?? ""}
-              onChange={(e) => updateDraft({ company: e.target.value })}
+              error={errors.company}
+              onChange={(company) => updateDraft({ company })}
+              onBlur={() => touch("company")}
             />
-          </label>
-          <label className="field field--short">
-            Start date
-            <input
+          </div>
+          <TextField
+            label="Location"
+            isOptional
+            value={draft?.location ?? ""}
+            onChange={(location) => updateDraft({ location })}
+          />
+          <div className="form-row form-row--dates">
+            <MonthField
+              label={LABELS.startDate}
+              isRequired
               value={draft?.startDate ?? ""}
-              onChange={(e) => updateDraft({ startDate: e.target.value })}
+              error={errors.startDate}
+              onChange={(startDate) => updateDraft({ startDate })}
+              onBlur={() => touch("startDate")}
             />
-          </label>
-          <label className="field field--short">
-            End date
-            <input
-              value={draft?.endDate ?? ""}
-              onChange={(e) => updateDraft({ endDate: e.target.value })}
+            <MonthField
+              label={LABELS.endDate}
+              isRequired={!isCurrent}
+              isDisabled={isCurrent}
+              placeholder={isCurrent ? "Present" : undefined}
+              value={isCurrent ? "" : (draft?.endDate ?? "")}
+              error={errors.endDate}
+              onChange={(endDate) => updateDraft({ endDate })}
+              onBlur={() => touch("endDate")}
             />
-          </label>
-          <label className="field">
-            I work here now
-            <input
-              type="checkbox"
-              checked={draft?.current ?? false}
-              onChange={(e) => updateDraft({ current: e.target.checked })}
-            />
-          </label>
-          <label className="field field--medium">
-            Location
-            <input
-              value={draft?.location ?? ""}
-              onChange={(e) => updateDraft({ location: e.target.value })}
-            />
-          </label>
+          </div>
+          <CheckboxField
+            label="I currently work here"
+            isChecked={isCurrent}
+            onChange={(current) => updateDraft({ current })}
+          />
           <RichTextField
+            label="Description"
+            isOptional
+            helper="Use 2–4 short bullets. Focus on outcomes and measurable impact."
             value={draft?.description ?? ""}
             onChange={(html) => updateDraft({ description: html })}
             ariaLabel="Experience description"

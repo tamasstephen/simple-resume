@@ -11,7 +11,7 @@
       content="Build a resume in your browser and export a clean, automatically paginated A4 PDF. No account, no upload — your data never leaves your device."
     />
     <link rel="canonical" href="https://cvpeers.com/" />
-    <meta name="theme-color" content="#f6f6f4" />
+    <meta name="theme-color" content="#ffffff" />
     <meta name="color-scheme" content="light" />
 
     <!-- Link previews. og:image is still absent: there is no card image yet,
@@ -37,7 +37,7 @@
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "Simple Resume",
-        "url": "https://cvpeers.com/",
+        "url": "https://cvpeers.com/create/",
         "description": "Build a resume in your browser and export a clean, automatically paginated A4 PDF. The preview is the printed document, so pages never need manual break handling.",
         "applicationCategory": "BusinessApplication",
         "applicationSubCategory": "Resume builder",
@@ -61,7 +61,294 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div class="sheet">
+      <header class="band">
+        <nav class="nav" aria-label="Primary">
+          <a class="nav__brand" href="/">
+            <span class="brand__mark" aria-hidden="true"><span></span></span>
+            <span class="brand__name">Simple Resume</span>
+          </a>
+          <div class="nav__menu">
+            <a class="nav__link" href="#how-it-works">How it works</a>
+            <a class="nav__link" href="#privacy">Privacy</a>
+            <a class="button button--nav" href="/create/">Open the editor</a>
+          </div>
+        </nav>
+      </header>
+
+      <main>
+        <section class="band hero">
+          <div class="hero__copy">
+            <p class="eyebrow">FREE · NO ACCOUNT · NOTHING LEAVES YOUR BROWSER</p>
+            <h1 class="hero__title">The preview is the PDF.</h1>
+            <p class="hero__lede">
+              Write your resume once. Simple Resume lays it out on real A4 pages as you save, and
+              exports exactly what you see — no page-break fiddling, no surprises in the download.
+            </p>
+            <div class="hero__actions">
+              <a class="button button--primary" href="/create/">
+                Start your resume
+                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                  <path
+                    d="M3 8h10M9 4l4 4-4 4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+              <a class="text-link" href="#how-it-works">See how it works</a>
+            </div>
+          </div>
+
+          <div class="hero__visual" aria-hidden="true">
+            <div class="sheet-page sheet-page--back">
+              <p class="sheet-page__folio">2 / 2</p>
+            </div>
+
+            <div class="sheet-page sheet-page--front">
+              <div class="page__head">
+                <p class="page__name">Alex Morgan</p>
+                <p class="page__contact">
+                  Staff Engineer · alex.morgan@mail.com · +49 30 1234 5678 · Berlin
+                </p>
+              </div>
+              <div class="page__section">
+                <p class="page__label">SUMMARY</p>
+                <p class="page__text">
+                  Product-minded engineer with ten years of shipping web platforms. I like boring
+                  infrastructure, sharp interfaces, and teams that write things down.
+                </p>
+              </div>
+              <div class="page__section page__section--experience">
+                <p class="page__label">EXPERIENCE</p>
+                <div class="page__job">
+                  <div class="page__row">
+                    <p class="page__role">Staff Engineer — Northwind Labs</p>
+                    <p class="page__dates">2022 – Present · Berlin</p>
+                  </div>
+                  <p class="page__text">
+                    • Led the billing platform’s move to event sourcing; reconciliation fell from 3
+                    days to 40 minutes.
+                  </p>
+                  <p class="page__text">
+                    • Set up the frontend guild and a shared component library used by 9 product
+                    teams.
+                  </p>
+                </div>
+                <div class="page__job">
+                  <div class="page__row">
+                    <p class="page__role">Senior Frontend Engineer — Paper Mill Co.</p>
+                    <p class="page__dates">2018 – 2022 · Remote</p>
+                  </div>
+                  <p class="page__text">
+                    • Rebuilt the editor on a CRDT model, enabling real-time collaboration for 40k
+                    teams.
+                  </p>
+                  <p class="page__text">
+                    • Cut p95 load time from 4.1s to 1.3s through code splitting and asset budgets.
+                  </p>
+                </div>
+                <div class="page__job">
+                  <div class="page__row">
+                    <p class="page__role">Frontend Developer — Lumen Studio</p>
+                    <p class="page__dates">2016 – 2018 · Budapest</p>
+                  </div>
+                  <p class="page__text">
+                    • Built marketing sites and design tooling for 20+ clients.
+                  </p>
+                </div>
+              </div>
+              <div class="page__section">
+                <p class="page__label">SKILLS</p>
+                <p class="page__text">
+                  TypeScript · React · System design · PostgreSQL · Accessibility
+                </p>
+              </div>
+              <div class="page__section">
+                <p class="page__label">EDUCATION</p>
+                <div class="page__row">
+                  <p class="page__role">BSc Computer Science — TU Berlin</p>
+                  <p class="page__dates">2012 – 2015</p>
+                </div>
+              </div>
+            </div>
+
+            <p class="break-note">
+              <span class="break-note__rule"></span>
+              <span class="break-note__text">PAGE 2 STARTED ITSELF</span>
+            </p>
+
+            <div class="demo-card">
+              <div class="demo-card__head">
+                <p class="demo-card__label">03 / EXPERIENCE</p>
+                <p class="demo-card__label">LUMEN STUDIO</p>
+              </div>
+              <div class="demo-card__body">
+                <p class="demo-card__text">
+                  <span class="copy--wide"
+                    >• Built marketing sites and design tooling for 20+ clients.</span
+                  >
+                  <span class="copy--narrow">• Built sites for 20+ clients.</span>
+                </p>
+                <p class="demo-card__field">
+                  <span class="copy--wide">• Ran the studio’s first accessibility audit</span>
+                  <span class="copy--narrow">• Ran the first accessibility audit</span>
+                  <span class="demo-card__caret"></span>
+                </p>
+              </div>
+              <div class="demo-card__foot">
+                <p class="page-count">
+                  <span class="page-count__dot"></span>
+                  <span id="page-count">A4 · 2 PAGES</span>
+                </p>
+                <span class="demo-card__save">Save</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="band how" id="how-it-works">
+          <div class="how__head">
+            <h2 class="section-title">
+              <span class="tone">Three steps.</span>
+              <span class="tone tone--continuation">No page-break maths, ever.</span>
+            </h2>
+            <div class="how__label">
+              <p class="eyebrow">HOW IT WORKS</p>
+              <button
+                type="button"
+                class="how__toggle"
+                data-walkthrough-toggle
+                aria-controls="walkthrough-steps"
+              >
+                Pause
+              </button>
+            </div>
+          </div>
+
+          <ol class="steps" id="walkthrough-steps" data-walkthrough>
+            <li class="step">
+              <p class="step__number">01</p>
+              <h3 class="step__title">Fill in nine sections</h3>
+              <p class="step__body">
+                Contact, summary, experience, education, projects, skills, languages, certifications
+                and links. Bold, italics and bullet lists where they matter.
+              </p>
+              <div class="step__visual step__visual--tags" aria-hidden="true">
+                <span class="chip">TypeScript</span>
+                <span class="chip">React</span>
+                <span class="chip chip--add">+ Add skill</span>
+              </div>
+            </li>
+            <li class="step step--active">
+              <p class="step__number">02</p>
+              <h3 class="step__title">Save, and watch it paginate</h3>
+              <p class="step__body">
+                Each save lays the resume out on real A4 pages. When a role spills over, page two
+                simply begins — you never place a break by hand.
+              </p>
+              <div class="step__visual" aria-hidden="true">
+                <span class="chip chip--muted">A4 · 1 PAGE</span>
+                <svg class="step__arrow" width="16" height="16" viewBox="0 0 16 16">
+                  <path
+                    d="M3 8h10M9 4l4 4-4 4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <span class="chip chip--count"><span class="chip__dot"></span>A4 · 2 PAGES</span>
+              </div>
+            </li>
+            <li class="step">
+              <p class="step__number">03</p>
+              <h3 class="step__title">Export the exact same pages</h3>
+              <p class="step__body">
+                Your browser’s own print engine turns the preview into a PDF. Selectable text, clean
+                structure, readable by applicant-tracking systems.
+              </p>
+              <div class="step__visual" aria-hidden="true">
+                <span class="file__icon">PDF</span>
+                <div class="file__text">
+                  <p class="file__name">alex-morgan-resume.pdf</p>
+                  <p class="file__meta">2 PAGES · SELECTABLE TEXT</p>
+                </div>
+              </div>
+            </li>
+          </ol>
+        </section>
+
+        <section class="band privacy" id="privacy">
+          <div class="privacy__copy">
+            <p class="eyebrow">PRIVACY</p>
+            <h2 class="section-title">
+              <span class="tone">Private by default.</span>
+              <span class="tone tone--continuation">Your resume never leaves this browser.</span>
+            </h2>
+            <p class="privacy__lede">
+              There is no sign-up and no server to send it to. Everything is kept in your browser’s
+              local storage — close the tab, come back tomorrow, and it’s still there.
+            </p>
+          </div>
+          <dl class="spec">
+            <div class="spec__row">
+              <dt class="eyebrow spec__label">ACCOUNT</dt>
+              <dd class="spec__value">None needed</dd>
+            </div>
+            <div class="spec__row">
+              <dt class="eyebrow spec__label">BACKEND</dt>
+              <dd class="spec__value">None — it’s a static page</dd>
+            </div>
+            <div class="spec__row">
+              <dt class="eyebrow spec__label">STORAGE</dt>
+              <dd class="spec__value">This browser only</dd>
+            </div>
+            <div class="spec__row">
+              <dt class="eyebrow spec__label">PRICE</dt>
+              <dd class="spec__value">Free</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="band closing">
+          <h2 class="section-title section-title--closing">
+            <span class="tone">Start writing.</span>
+            <span class="tone tone--continuation">The pages take care of themselves.</span>
+          </h2>
+          <div class="closing__actions">
+            <a class="button button--primary" href="/create/">
+              Start your resume
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                <path
+                  d="M3 8h10M9 4l4 4-4 4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+            <p class="eyebrow closing__note">OPENS INSTANTLY · NOTHING TO INSTALL</p>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="footer__links">
+          <nav aria-label="Footer">
+            <a href="#privacy">Privacy</a>
+          </nav>
+          <span>© 2026</span>
+        </div>
+        <p class="eyebrow footer__brand">SIMPLE RESUME · CVPEERS.COM</p>
+      </footer>
+    </div>
+    <script type="module" src="/src/landing/main.ts"></script>
   </body>
 </html>

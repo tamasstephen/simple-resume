@@ -31,10 +31,12 @@ test("delete removes a saved skill", async () => {
   expect(screen.queryByText("Go")).not.toBeInTheDocument();
 });
 
-test("Save is disabled until the name is non-empty", async () => {
+test("saving without a name keeps the dialog open and asks for one", async () => {
   renderSection();
   await userEvent.click(screen.getByRole("button", { name: /add skill/i }));
-  expect(screen.getByRole("button", { name: /^save$/i })).toBeDisabled();
+  await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
+  expect(screen.getByLabelText(/skill name/i)).toHaveAccessibleDescription("Add a skill.");
   await userEvent.type(screen.getByLabelText(/skill name/i), "Rust");
-  expect(screen.getByRole("button", { name: /^save$/i })).toBeEnabled();
+  await userEvent.click(screen.getByRole("button", { name: /^save$/i }));
+  expect(screen.getByText("Rust")).toBeInTheDocument();
 });

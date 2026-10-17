@@ -1,0 +1,37 @@
+:root {
+  --color-background: #ffffff;
+  --color-surface: #f7f7f7;
+  --color-text: #000000;
+  --color-text-secondary: #666666;
+  --color-text-continuation: #8a8a8a;
+  --color-border: #eaeaea;
+  --color-border-strong: #d4d4d4;
+  --color-primary: #0070f3;
+  --color-primary-surface: #eef5ff;
+  --color-success: #00a86b;
+  --color-danger-text: #cd2b31;
+  --color-text-disabled: #999999;
+  --color-focus: var(--color-primary);
+  --color-danger: #e5484d;
+  --color-danger-surface: #fff1f1;
+  --color-warning: #b7791f;
+  --color-warning-surface: #fff8e6;
+  --color-scrim: rgb(0 0 0 / 32%);
+  --color-white: #ffffff;
+  --color-text-placeholder: var(--color-text-secondary);
+  --color-control-border: #8a8a8a;
+  --color-action: #000000;
+  --color-action-hover: #262626;
+  --color-action-pressed: #404040;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --radius-sm: 4px;
+  --radius-control: 6px;
+  --radius-md: 8px;
+  --radius-dialog: 12px;
+
+  --container-control: 44px;
+  --container-input: 48px;
+}

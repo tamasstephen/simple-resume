@@ -1,61 +1,82 @@
 import { useResumeState, useResumeDispatch } from "../../resume/useResume";
 import { useSectionDraft } from "../useSectionDraft";
+import { TextField } from "../TextField";
+import { MonthField } from "../MonthField";
+import { listErrorLabels } from "../errorLabels";
+import { validateCertification } from "../../../lib/validation/sectionRules";
 import { SectionEditor } from "../SectionEditor";
 import { newId } from "../../../lib/id";
 import type { CertificationItem } from "../../../lib/schema/resume";
 
 const makeEmpty = (): CertificationItem => ({ id: newId(), name: "", issuer: "", date: "" });
 
+const LABELS = { name: "Certification name", date: "Date" };
+
 /** Repeatable Certifications section. */
 export function CertificationsSection() {
   const items = useResumeState().committed.certifications;
   const dispatch = useResumeDispatch();
-  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } = useSectionDraft(makeEmpty);
+  const {
+    draft,
+    isEditing,
+    isDirty,
+    errors,
+    blockedSaveCount,
+    startAdd,
+    startEdit,
+    updateDraft,
+    touch,
+    trySave,
+    cancel,
+  } = useSectionDraft(makeEmpty, validateCertification);
 
-  const save = () => {
-    if (draft === null) return;
-    dispatch({ type: "SAVE_ITEM", section: "certifications", item: draft });
-    cancel();
-  };
+  const save = () =>
+    trySave((item) => dispatch({ type: "SAVE_ITEM", section: "certifications", item }));
 
   return (
     <SectionEditor<CertificationItem>
+      sectionId="certifications"
       title="Certifications"
       itemNoun="certification"
+      dialogDescription="A credential, who issued it and when."
       items={items}
       draft={draft}
       isEditing={isEditing}
-      canSave={draft !== null && draft.name.trim().length > 0}
-      renderSummary={(item) => (
-        <span>
-          {item.name}
-          {item.issuer ? ` — ${item.issuer}` : ""}
-        </span>
-      )}
-      renderMeta={(item) => [item.issuer, item.date].filter(Boolean).join(", ")}
+      isDirty={isDirty}
+      errorLabels={listErrorLabels({ errors, labels: LABELS })}
+      blockedSaveCount={blockedSaveCount}
+      getItemErrorLabels={(item) =>
+        listErrorLabels({ errors: validateCertification(item), labels: LABELS })
+      }
+      renderSummary={(item) => <span>{item.name}</span>}
+      renderSubtitle={(item) => item.issuer}
+      renderMeta={(item) => item.date}
       renderForm={() => (
         <>
-          <label>
-            Certification name
-            <input
-              value={draft?.name ?? ""}
-              onChange={(e) => updateDraft({ name: e.target.value })}
-            />
-          </label>
-          <label className="field field--medium">
-            Issuer
-            <input
+          <TextField
+            label={LABELS.name}
+            isRequired
+            value={draft?.name ?? ""}
+            error={errors.name}
+            onChange={(name) => updateDraft({ name })}
+            onBlur={() => touch("name")}
+          />
+          <div className="form-row form-row--dates">
+            <TextField
+              label="Issuer"
+              isOptional
               value={draft?.issuer ?? ""}
-              onChange={(e) => updateDraft({ issuer: e.target.value })}
+              onChange={(issuer) => updateDraft({ issuer })}
             />
-          </label>
-          <label className="field field--short">
-            Date
-            <input
+            <MonthField
+              label={LABELS.date}
+              isOptional
               value={draft?.date ?? ""}
-              onChange={(e) => updateDraft({ date: e.target.value })}
+              error={errors.date}
+              onChange={(date) => updateDraft({ date })}
+              onBlur={() => touch("date")}
             />
-          </label>
+          </div>
         </>
       )}
       onAdd={startAdd}

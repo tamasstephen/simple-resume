@@ -90,10 +90,10 @@ export function KebabMenu({ isOpen, onToggle, onClose, onEdit, onDelete }: Kebab
         aria-expanded={isOpen}
         onClick={onToggle}
       >
-        <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" fill="currentColor">
-          <circle cx="6" cy="2.5" r="1.5" />
-          <circle cx="6" cy="6" r="1.5" />
-          <circle cx="6" cy="9.5" r="1.5" />
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor">
+          <circle cx="8" cy="3.5" r="1.3" />
+          <circle cx="8" cy="8" r="1.3" />
+          <circle cx="8" cy="12.5" r="1.3" />
         </svg>
       </button>
       {isOpen && (

@@ -2,15 +2,26 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { ItemDialog } from "./ItemDialog";
 import { KebabMenu } from "./KebabMenu";
+import { ErrorIcon } from "./TextField";
+import { SectionHeading } from "./SectionHeading";
+import { sectionAnchor, type SectionId } from "./sectionMeta";
 
 export interface SectionEditorBaseProps<T extends { id: string }> {
+  sectionId: SectionId;
   title: string;
   /** Singular name of one item ("skill"), used by the add action and dialog. */
   itemNoun: string;
+  /** What the dialog heading calls an item when it differs ("work experience"). */
+  dialogNoun?: string;
+  /** One line under the dialog heading: what this entry is for. */
+  dialogDescription: string;
   items: readonly T[];
   draft: T | null;
   isEditing: boolean;
-  canSave: boolean;
+  isDirty: boolean;
+  /** Labels of the draft's invalid fields, for the dialog's summary alert. */
+  errorLabels?: readonly string[];
+  blockedSaveCount?: number;
   renderSummary: (item: T) => ReactNode;
   renderForm: () => ReactNode;
   onAdd: () => void;
@@ -30,19 +41,51 @@ export interface SectionEditorBaseProps<T extends { id: string }> {
  */
 export type SectionEditorProps<T extends { id: string }> = SectionEditorBaseProps<T> &
   (
-    | { layout?: "table"; renderMeta?: (item: T) => ReactNode }
+    | {
+        layout?: "table";
+        renderMeta?: (item: T) => ReactNode;
+        renderSubtitle?: (item: T) => ReactNode;
+        /** Labels of a saved item's fields that break a rule; a non-empty
+         *  list flags the row and replaces its subtitle with what to check. */
+        getItemErrorLabels?: (item: T) => readonly string[];
+      }
     | { layout: "tags"; itemLabel: (item: T) => string }
   );
+
+function describeItemErrors(labels: readonly string[]): string {
+  return `Check the ${labels.map((label) => label.toLowerCase()).join(" and ")}`;
+}
+
+function renderEntryError(labels: readonly string[]) {
+  return (
+    <div className="entry__error">
+      <ErrorIcon size={13} />
+      {describeItemErrors(labels)}
+    </div>
+  );
+}
+
+function renderEntrySubtitle(subtitle: ReactNode) {
+  if (subtitle === undefined || subtitle === null || subtitle === false || subtitle === "") {
+    return null;
+  }
+  return <div className="entry__subtitle">{subtitle}</div>;
+}
 
 /** Generic save-based section shell: saved-items list + add/edit/delete + draft form. */
 export function SectionEditor<T extends { id: string }>(props: SectionEditorProps<T>) {
   const {
+    sectionId,
     title,
     itemNoun,
+    dialogNoun = itemNoun,
+    dialogDescription,
     items,
     draft,
     isEditing,
-    canSave,
+    isDirty,
+    errorLabels = [],
+    blockedSaveCount = 0,
     renderSummary,
     renderForm,
     onAdd,
@@ -52,12 +95,24 @@ export function SectionEditor<T extends { id: string }>(props: SectionEditorProp
     onCancel,
   } = props;
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  // Stays mounted (hidden) while the dialog is open so focus can return to it.
+  const addButton = (
+    <button
+      type="button"
+      className="btn btn--secondary btn--add"
+      hidden={draft !== null}
+      onClick={onAdd}
+    >
+      <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+        <path d="M7 2v10M2 7h10" fill="none" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+      Add {itemNoun}
+    </button>
+  );
 
   return (
-    <section aria-label={title} className="section">
-      <div className="section__head">
-        <h2 className="section__title">{title}</h2>
-      </div>
+    <section aria-label={title} className="section" id={sectionAnchor(sectionId)}>
+      <SectionHeading sectionId={sectionId} />
 
       {items.length > 0 &&
         (props.layout === "tags" ? (
@@ -78,55 +133,70 @@ export function SectionEditor<T extends { id: string }>(props: SectionEditorProp
                   aria-label={`Remove ${props.itemLabel(item)}`}
                   onClick={() => onDeleteItem(item.id)}
                 >
-                  <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true">
-                    <path d="M0 0L8 8M8 0L0 8" stroke="currentColor" strokeWidth="1" />
+                  <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+                    <path
+                      d="M7 7l6 6M13 7l-6 6"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.4"
+                      strokeLinecap="round"
+                    />
                   </svg>
                 </button>
               </li>
             ))}
           </ul>
         ) : (
-          <table className="item-table" aria-label={`${title} items`}>
-            <tbody>
-              {items.map((item) => (
-                <tr key={item.id}>
-                  <td className="item__summary">
-                    <div className="item__truncate">{renderSummary(item)}</div>
-                  </td>
+          <ul className="entry-list" aria-label={`${title} items`}>
+            {items.map((item) => {
+              const errorLabels = props.getItemErrorLabels?.(item) ?? [];
+              const isInvalid = errorLabels.length > 0;
+              return (
+                <li key={item.id} className={isInvalid ? "entry entry--invalid" : "entry"}>
+                  <div className="entry__text">
+                    <div className="entry__summary">{renderSummary(item)}</div>
+                    {isInvalid
+                      ? renderEntryError(errorLabels)
+                      : renderEntrySubtitle(props.renderSubtitle?.(item))}
+                  </div>
                   {props.renderMeta !== undefined && (
-                    <td className="item__meta">{props.renderMeta(item)}</td>
+                    <div className="entry__meta">{props.renderMeta(item)}</div>
                   )}
-                  <td className="item__actions">
-                    <KebabMenu
-                      isOpen={openMenuId === item.id}
-                      onToggle={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
-                      onClose={() => setOpenMenuId(null)}
-                      onEdit={() => {
-                        setOpenMenuId(null);
-                        onEditItem(item);
-                      }}
-                      onDelete={() => {
-                        setOpenMenuId(null);
-                        onDeleteItem(item.id);
-                      }}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  <KebabMenu
+                    isOpen={openMenuId === item.id}
+                    onToggle={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
+                    onClose={() => setOpenMenuId(null)}
+                    onEdit={() => {
+                      setOpenMenuId(null);
+                      onEditItem(item);
+                    }}
+                    onDelete={() => {
+                      setOpenMenuId(null);
+                      onDeleteItem(item.id);
+                    }}
+                  />
+                </li>
+              );
+            })}
+          </ul>
         ))}
-      {items.length === 0 && <p className="item-table__empty">— none yet</p>}
+      {items.length === 0 && (
+        <div className="empty-state" hidden={draft !== null}>
+          <p className="empty-state__title">{`No ${title.toLowerCase()} yet`}</p>
+          {addButton}
+        </div>
+      )}
+      {items.length > 0 && addButton}
 
-      {draft === null ? (
-        <button type="button" className="btn btn--secondary" onClick={onAdd}>
-          Add {itemNoun}
-        </button>
-      ) : (
+      {draft !== null && (
         <ItemDialog
-          title={itemNoun}
+          title={`${isEditing ? "Edit" : "Add"} ${dialogNoun}`}
+          description={dialogDescription}
+          itemNoun={itemNoun}
           isEditing={isEditing}
-          canSave={canSave}
+          isDirty={isDirty}
+          errorLabels={errorLabels}
+          blockedSaveCount={blockedSaveCount}
           onSave={onSave}
           onCancel={onCancel}
         >

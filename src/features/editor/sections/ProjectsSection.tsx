@@ -1,5 +1,8 @@
 import { useResumeState, useResumeDispatch } from "../../resume/useResume";
 import { useSectionDraft } from "../useSectionDraft";
+import { TextField } from "../TextField";
+import { listErrorLabels } from "../errorLabels";
+import { validateProject } from "../../../lib/validation/sectionRules";
 import { SectionEditor } from "../SectionEditor";
 import { RichTextField } from "../RichTextField";
 import { sanitizeDescription } from "../sanitizeFields";
@@ -8,45 +11,71 @@ import type { ProjectItem } from "../../../lib/schema/resume";
 
 const makeEmpty = (): ProjectItem => ({ id: newId(), name: "", url: "", description: "" });
 
+const LABELS = { name: "Project name", url: "URL" };
+
 /** Repeatable Projects section with a rich-text description. */
 export function ProjectsSection() {
   const items = useResumeState().committed.projects;
   const dispatch = useResumeDispatch();
-  const { draft, isEditing, startAdd, startEdit, updateDraft, cancel } = useSectionDraft(makeEmpty);
+  const {
+    draft,
+    isEditing,
+    isDirty,
+    errors,
+    blockedSaveCount,
+    startAdd,
+    startEdit,
+    updateDraft,
+    touch,
+    trySave,
+    cancel,
+  } = useSectionDraft(makeEmpty, validateProject);
 
-  const save = () => {
-    if (draft === null) return;
-    dispatch({ type: "SAVE_ITEM", section: "projects", item: sanitizeDescription(draft) });
-    cancel();
-  };
+  const save = () =>
+    trySave((item) =>
+      dispatch({ type: "SAVE_ITEM", section: "projects", item: sanitizeDescription(item) }),
+    );
 
   return (
     <SectionEditor<ProjectItem>
+      sectionId="projects"
       title="Projects"
       itemNoun="project"
+      dialogDescription="Something you built, and where people can see it."
       items={items}
       draft={draft}
       isEditing={isEditing}
-      canSave={draft !== null && draft.name.trim().length > 0}
+      isDirty={isDirty}
+      errorLabels={listErrorLabels({ errors, labels: LABELS })}
+      blockedSaveCount={blockedSaveCount}
+      getItemErrorLabels={(item) =>
+        listErrorLabels({ errors: validateProject(item), labels: LABELS })
+      }
       renderSummary={(item) => <span>{item.name}</span>}
-      renderMeta={(item) => item.url}
+      renderSubtitle={(item) => item.url}
       renderForm={() => (
         <>
-          <label>
-            Project name
-            <input
-              value={draft?.name ?? ""}
-              onChange={(e) => updateDraft({ name: e.target.value })}
-            />
-          </label>
-          <label>
-            URL
-            <input
-              value={draft?.url ?? ""}
-              onChange={(e) => updateDraft({ url: e.target.value })}
-            />
-          </label>
+          <TextField
+            label={LABELS.name}
+            isRequired
+            value={draft?.name ?? ""}
+            error={errors.name}
+            onChange={(name) => updateDraft({ name })}
+            onBlur={() => touch("name")}
+          />
+          <TextField
+            label={LABELS.url}
+            isOptional
+            type="url"
+            placeholder="github.com/you/project"
+            value={draft?.url ?? ""}
+            error={errors.url}
+            onChange={(url) => updateDraft({ url })}
+            onBlur={() => touch("url")}
+          />
           <RichTextField
+            label="Description"
+            isOptional
             value={draft?.description ?? ""}
             onChange={(html) => updateDraft({ description: html })}
             ariaLabel="Project description"

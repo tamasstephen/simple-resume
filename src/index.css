@@ -1,51 +1,31 @@
-/* Design tokens — andmade.jp paper-and-ink editorial language. */
+/* Colours, fonts and radii come from styles/tokens.css, shared with the landing page. */
 :root {
   color-scheme: light;
-  --paper: #f6f6f4;
-  --ink: #242424; /* soft black — user correction 2026-09-11 (was #000) */
-  /* Muted ink for labels and meta. 60%, not 50%: at 12px on paper, 50%
-     measured 3.92:1 against the 4.5:1 AA floor. 60% lands at ~5:1. */
-  --ink-muted: rgb(0 0 0 / 60%);
-  --hairline: rgb(0 0 0 / 15%);
-  --white: #fff;
-  --danger: #b00020; /* delete only — user-sanctioned monochrome exception */
-  --font-sans: "Inter", system-ui, sans-serif; /* self-hosted @fontsource 400/500/600 */
-  --font-serif: "IBM Plex Serif", Georgia, serif; /* self-hosted @fontsource 300 */
-  --fs-micro: 12px;
-  --fs-body: 12px;
-  --fs-lead: 14px;
-  --fs-title: 22px;
-  --lh-tight: 1.05;
-  --lh-body: 1.5;
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 16px;
-  --space-4: 24px;
-  --space-5: 32px;
-  --space-6: 48px;
   --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --app-header-height: 64px;
+  /* 8px padding + 36px item + 8px padding + 1px border. */
+  --rail-strip-height: 53px;
 }
 
 /* Reset & base. Element resets are scoped to the app chrome only: the Paged.js
    preview document shares this DOM and must keep its own print styling. */
 * {
   box-sizing: border-box;
-  border-radius: 0;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--paper);
-  color: var(--ink);
-  font: 400 var(--fs-body) / var(--lh-body) var(--font-sans);
+  background: var(--color-background);
+  color: var(--color-text);
+  font: 400 14px / 1.5 var(--font-sans);
 }
 
 :is(.app-header, .editor-pane) :is(h2, p, ul, button) {
   margin: 0;
 }
 
-/* App shell & header: paper band with a hairline divider. Items are
+/* App shell & header: white band with a divider. Items are
    vertically centered; edge padding mirrors the editor pane's inline
    padding (vertical 24px, user-tuned down from 40px). */
 /* Desktop frame (screen, >960px): flex column — header auto + shell fills
@@ -70,18 +50,43 @@ body {
 .app-header {
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px var(--space-6);
-  background: var(--paper);
-  border-bottom: 1px solid var(--hairline);
+  height: var(--app-header-height);
+  padding-inline: 24px;
+  background: var(--color-background);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
 }
 
 .app-header__wordmark {
-  color: var(--ink);
-  font: 300 var(--fs-title) / var(--lh-tight) var(--font-serif);
+  color: var(--color-text);
+  font: 700 16px / 20px var(--font-sans);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.app-header__divider {
+  flex-shrink: 0;
+  width: 1px;
+  height: 16px;
+  background: var(--color-border-strong);
+}
+
+.app-header__identity {
+  overflow: hidden;
+  color: var(--color-text-secondary);
+  font: 400 14px / 18px var(--font-sans);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Stacked layout only: side by side, the preview is already on screen. */
@@ -89,30 +94,163 @@ body {
   display: none;
 }
 
-.app-header__meta {
-  color: var(--ink-muted);
-  font: 400 var(--fs-micro) / 1 var(--font-sans);
+.app-header__status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-secondary);
+  font: 400 12px / 16px var(--font-mono);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
-/* Right side: meta label + export action grouped together. */
+.app-header__dot {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-success);
+}
+
+/* Right side: save status + export action grouped together. */
 .app-header__actions {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: 20px;
 }
 
+.app-header__actions > :is(.btn--primary, .btn--secondary) {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+/* Rail | editor | preview. The editor column is capped at the width forms
+   read well at; the preview takes the rest. */
 .app-shell {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 232px minmax(0, 600px) 1fr;
   flex: 1;
   min-height: 0;
 }
 
-/* Editor pane & sections: hairline dividers. */
+/* Section rail: numbered jump list down the left edge. The shell does not
+   scroll on desktop, so the rail stays put while the editor scrolls. */
+.section-rail {
+  overflow-y: auto;
+  padding: 24px 12px;
+  border-right: 1px solid var(--color-border);
+  background: var(--color-background);
+}
+
+.section-rail__label {
+  margin: 0;
+  padding: 0 12px 12px;
+  color: var(--color-text-secondary);
+  font: 400 12px / 16px var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
+.section-rail__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.section-rail__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  padding-inline: 12px;
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  font: 400 14px / 18px var(--font-sans);
+  text-decoration: none;
+}
+
+.section-rail__item[aria-current="location"] {
+  background: var(--color-surface);
+  font-weight: 600;
+}
+
+.section-rail__item[aria-current="location"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--color-primary);
+}
+
+.section-rail__number {
+  flex-shrink: 0;
+  width: 22px;
+  color: var(--color-text-secondary);
+  font: 400 12px / 16px var(--font-mono);
+}
+
+.section-rail__item[aria-current="location"] .section-rail__number {
+  color: var(--color-text);
+}
+
+.section-rail__name {
+  flex-grow: 1;
+}
+
+/* Per-section status slot: holds the attention badge when saved fields
+   break a rule. */
+.section-rail__status {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: flex-end;
+  min-width: 20px;
+}
+
+.section-rail__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding-inline: 6px;
+  border-radius: 10px;
+  background: var(--color-danger-surface);
+  color: var(--color-danger-text);
+  font: 600 11px / 12px var(--font-mono);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Editor pane & sections: dividers. */
 .editor-pane {
   overflow-y: auto;
-  padding: 40px var(--space-6);
-  background: var(--paper);
+  padding: 40px 48px;
+  background: var(--color-background);
+}
+
+/* Desktop: the pane scrolls on its own, and its end would stop the last
+   sections well below the top, out of reach of a rail jump and of the
+   scroll-spy's reading line. The extra room lets the last heading (about
+   215px of section below it) scroll up to the top. */
+@media screen and (min-width: 961px) {
+  .editor-pane {
+    padding-bottom: max(40px, calc(100vh - var(--app-header-height) - 215px));
+  }
 }
 
 .section {
@@ -121,122 +259,154 @@ body {
 }
 
 .section + .section {
-  margin-top: var(--space-4);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--hairline);
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid var(--color-border);
 }
 
 .section__head {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-2);
-  margin-bottom: var(--space-3);
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 40px;
 }
 
+.section__eyebrow {
+  color: var(--color-text-secondary);
+  font: 400 12px / 16px var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
+/* Jumping to a section (rail click) must land below the sticky chrome. On
+   desktop the editor pane is its own scroll container and starts below the
+   header, so only breathing room is needed. */
 .section__title {
-  color: var(--ink);
-  font: 300 var(--fs-title) / var(--lh-tight) var(--font-serif);
+  scroll-margin-top: 24px;
+  color: var(--color-text);
+  font: 700 32px / 36px var(--font-sans);
+  letter-spacing: -0.035em;
 }
 
-/* Single-form sections (Contact, Summary) render the title as a direct
-   child with no head wrapper — give it the same gap .section__head's
-   margin provides in repeatable sections. */
-.section > .section__title {
-  margin-bottom: var(--space-3);
+.section__description {
+  color: var(--color-text-secondary);
+  font: 400 15px / 1.5 var(--font-sans);
 }
 
-/* Item table: hugs its content (never the full column width), hairline
-   grid; long names truncate with an ellipsis. */
-.item-table {
-  border-collapse: collapse;
-  width: fit-content;
-  max-width: 100%;
+/* Entry list: full-width rows, one per saved item. The text column takes the
+   slack and truncates; meta and kebab keep fixed slots so rows align. */
+.entry-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
 }
 
-.item-table td {
-  padding: var(--space-2);
-  border: 1px solid var(--hairline);
-  vertical-align: middle;
+.entry {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 12px 14px 16px;
 }
 
-/* No vertical rule between the name and the kebab (user correction); with
-   border-collapse both sides of the shared edge must declare none. Row
-   separators and the outer frame stay. Scoped under .item-table to
-   outspecify the td rule below. */
-.item-table .item__summary {
-  border-right: 0;
-  color: var(--ink);
-  font: 400 var(--fs-body) / var(--lh-body) var(--font-sans);
+.entry + .entry {
+  border-top: 1px solid var(--color-border);
 }
 
-/* Ellipsis lives on the wrapper div, not the td — table cells ignore
-   max-width for overflow purposes. */
-.item__truncate {
-  max-width: 420px;
+.entry__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.entry__summary,
+.entry__subtitle {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  transition: opacity 150ms var(--ease-out);
 }
 
-/* Row hover fades the name; the kebab keeps its own hover language
-   instead of compounding opacity inside a faded row. */
-.item-table tr:hover .item__truncate {
-  opacity: 0.5;
+.entry__summary {
+  color: var(--color-text);
+  font: 600 14px / 18px var(--font-sans);
 }
 
-/* Meta cell (dates, issuer, URL): right-aligned muted micro type, and it
-   joins the no-vertical-rules language the name/kebab edge established. */
-.item-table .item__meta {
-  border-inline: 0;
-  color: var(--ink-muted);
-  font: 400 var(--fs-micro) / var(--lh-body) var(--font-sans);
+.entry__subtitle {
+  color: var(--color-text-secondary);
+  font: 400 13px / 1.4 var(--font-sans);
+}
+
+/* A saved entry with fields that break a rule: tinted row, and the
+   subtitle gives way to what to check. */
+.entry--invalid {
+  background: var(--color-danger-surface);
+}
+
+/* Rounded to the list's inner edge; the list cannot clip (kebab menus
+   overflow it). */
+.entry--invalid:first-child {
+  border-top-left-radius: calc(var(--radius-md) - 1px);
+  border-top-right-radius: calc(var(--radius-md) - 1px);
+}
+
+.entry--invalid:last-child {
+  border-bottom-left-radius: calc(var(--radius-md) - 1px);
+  border-bottom-right-radius: calc(var(--radius-md) - 1px);
+}
+
+.entry__error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-danger-text);
+  font: 500 13px / 1.4 var(--font-sans);
+}
+
+.entry__error svg {
+  flex-shrink: 0;
+}
+
+.entry__meta {
+  flex-shrink: 0;
+  width: 128px;
+  color: var(--color-text-secondary);
+  font: 400 12px / 16px var(--font-mono);
   text-align: right;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
-/* Kebab cell: joins the shared edge removal (see .item__summary). */
-.item-table .item__actions {
-  border-left: 0;
-}
-
-/* Row kebab: borderless ink trigger; menu is white stock with a 1px ink
-   border, zero radius — no shadows outside the preview page sheets. */
+/* Row kebab: 32px slot; the menu is a shadowed card. */
 .kebab {
   position: relative;
   flex-shrink: 0;
 }
 
 .kebab__trigger {
-  position: relative;
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: 0;
+  border-radius: var(--radius-control);
   background: transparent;
-  color: var(--ink);
+  color: var(--color-text-secondary);
   cursor: pointer;
-  transition: opacity 150ms var(--ease-out);
+  transition: background-color 150ms var(--ease-out);
 }
 
-/* 24px of ink, 40px of target: the kebab is the only route to Edit/Delete
-   and it is thumb-sized on touch without changing the row's rhythm. */
-.kebab__trigger::before {
-  content: "";
-  position: absolute;
-  inset: -8px;
-}
-
-.kebab__trigger:hover {
-  opacity: 0.5;
+.kebab__trigger:hover,
+.kebab__trigger[aria-expanded="true"] {
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
 .kebab__trigger:focus-visible,
 .kebab__item:focus-visible {
-  outline: 1px solid var(--ink);
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 
@@ -247,39 +417,45 @@ body {
   z-index: 2;
   display: flex;
   flex-direction: column;
-  min-width: 128px;
-  padding: var(--space-1) 0;
-  background: var(--white);
-  border: 1px solid var(--ink);
+  width: 176px;
+  padding: 4px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
 }
 
 .kebab__item {
-  padding: 6px var(--space-2);
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding-inline: 10px;
   border: 0;
+  border-radius: 4px;
   background: transparent;
-  color: var(--ink);
-  font: 400 var(--fs-body) / var(--lh-body) var(--font-sans);
+  color: var(--color-text);
+  font: 400 14px / 18px var(--font-sans);
   text-align: left;
   cursor: pointer;
-  transition: opacity 150ms var(--ease-out);
 }
 
-.kebab__item:hover {
-  opacity: 0.5;
+.kebab__item:hover,
+.kebab__item:focus-visible {
+  background: var(--color-surface);
 }
 
-/* Delete is the single sanctioned color exception (user correction). */
 .kebab__item--danger {
-  color: var(--danger);
+  color: var(--color-danger-text);
+  font-weight: 500;
 }
 
 /* Tag list: single-value items (skills, languages) print as an inline list,
-   so the editor models them the same way — a row each turned eleven skills
-   into half a screen. Each tag carries its own edit and remove controls. */
+   so the editor models them the same way. Each tag carries its own edit and
+   remove controls. */
 .tag-list {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -288,197 +464,743 @@ body {
 .tag {
   display: flex;
   align-items: center;
-  border: 1px solid var(--hairline);
-  background: var(--white);
+  height: 32px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-background);
 }
 
 .tag__edit,
 .tag__remove {
   border: 0;
   background: transparent;
-  color: var(--ink);
   cursor: pointer;
-  transition: opacity 150ms var(--ease-out);
 }
 
 .tag__edit {
-  padding: 6px var(--space-2);
-  font: 400 var(--fs-body) / var(--lh-body) var(--font-sans);
+  padding: 0 6px 0 12px;
+  color: var(--color-text);
+  font: 400 14px / 18px var(--font-sans);
 }
 
 .tag__remove {
   display: grid;
+  position: relative;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
   padding: 0;
+  color: var(--color-text-secondary);
+}
+
+/* Hit extender: a 24x24 target (WCAG 2.5.8) around the 20px glyph. */
+.tag__remove::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
 }
 
 .tag__edit:hover,
 .tag__remove:hover {
-  opacity: 0.5;
+  color: var(--color-text);
 }
 
 .tag__edit:focus-visible,
 .tag__remove:focus-visible {
-  outline: 1px solid var(--ink);
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 
-.item-table__empty {
-  color: var(--ink-muted);
-  font: 400 var(--fs-micro) / var(--lh-body) var(--font-sans);
+.empty-state[hidden],
+.btn--add[hidden] {
+  display: none;
 }
 
-/* Forms: micro labels, boxed inputs, 16px field rhythm. */
-.section label {
-  display: block;
-  color: var(--ink-muted);
-  font: 400 var(--fs-micro) / var(--lh-tight) var(--font-sans);
+.btn--add {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.section input:not([type="checkbox"]) {
-  display: block;
-  width: 100%;
-  margin-top: 6px;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--hairline);
-  background: var(--white);
-  color: var(--ink);
-  font: 400 var(--fs-body) / var(--lh-body) var(--font-sans);
-  text-transform: none;
-  letter-spacing: normal;
+/* Empty state: text left, Add right; wraps under 480px. */
+.empty-state {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
 }
 
-/* Field widths carry meaning: a date is not as wide as a job title. */
-.field--short input:not([type="checkbox"]) {
-  max-width: 140px;
+.empty-state__title {
+  margin: 0;
+  color: var(--color-text);
+  font: 600 14px / 18px var(--font-sans);
 }
 
-.field--medium input:not([type="checkbox"]) {
-  max-width: 300px;
+/* Fields (refined design system): 14px/600 label row with a required star or
+   "Optional" on the right, 8px above a 48px control with a #8A8A8A border and
+   16px text, then a 13px helper or error line. 16px between fields. */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
 }
 
-/* Checkbox labels render as an inline row instead of stacked. */
-.section input[type="checkbox"] {
-  margin-left: var(--space-2);
-  accent-color: var(--ink);
+.field__label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
 }
 
-/* 16px between fields in the single-form sections (Contact, Summary). */
-.section > label + label,
+.section .field__label {
+  color: var(--color-text);
+  font: 600 14px / 20px var(--font-sans);
+}
+
+/* The star is decoration for sighted users; inputs carry aria-required. */
+.field__label--required::after {
+  content: " *" / "";
+}
+
+.field__hint,
+.section .field__helper {
+  color: var(--color-text-secondary);
+  font: 400 13px / 20px var(--font-sans);
+}
+
+.field__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: var(--container-input);
+  border: 1px solid var(--color-control-border);
+  border-radius: var(--radius-control);
+  background: var(--color-background);
+  transition:
+    border-color 120ms var(--ease-out),
+    box-shadow 120ms var(--ease-out);
+}
+
+.field--short .field__control {
+  max-width: 200px;
+}
+
+.field--medium .field__control {
+  max-width: 320px;
+}
+
+.field__input {
+  flex: 1;
+  align-self: stretch;
+  min-width: 0;
+  padding: 0 16px;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: var(--color-text);
+  font: 400 16px / 24px var(--font-sans);
+}
+
+.field__input:focus {
+  outline: none;
+}
+
+.field__input::placeholder {
+  color: var(--color-text-placeholder);
+  opacity: 1;
+}
+
+/* Focus: 2px white gap + 2px cobalt ring, drawn on the box so a trailing
+   picker button sits inside it. */
+.field__control:focus-within {
+  border-color: var(--color-focus);
+  box-shadow:
+    0 0 0 2px var(--color-background),
+    0 0 0 4px var(--color-focus);
+}
+
+.field__control:has(.field__input[aria-invalid="true"]) {
+  border-color: var(--color-danger);
+}
+
+.field__control:has(.field__input:disabled) {
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
+.field__input:disabled {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.field__input:disabled::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.section .field__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: var(--color-danger-text);
+  font: 400 13px / 20px var(--font-sans);
+}
+
+.field__error svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+/* Icon button inside the control (the month picker trigger). */
+.field__trailing-button {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 44px;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0 var(--radius-control) var(--radius-control) 0;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.field__trailing-button:disabled {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+/* Two fields side by side (job title + company, start + end date). */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.form-row .field--short .field__control,
+.form-row .field--medium .field__control {
+  max-width: none;
+}
+
+/* Checkbox: 20px box, black when checked, inside a 44px tall target. */
+.section .checkbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  color: var(--color-text);
+  font: 400 14px / 20px var(--font-sans);
+  cursor: pointer;
+}
+
+.checkbox__input {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 1px solid var(--color-control-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-background) center / 14px no-repeat;
+  appearance: none;
+  cursor: pointer;
+}
+
+.checkbox__input:checked {
+  border-color: var(--color-action);
+  background-color: var(--color-action);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='m4 10 4 4 8-8' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Month picker: year stepper over a 4×3 grid of months, below the field. */
+.month-field {
+  position: relative;
+}
+
+.month-picker {
+  position: absolute;
+  z-index: 3;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 288px;
+  max-width: 100%;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 12%);
+}
+
+.month-picker__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.month-picker__year {
+  font: 600 14px / 20px var(--font-sans);
+}
+
+.month-picker__nav,
+.month-picker__month {
+  display: grid;
+  place-items: center;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-text);
+  font: 400 14px / 20px var(--font-sans);
+  cursor: pointer;
+  transition: background-color 120ms var(--ease-out);
+}
+
+.month-picker__nav {
+  width: 44px;
+}
+
+.month-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.month-picker__nav:hover,
+.month-picker__month:hover {
+  background: var(--color-surface);
+}
+
+.month-picker__month[aria-pressed="true"] {
+  background: var(--color-action);
+  color: var(--color-white);
+  font-weight: 600;
+}
+
+/* Inline forms (Contact, Summary): the same 16px rhythm as the dialogs. */
+.section > .field + .field,
 .section > .btn {
-  margin-top: var(--space-3);
+  margin-top: 16px;
 }
 
-/* Add/edit popup: native <dialog> card over an ink scrim. The top layer
-   escapes the pane's overflow AND the print stylesheet (the dialog lives
-   in .editor-pane DOM-wise, so it is display:none in print — no stray
-   dialogs in exported PDFs). */
+/* Error summary: what blocks Save and how to fix it, above the fields. */
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-control);
+}
+
+.alert svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.alert--danger {
+  border: 1px solid color-mix(in srgb, var(--color-danger) 35%, transparent);
+  background: var(--color-danger-surface);
+  color: var(--color-danger-text);
+}
+
+.section .alert__title {
+  font: 600 14px / 20px var(--font-sans);
+}
+
+.section .alert__text {
+  color: var(--color-text);
+  font: 400 14px / 20px var(--font-sans);
+}
+
+/* Popup form: native <dialog>, 640px card over the scrim. The top layer
+   escapes the pane's overflow AND the print stylesheet (the dialog lives in
+   .editor-pane DOM-wise, so it is display:none in print). Header and footer
+   stay put; only the body scrolls. */
 .modal {
-  width: min(480px, calc(100vw - 2 * var(--space-6)));
-  max-height: calc(100dvh - 2 * var(--space-6));
-  padding: var(--space-5);
-  overflow-y: auto;
-  border: 1px solid var(--ink);
-  background: var(--white);
-  color: var(--ink);
+  width: min(640px, calc(100vw - 2 * 32px));
+  max-height: calc(100dvh - 2 * 32px);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-dialog);
+  background: var(--color-background);
+  color: var(--color-text);
+  box-shadow: 0 24px 64px rgb(0 0 0 / 18%);
+}
+
+.modal[open] {
+  display: flex;
+  flex-direction: column;
 }
 
 .modal::backdrop {
-  background: rgb(0 0 0 / 32%);
+  background: var(--color-scrim);
 }
 
-/* Scoped under .modal to outspecify the editor-pane heading reset —
-   the bare class lost margin-bottom to it (gap rendered as 0). */
-.modal .modal__title {
-  margin: 0 0 var(--space-2);
-  font: 300 var(--fs-title) / var(--lh-tight) var(--font-serif);
-}
-
-/* 16px field rhythm inside the dialog (it sits in .section DOM-wise, so
-   the shared label/input styles above still apply). */
-.modal__form > * + * {
-  margin-top: var(--space-3);
-}
-
-/* Action row: 24px from the last field (user-specified: 8px margin + 16px
-   of its own padding), 8px between Save and Cancel. Sticky to the dialog's
-   bottom padding edge — the card scrolls on short viewports and Save must
-   never scroll out of reach. */
-.modal__actions {
-  position: sticky;
-  bottom: calc(var(--space-5) * -1);
+.modal__header {
   display: flex;
-  gap: var(--space-2);
-  margin-top: var(--space-2);
-  padding-block: var(--space-3);
-  background: var(--white);
-  border-top: 1px solid var(--hairline);
+  flex-shrink: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px;
+  border-bottom: 1px solid var(--color-border);
 }
 
-/* Rich text: toggle toolbar above a boxed editable surface. */
+.modal__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.modal .modal__title {
+  margin: 0;
+  font: 600 24px / 30px var(--font-sans);
+  letter-spacing: -0.02em;
+}
+
+.section .modal__description {
+  color: var(--color-text-secondary);
+  font: 400 13px / 20px var(--font-sans);
+}
+
+.modal__description--compact {
+  display: none;
+}
+
+.modal__eyebrow {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font: 400 12px / 16px var(--font-mono);
+  letter-spacing: 0.08em;
+}
+
+.modal__close {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: -10px -10px 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-color 120ms var(--ease-out);
+}
+
+.modal__close:hover {
+  background: var(--color-surface);
+}
+
+.modal__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  margin: 0;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.modal__footer {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-background);
+}
+
+.section .modal__required-note {
+  color: var(--color-text-secondary);
+  font: 400 13px / 20px var(--font-sans);
+}
+
+.modal__actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* Confirmation: the same card, narrower, with a heading, one paragraph and
+   the actions. It lives in the header DOM-wise (white-space: nowrap). */
+.modal--confirm {
+  width: min(440px, calc(100vw - 2 * 16px));
+  white-space: normal;
+}
+
+.modal--confirm .modal__header {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.modal--confirm .modal__title {
+  font-size: 20px;
+  line-height: 26px;
+}
+
+.modal .modal__confirm-text {
+  padding-block: 16px 24px;
+  color: var(--color-text-secondary);
+  font: 400 14px / 20px var(--font-sans);
+}
+
+/* Below 768px the form becomes a bottom sheet: full width, 30px of page
+   left visible above it, stacked columns, 20px gutters, 48px actions and
+   safe-area room under them. */
+@media (max-width: 767px) {
+  .modal--form {
+    width: 100%;
+    max-width: none;
+    max-height: calc(100dvh - 30px);
+    margin: auto 0 0;
+    border-radius: var(--radius-dialog) var(--radius-dialog) 0 0;
+    box-shadow: 0 -8px 32px rgb(0 0 0 / 10%);
+  }
+
+  .modal--form .modal__header {
+    gap: 12px;
+    padding: 20px;
+  }
+
+  .modal--form .modal__title {
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  .modal--form .modal__description {
+    display: none;
+  }
+
+  .modal--form .modal__description--compact {
+    display: block;
+  }
+
+  .modal--form .modal__body {
+    padding: 20px;
+  }
+
+  .modal--form .modal__footer {
+    padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+  }
+
+  .modal--form .modal__required-note {
+    display: none;
+  }
+
+  .modal--form .modal__actions {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .modal--form .modal__actions .btn {
+    flex: 1;
+    height: 48px;
+  }
+
+  .modal--form .modal__actions .btn--primary {
+    flex: 2;
+  }
+
+  .form-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .form-row--dates {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rich-text .tiptap {
+    font-size: 16px;
+    line-height: 24px;
+  }
+}
+
+@media (max-width: 374px) {
+  .form-row--dates {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Rich text: one bordered box, a 44px toolbar of glyph buttons on top. */
+.rich-text {
+  border: 1px solid var(--color-control-border);
+  border-radius: var(--radius-control);
+  background: var(--color-background);
+  transition:
+    border-color 120ms var(--ease-out),
+    box-shadow 120ms var(--ease-out);
+}
+
+.rich-text:focus-within {
+  border-color: var(--color-focus);
+  box-shadow:
+    0 0 0 2px var(--color-background),
+    0 0 0 4px var(--color-focus);
+}
+
 .rich-text__toolbar {
   display: flex;
-  gap: var(--space-2);
-  margin-bottom: var(--space-2);
+  align-items: center;
+  gap: 4px;
+  height: 44px;
+  padding-inline: 8px;
+  border-bottom: 1px solid var(--color-border);
+  border-radius: var(--radius-control) var(--radius-control) 0 0;
+  background: var(--color-surface);
+}
+
+.rich-text__separator {
+  width: 1px;
+  height: 16px;
+  margin-inline: 4px;
+  background: var(--color-border-strong);
+}
+
+.rich-text__button {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text);
+  font: 700 16px / 24px var(--font-sans);
+  cursor: pointer;
+  transition: background-color 120ms var(--ease-out);
+}
+
+.rich-text__button em {
+  font-weight: 400;
+}
+
+.rich-text__button:hover {
+  background: var(--color-border);
+}
+
+.rich-text__button[aria-pressed="true"] {
+  border-color: var(--color-border);
+  background: var(--color-background);
 }
 
 .rich-text .tiptap {
-  min-height: calc(var(--fs-body) * var(--lh-body) * 4);
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--hairline);
-  background: var(--white);
-  color: var(--ink);
-  font: 400 var(--fs-body) / var(--lh-body) var(--font-sans);
+  min-height: 92px;
+  padding: 12px 16px;
+  background: transparent;
+  color: var(--color-text);
+  font: 400 14px / 20px var(--font-sans);
+}
+
+.rich-text .tiptap:focus {
+  outline: none;
 }
 
 .rich-text .tiptap ul,
 .rich-text .tiptap ol {
-  padding-left: var(--space-4);
+  padding-left: 20px;
 }
 
+.rich-text .tiptap li + li,
 .rich-text .tiptap p + p {
-  margin-top: var(--space-2);
+  margin-top: 8px;
 }
 
-/* Buttons: one black solid (Save), ink outline (Add), underline-sweep text
-   (Cancel/Edit/Delete), inverted toggles (toolbar). */
+/* Buttons (refined): 44px targets; black primary that darkens to #262626
+   on hover and #404040 when pressed; white secondary with a hairline border.
+   Hover and pressed change fill only, over 120ms. The header keeps a 36px
+   compact size. */
 .btn {
   appearance: none;
   border: 0;
   background: none;
   padding: 0;
-  color: var(--ink);
-  font: 500 var(--fs-body) / 1.2 var(--font-sans);
+  color: var(--color-text);
+  font: 600 14px / 20px var(--font-sans);
   cursor: pointer;
-  transition: opacity 150ms var(--ease-out);
+  transition:
+    background-color 120ms var(--ease-out),
+    opacity 120ms var(--ease-out);
+}
+
+.btn--primary,
+.btn--secondary,
+.btn--danger {
+  height: var(--container-control);
+  padding-inline: 20px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+}
+
+.app-header__actions > :is(.btn--primary, .btn--secondary) {
+  height: 36px;
+  padding-inline: 16px;
 }
 
 .btn--primary {
-  padding: var(--space-2) var(--space-3);
-  background: var(--ink);
-  color: var(--white);
+  border-color: var(--color-action);
+  background: var(--color-action);
+  color: var(--color-white);
 }
 
 .btn--primary:hover:not(:disabled) {
-  opacity: 0.5;
+  background: var(--color-action-hover);
+}
+
+.btn--primary:active:not(:disabled) {
+  background: var(--color-action-pressed);
 }
 
 .btn--primary:disabled {
-  opacity: 0.5;
+  border-color: var(--color-surface);
+  background: var(--color-surface);
+  color: var(--color-text-disabled);
   cursor: default;
 }
 
 .btn--secondary {
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--ink);
-  background: transparent;
-  color: var(--ink);
+  border-color: var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text);
 }
 
 .btn--secondary:hover {
-  opacity: 0.5;
+  background: var(--color-surface);
+}
+
+/* Destructive confirm: only inside a confirmation dialog, never as a
+   first-click action. */
+.btn--danger {
+  border-color: var(--color-danger-text);
+  background: var(--color-danger-text);
+  color: var(--color-white);
+}
+
+.btn--danger:hover {
+  opacity: 0.9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .field__control,
+  .rich-text {
+    transition: none;
+  }
 }
 
 .btn--text {
@@ -531,29 +1253,31 @@ body {
 }
 
 .btn--toggle {
-  padding: var(--space-1) var(--space-2);
-  border: 1px solid var(--hairline);
+  min-width: 32px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
   background: transparent;
-  color: var(--ink);
-  font: 400 var(--fs-micro) / 1 var(--font-sans);
+  color: var(--color-text);
+  font: 500 12px / 1 var(--font-sans);
 }
 
 .btn--toggle:hover {
-  border-color: var(--ink);
+  background: var(--color-border);
 }
 
 .btn--toggle[aria-pressed="true"] {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--color-text);
+  color: var(--color-background);
 }
 
-/* Preview chrome: hairline pane divider, white page sheets with a hairline
-   edge. The resume document inside the pages keeps its own print styling. */
+/* Preview chrome: divider, surface pane, white page sheets with a soft
+   shadow. The resume document inside the pages keeps its own print styling. */
 .preview-pane {
   overflow: hidden;
-  border-left: 1px solid var(--hairline);
-  background: var(--paper);
+  border-left: 1px solid var(--color-border);
+  background: var(--color-surface);
 }
 
 /* Block padding only: inline padding would shrink the fit-to-width scale.
@@ -562,7 +1286,37 @@ body {
 .preview-scroll {
   overflow: auto;
   height: 100%;
-  padding: var(--space-4) 0;
+  padding: 16px 0 24px;
+}
+
+/* Bar above the sheets: 24px from the pane top, 32px tall. Screen-only. */
+.preview-bar {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  padding: 24px 40px 0;
+  color: var(--color-text-secondary);
+  font: 400 12px / 16px var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
+@media screen {
+  .preview-pane {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .preview-scroll {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+  }
+}
+
+@media print {
+  .preview-bar {
+    display: none;
+  }
 }
 
 /* Sizer: carries the SCALED dimensions so the scroll pane's scrollable
@@ -584,8 +1338,10 @@ body {
 }
 
 .pagedjs_page {
-  background: var(--white);
-  box-shadow: 0 0 0 1px var(--hairline);
+  background: var(--color-background);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 6%),
+    0 12px 32px rgb(0 0 0 / 6%);
 }
 
 /* On screen the sheets are separate pieces of paper; without a gutter a
@@ -593,22 +1349,93 @@ body {
    page boxes ARE the sheets and any margin would push content off them. */
 @media screen {
   .pagedjs_page + .pagedjs_page {
-    margin-top: var(--space-4);
+    margin-top: 24px;
   }
 }
 
 /* Focus states. */
 :focus-visible {
-  outline: 1px solid var(--ink);
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 
-/* Below 960px: panes stack to one column, the divider moves to the preview's
-   top edge, and the page (body) scrolls instead of the editor pane. */
-@media (max-width: 960px) {
+/* 961-1279px: a full rail would squeeze the preview below a readable
+   width, so it collapses to numbers. The names stay in the accessible name. */
+@media (min-width: 961px) and (max-width: 1279px) {
   .app-shell {
-    grid-template-columns: 1fr;
+    grid-template-columns: 64px minmax(0, 600px) minmax(340px, 1fr);
+  }
+
+  .section-rail__label,
+  .section-rail__status {
+    display: none;
+  }
+
+  .section-rail__item {
+    justify-content: center;
+    padding-inline: 0;
+  }
+
+  .section-rail__number {
+    width: auto;
+  }
+
+  .section-rail__name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* Below 960px: panes stack to one column (header, rail strip, editor,
+   preview), the divider moves to the preview's top edge, and the page (body)
+   scrolls instead of the editor pane. */
+@media (max-width: 960px) {
+  /* minmax(0, ...) so a long truncated entry title cannot widen the track. */
+  .app-shell {
+    grid-template-columns: minmax(0, 1fr);
     height: auto;
+  }
+
+  /* Rail becomes a horizontally scrolling strip pinned under the header. */
+  .section-rail {
+    position: sticky;
+    top: var(--app-header-height);
+    z-index: 1;
+    overflow: auto hidden;
+    padding: 8px 16px;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .section-rail__label,
+  .section-rail__status {
+    display: none;
+  }
+
+  .section-rail__list {
+    flex-direction: row;
+    gap: 4px;
+  }
+
+  .section-rail__item {
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .section-rail__item[aria-current="location"]::before {
+    top: auto;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    height: 2px;
+  }
+
+  .section__title {
+    scroll-margin-top: calc(var(--app-header-height) + var(--rail-strip-height) + 16px);
   }
 
   .editor-pane {
@@ -616,8 +1443,9 @@ body {
   }
 
   .preview-pane {
+    scroll-margin-top: calc(var(--app-header-height) + var(--rail-strip-height));
     border-left: none;
-    border-top: 1px solid var(--hairline);
+    border-top: 1px solid var(--color-border);
   }
 
   /* The preview is a long scroll below the editor here — the sticky header
@@ -628,42 +1456,68 @@ body {
 }
 
 /* Phone: the desktop 48px gutters eat a quarter of the screen, and the
-   header's three items each wrap to two lines at 420px. */
+   header's items would wrap. */
 @media (max-width: 600px) {
   .app-header {
-    padding: var(--space-3);
-    gap: var(--space-3);
+    padding-inline: 16px;
+    gap: 16px;
   }
 
-  .app-header__wordmark {
-    font-size: var(--fs-lead);
-    white-space: nowrap;
+  .app-header__divider,
+  .app-header__identity,
+  .app-header__status {
+    display: none;
   }
 
   .app-header__actions {
-    gap: var(--space-2);
+    gap: 8px;
   }
 
-  .app-header__meta,
-  .app-header .btn--primary {
+  /* Four header items do not fit a phone; Clear keeps its name for
+     assistive tech and shows only its icon. */
+  .app-header__actions > .clear-button {
+    width: 36px;
+    padding-inline: 0;
+    justify-content: center;
+  }
+
+  .clear-button__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
     white-space: nowrap;
   }
 
   .editor-pane {
-    padding: var(--space-4) var(--space-3);
+    padding: 24px 16px;
   }
 
-  /* fit-content leaves a 102px box adrift in a 324px column. */
-  .item-table {
-    width: 100%;
+  .section__title {
+    font-size: 26px;
+    line-height: 30px;
   }
 
-  .item__truncate {
+  .section__head {
+    margin-bottom: 24px;
+  }
+
+  .preview-bar {
+    padding-inline: 16px;
+  }
+
+  .field--short .field__control,
+  .field--medium .field__control {
     max-width: none;
   }
+}
 
-  .field--short input:not([type="checkbox"]),
-  .field--medium input:not([type="checkbox"]) {
-    max-width: none;
+/* Narrow phones: wordmark, Preview, Clear and Export PDF overlap below
+   ~420px. The wordmark is static text, and the actions are what the page
+   is for, so it gives way. */
+@media (max-width: 420px) {
+  .app-header__wordmark {
+    display: none;
   }
 }

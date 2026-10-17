@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { SectionHeading } from "../SectionHeading";
+import { sectionAnchor } from "../sectionMeta";
 import { useResumeState, useResumeDispatch } from "../../resume/useResume";
 import { RichTextField } from "../RichTextField";
 import { sanitizeSummaryText } from "../sanitizeFields";
@@ -10,8 +12,8 @@ export function SummaryForm() {
   const [draft, setDraft] = useState<string>(committed.text);
 
   return (
-    <section aria-label="Summary" className="section">
-      <h2 className="section__title">Summary</h2>
+    <section aria-label="Summary" className="section" id={sectionAnchor("summary")}>
+      <SectionHeading sectionId="summary" />
       <RichTextField value={draft} onChange={setDraft} ariaLabel="Summary text" />
       <button
         type="button"
