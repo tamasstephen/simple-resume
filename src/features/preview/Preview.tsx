@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Previewer } from "pagedjs";
+import { Previewer, type Polisher } from "pagedjs";
 import { useResumeState } from "../resume/useResume";
 import { renderResumeHtml } from "../render/renderResumeHtml";
-import { pageStyles } from "../render/pageStyles";
+import { TEMPLATES } from "../render/templates";
 
 // A4 width at 96dpi (210mm) — used to scale the rendered page to fit the pane.
 const PAGE_WIDTH_PX = 794;
@@ -17,6 +17,18 @@ const PREVIEW_GUTTER_PX = 24;
 // keeps at most one chunker alive and lets each cleanup remove its target
 // only after its run has settled.
 let paginationQueue: Promise<void> = Promise.resolve();
+
+// Every run adds its template's styles to <head> and Paged.js never removes
+// them. The live pages need their run's styles until the next run's pages
+// replace them, so the previous run's are dropped only then. Meanwhile both
+// sets are in the document — which is why each template scopes its rules to
+// its own root class (see templates.test.ts).
+let livePolisher: Polisher | null = null;
+
+function retirePolisher(next: Polisher) {
+  livePolisher?.destroy();
+  livePolisher = next;
+}
 
 /** `onPaginated` reports the page count after each finished run — the app
  *  header shows it. It is read through a ref so a caller passing an inline
@@ -54,8 +66,10 @@ export function Preview({ onPaginated }: { onPaginated?: (pageCount: number) => 
       document.body.appendChild(stage);
       const previewer = new Previewer();
       try {
+        const { pageStyles } = TEMPLATES[resume.template];
         await previewer.preview(renderResumeHtml(resume), [{ "resume-page": pageStyles }], stage);
         container.replaceChildren(...stage.children);
+        retirePolisher(previewer.polisher);
         const el = pagesRef.current;
         if (el !== null) {
           setContentSize({ width: el.offsetWidth, height: el.offsetHeight });

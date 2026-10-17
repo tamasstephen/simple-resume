@@ -47,7 +47,9 @@ test("spaces paragraphs tighter than entries, and entries tighter than sections"
 // The links line is a second line of the contact block, not a row of its own:
 // same size, same ink, no gap between them.
 test("gives the links line the contact line's treatment", () => {
-  const shared = /\.resume-contact,\s*\.resume-links\s*\{([^}]*)\}/.exec(pageStyles)?.[1] ?? "";
+  const shared =
+    /\.resume-contact,\s*\.resume-root--ats \.resume-links\s*\{([^}]*)\}/.exec(pageStyles)?.[1] ??
+    "";
   expect(shared).toContain("margin: 0");
 });
 
@@ -55,7 +57,7 @@ test("gives the links line the contact line's treatment", () => {
 // Arial ships only 400 and 700, so an entry title cannot out-rank it by
 // weight — it has to be bigger.
 test("sets entry titles larger than body text so in-body bold cannot rival them", () => {
-  const body = declaredPt(".resume-root", "font-size");
+  const body = declaredPt(".resume-root--ats", "font-size");
   const entryTitle = declaredPt(".resume-entry-title", "font-size");
   expect(body).toBeGreaterThan(0);
   expect(entryTitle).toBeGreaterThan(body ?? 0);

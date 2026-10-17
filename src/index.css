@@ -1300,6 +1300,71 @@ body {
   letter-spacing: 0.06em;
 }
 
+/* With the picker the bar holds two things: the label left, the control
+   right. It sits on the bar's 32px row, so the bar keeps its height. */
+.preview-bar {
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.template-picker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.preview-bar__label {
+  white-space: nowrap;
+}
+
+.template-picker__label {
+  text-transform: uppercase;
+}
+
+/* Below 1280px the preview column is too narrow for the page-count label,
+   a "TEMPLATE" caption and the select on one row. The caption gives way; it
+   stays the select's accessible name. */
+@media (max-width: 1279px) {
+  .template-picker__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+.template-picker__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.template-picker__select {
+  height: 32px;
+  padding: 0 32px 0 12px;
+  border: 1px solid var(--color-control-border);
+  border-radius: var(--radius-control);
+  background: var(--color-background);
+  color: var(--color-text);
+  font: 400 14px / 18px var(--font-sans);
+  letter-spacing: normal;
+  appearance: none;
+  cursor: pointer;
+}
+
+.template-picker__select:hover {
+  border-color: var(--color-text);
+}
+
+.template-picker__chevron {
+  position: absolute;
+  right: 12px;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
 @media screen {
   .preview-pane {
     display: flex;
