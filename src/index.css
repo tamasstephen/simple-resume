@@ -218,6 +218,16 @@ body {
   background: var(--color-background);
 }
 
+/* Desktop: the pane scrolls on its own, and its end would stop the last
+   sections well below the top, out of reach of a rail jump and of the
+   scroll-spy's reading line. The extra room lets the last heading (about
+   215px of section below it) scroll up to the top. */
+@media screen and (min-width: 961px) {
+  .editor-pane {
+    padding-bottom: max(40px, calc(100vh - var(--app-header-height) - 215px));
+  }
+}
+
 .section {
   max-width: 640px;
   margin-inline: auto;

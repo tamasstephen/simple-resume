@@ -1,32 +1,43 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { sectionAnchor, type SectionId } from "./sectionMeta";
+import { pickActiveSection, type SectionPosition } from "./pickActiveSection";
 
-// A section counts as "current" while it crosses the band just under the
-// header, so the rail follows what the writer is reading, not what is merely
-// on screen.
-const OBSERVER_MARGIN = "-72px 0px -60% 0px";
-
-function findNearestTop(
-  entries: ReadonlyMap<SectionId, IntersectionObserverEntry>,
-): SectionId | null {
-  let nearest: SectionId | null = null;
-  let nearestTop = Infinity;
-  for (const [id, entry] of entries) {
-    if (!entry.isIntersecting) continue;
-    if (entry.boundingClientRect.top >= nearestTop) continue;
-    nearest = id;
-    nearestTop = entry.boundingClientRect.top;
-  }
-  return nearest;
-}
+// A section becomes current once its top passes 40% down the viewport, so the
+// rail follows what the writer is reading, not what is merely on screen.
+const READING_LINE_RATIO = 0.4;
+// Sub-pixel scroll offsets mean "at the end" is rarely an exact match.
+const END_SLACK_PX = 2;
 
 const USER_SCROLL_EVENTS: readonly string[] = ["wheel", "touchmove", "keydown"];
 
-/** Scroll-spy: the id of the section nearest the top of the viewport, or null
- *  before any is seen (and wherever IntersectionObserver does not exist).
- *  `selectSection` pins a rail click as active — the jump's own scroll (or a
- *  pane that cannot scroll that far) must not hand it back to the observer —
- *  until the user scrolls or types again. */
+function measurePositions(ids: readonly SectionId[]): SectionPosition[] {
+  const positions: SectionPosition[] = [];
+  for (const id of ids) {
+    const element = document.getElementById(sectionAnchor(id));
+    if (element === null) continue;
+    positions.push({ id, top: element.getBoundingClientRect().top });
+  }
+  return positions;
+}
+
+function isScrolledToEnd(scroller: Element | null): boolean {
+  if (scroller === null || scroller.scrollHeight <= scroller.clientHeight) return false;
+  return scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < END_SLACK_PX;
+}
+
+/** The element whose scroll moves the sections, or null for an unrelated
+ *  scroller (the preview pane, an open dialog). */
+function getSectionScroller(target: EventTarget | null, ids: readonly SectionId[]): Element | null {
+  const first = ids[0] === undefined ? null : document.getElementById(sectionAnchor(ids[0]));
+  if (target instanceof Document) return target.scrollingElement;
+  if (target instanceof Element && first !== null && target.contains(first)) return target;
+  return null;
+}
+
+/** Scroll-spy: the id of the section the writer is reading — on desktop the
+ *  editor pane scrolls, below 961px the page does; both are followed.
+ *  `selectSection` pins a rail click as active, so the jump's own scroll
+ *  cannot hand it back to the spy, until the user scrolls or types again. */
 export function useActiveSection(
   ids: readonly SectionId[],
 ): [SectionId | null, (id: SectionId) => void] {
@@ -49,27 +60,23 @@ export function useActiveSection(
   }, []);
 
   useEffect(() => {
-    if (typeof IntersectionObserver === "undefined") return;
-    const latest = new Map<SectionId, IntersectionObserverEntry>();
-    const idByElement = new Map<Element, SectionId>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          const id = idByElement.get(entry.target);
-          if (id !== undefined) latest.set(id, entry);
-        }
-        const nearest = findNearestTop(latest);
-        if (nearest !== null && !isPinnedRef.current) setActiveId(nearest);
-      },
-      { rootMargin: OBSERVER_MARGIN },
-    );
-    for (const id of ids) {
-      const element = document.getElementById(sectionAnchor(id));
-      if (element === null) continue;
-      idByElement.set(element, id);
-      observer.observe(element);
-    }
-    return () => observer.disconnect();
+    const update = (scroller: Element | null) => {
+      if (isPinnedRef.current) return;
+      const picked = pickActiveSection({
+        positions: measurePositions(ids),
+        readingLine: window.innerHeight * READING_LINE_RATIO,
+        isAtEnd: isScrolledToEnd(scroller),
+      });
+      setActiveId(picked);
+    };
+    const handleScroll = (event: Event) => {
+      const scroller = getSectionScroller(event.target, ids);
+      if (scroller !== null) update(scroller);
+    };
+    update(null);
+    // Scroll does not bubble; capturing on document hears the editor pane too.
+    document.addEventListener("scroll", handleScroll, { capture: true, passive: true });
+    return () => document.removeEventListener("scroll", handleScroll, { capture: true });
   }, [ids]);
 
   return [activeId, selectSection];
