@@ -15,7 +15,7 @@ function renderHeader({ name = "", title = "" }: { name?: string; title?: string
   persistence.save({ ...resume, contact: { ...resume.contact, name, title } });
   return render(
     <ResumeProvider persistence={persistence}>
-      <AppHeader />
+      <AppHeader onCleared={() => {}} />
     </ResumeProvider>,
   );
 }

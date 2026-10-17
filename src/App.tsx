@@ -18,17 +18,20 @@ export default function App() {
   // the preview's pagination run knows, so App holds the number between them.
   const [pageCount, setPageCount] = useState(0);
   const [activeSectionId, selectSection] = useActiveSection(SECTION_IDS);
+  // Contact and Summary edit local drafts seeded once from the store; after a
+  // clear, a new key remounts the editor so no stale draft survives.
+  const [editorKey, setEditorKey] = useState(0);
 
   return (
     <ResumeProvider persistence={persistence}>
       {/* Print CSS for native print-to-PDF (S12). Renders inside #root —
           after index.css in <head> — so its rules win on document order. */}
       <style>{printStyles}</style>
-      <AppHeader />
+      <AppHeader onCleared={() => setEditorKey((key) => key + 1)} />
       <main className="app-shell">
         <SectionRail activeId={activeSectionId} onSelect={selectSection} />
         <section aria-label="Editor" className="editor-pane">
-          <Editor />
+          <Editor key={editorKey} />
         </section>
         <section id="preview" aria-label="Preview" className="preview-pane">
           <PreviewBar pageCount={pageCount} />

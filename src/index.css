@@ -119,7 +119,7 @@ body {
   gap: 20px;
 }
 
-.app-header .btn--primary {
+.app-header__actions > :is(.btn--primary, .btn--secondary) {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -617,6 +617,17 @@ body {
   padding: 20px 24px 24px;
 }
 
+/* Lives inside the header (white-space: nowrap) DOM-wise. */
+.modal--confirm {
+  width: min(440px, calc(100vw - 2 * 16px));
+  white-space: normal;
+}
+
+.modal--confirm .modal__form {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
 .modal__form > * + * {
   margin-top: 16px;
 }
@@ -697,7 +708,7 @@ body {
   border-radius: var(--radius-control);
 }
 
-.app-header :is(.btn--primary, .btn--secondary) {
+.app-header__actions > :is(.btn--primary, .btn--secondary) {
   height: 36px;
 }
 
@@ -723,6 +734,20 @@ body {
 }
 
 .btn--secondary:hover {
+  opacity: 0.85;
+}
+
+/* Destructive confirm: only inside a confirmation dialog, never as a
+   first-click action. */
+.btn--danger {
+  height: 40px;
+  padding-inline: 16px;
+  border-radius: var(--radius-control);
+  background: var(--color-danger-text);
+  color: var(--color-background);
+}
+
+.btn--danger:hover {
   opacity: 0.85;
 }
 
@@ -996,6 +1021,23 @@ body {
     gap: 8px;
   }
 
+  /* Four header items do not fit a phone; Clear keeps its name for
+     assistive tech and shows only its icon. */
+  .app-header__actions > .clear-button {
+    width: 36px;
+    padding-inline: 0;
+    justify-content: center;
+  }
+
+  .clear-button__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
   .editor-pane {
     padding: 24px 16px;
   }
@@ -1016,5 +1058,14 @@ body {
   .field--short input:not([type="checkbox"]),
   .field--medium input:not([type="checkbox"]) {
     max-width: none;
+  }
+}
+
+/* Narrow phones: wordmark, Preview, Clear and Export PDF overlap below
+   ~420px. The wordmark is static text, and the actions are what the page
+   is for, so it gives way. */
+@media (max-width: 420px) {
+  .app-header__wordmark {
+    display: none;
   }
 }

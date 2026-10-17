@@ -1,4 +1,5 @@
 import { useResumeState } from "./features/resume/useResume";
+import { ClearResumeButton } from "./features/resume/ClearResumeButton";
 
 function formatIdentity({ name, title }: { name: string; title: string }): string {
   if (name.trim().length === 0) return "";
@@ -21,8 +22,13 @@ function DownloadIcon() {
   );
 }
 
-/** App band: wordmark and who the resume is for, save status, Export PDF. */
-export function AppHeader() {
+interface AppHeaderProps {
+  onCleared: () => void;
+}
+
+/** App band: wordmark and who the resume is for, save status, Clear and
+ *  Export PDF. */
+export function AppHeader({ onCleared }: AppHeaderProps) {
   const identity = formatIdentity(useResumeState().committed.contact);
 
   return (
@@ -46,6 +52,7 @@ export function AppHeader() {
           <span className="app-header__dot" aria-hidden="true" />
           SAVED LOCALLY
         </span>
+        <ClearResumeButton onCleared={onCleared} />
         <button type="button" className="btn btn--primary" onClick={() => window.print()}>
           <DownloadIcon />
           Export PDF
