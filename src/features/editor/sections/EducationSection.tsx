@@ -1,6 +1,7 @@
 import { useResumeState, useResumeDispatch } from "../../resume/useResume";
 import { useSectionDraft } from "../useSectionDraft";
 import { TextField } from "../TextField";
+import { MonthField } from "../MonthField";
 import { listErrorLabels } from "../errorLabels";
 import { validateEducation } from "../../../lib/validation/sectionRules";
 import { SectionEditor } from "../SectionEditor";
@@ -20,7 +21,7 @@ const makeEmpty = (): EducationItem => ({
   description: "",
 });
 
-const LABELS = { startDate: "Start date", endDate: "End date" };
+const LABELS = { institution: "Institution", startDate: "Start date", endDate: "End date" };
 
 /** Repeatable Education section with a rich-text description. */
 export function EducationSection() {
@@ -29,11 +30,13 @@ export function EducationSection() {
   const {
     draft,
     isEditing,
+    isDirty,
     errors,
     blockedSaveCount,
     startAdd,
     startEdit,
     updateDraft,
+    touch,
     trySave,
     cancel,
   } = useSectionDraft(makeEmpty, validateEducation);
@@ -48,58 +51,64 @@ export function EducationSection() {
       sectionId="education"
       title="Education"
       itemNoun="education"
+      dialogDescription="Where you studied and what you earned there."
       items={items}
       draft={draft}
       isEditing={isEditing}
+      isDirty={isDirty}
       errorLabels={listErrorLabels({ errors, labels: LABELS })}
       blockedSaveCount={blockedSaveCount}
       getItemErrorLabels={(item) =>
         listErrorLabels({ errors: validateEducation(item), labels: LABELS })
       }
-      canSave={draft !== null && draft.institution.trim().length > 0}
       renderSummary={(item) => <span>{item.degree || item.institution}</span>}
       renderSubtitle={(item) => joinSubtitle([item.degree ? item.institution : "", item.field])}
       renderMeta={(item) => [item.startDate, item.endDate].filter(Boolean).join(" – ")}
       renderForm={() => (
         <>
-          <label>
-            Institution
-            <input
-              value={draft?.institution ?? ""}
-              onChange={(e) => updateDraft({ institution: e.target.value })}
-            />
-          </label>
-          <label className="field field--short">
-            Degree
-            <input
+          <TextField
+            label={LABELS.institution}
+            isRequired
+            value={draft?.institution ?? ""}
+            error={errors.institution}
+            onChange={(institution) => updateDraft({ institution })}
+            onBlur={() => touch("institution")}
+          />
+          <div className="form-row">
+            <TextField
+              label="Degree"
+              isOptional
               value={draft?.degree ?? ""}
-              onChange={(e) => updateDraft({ degree: e.target.value })}
+              onChange={(degree) => updateDraft({ degree })}
             />
-          </label>
-          <label className="field field--medium">
-            Field of study
-            <input
+            <TextField
+              label="Field of study"
+              isOptional
               value={draft?.field ?? ""}
-              onChange={(e) => updateDraft({ field: e.target.value })}
+              onChange={(field) => updateDraft({ field })}
             />
-          </label>
-          <TextField
-            label={LABELS.startDate}
-            width="short"
-            placeholder="MM/YYYY"
-            value={draft?.startDate ?? ""}
-            error={errors.startDate}
-            onChange={(startDate) => updateDraft({ startDate })}
-          />
-          <TextField
-            label={LABELS.endDate}
-            width="short"
-            placeholder="MM/YYYY"
-            value={draft?.endDate ?? ""}
-            error={errors.endDate}
-            onChange={(endDate) => updateDraft({ endDate })}
-          />
+          </div>
+          <div className="form-row form-row--dates">
+            <MonthField
+              label={LABELS.startDate}
+              isOptional
+              value={draft?.startDate ?? ""}
+              error={errors.startDate}
+              onChange={(startDate) => updateDraft({ startDate })}
+              onBlur={() => touch("startDate")}
+            />
+            <MonthField
+              label={LABELS.endDate}
+              isOptional
+              value={draft?.endDate ?? ""}
+              error={errors.endDate}
+              onChange={(endDate) => updateDraft({ endDate })}
+              onBlur={() => touch("endDate")}
+            />
+          </div>
           <RichTextField
+            label="Description"
+            isOptional
             value={draft?.description ?? ""}
             onChange={(html) => updateDraft({ description: html })}
             ariaLabel="Education description"

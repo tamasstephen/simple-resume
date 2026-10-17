@@ -18,46 +18,52 @@ export function LinksSection() {
   const {
     draft,
     isEditing,
+    isDirty,
     errors,
     blockedSaveCount,
     startAdd,
     startEdit,
     updateDraft,
+    touch,
     trySave,
     cancel,
   } = useSectionDraft(makeEmpty, validateLink);
 
-  const save = () =>
-    trySave((item) => dispatch({ type: "SAVE_ITEM", section: "links", item: item }));
+  const save = () => trySave((item) => dispatch({ type: "SAVE_ITEM", section: "links", item }));
 
   return (
     <SectionEditor<LinkItem>
       sectionId="links"
       title="Links"
       itemNoun="link"
+      dialogDescription="A page that shows your work: portfolio, GitHub, LinkedIn."
       items={items}
       draft={draft}
       isEditing={isEditing}
+      isDirty={isDirty}
       errorLabels={listErrorLabels({ errors, labels: LABELS })}
       blockedSaveCount={blockedSaveCount}
       getItemErrorLabels={(item) => listErrorLabels({ errors: validateLink(item), labels: LABELS })}
-      canSave={draft !== null && draft.url.trim().length > 0}
       renderSummary={(item) => <span>{item.label || item.url}</span>}
       renderSubtitle={(item) => (item.label ? item.url : "")}
       renderForm={() => (
         <>
-          <label className="field field--medium">
-            Label
-            <input
-              value={draft?.label ?? ""}
-              onChange={(e) => updateDraft({ label: e.target.value })}
-            />
-          </label>
+          <TextField
+            label="Label"
+            isOptional
+            placeholder="e.g. Portfolio"
+            value={draft?.label ?? ""}
+            onChange={(label) => updateDraft({ label })}
+          />
           <TextField
             label={LABELS.url}
+            isRequired
+            type="url"
+            placeholder="github.com/you"
             value={draft?.url ?? ""}
             error={errors.url}
             onChange={(url) => updateDraft({ url })}
+            onBlur={() => touch("url")}
           />
         </>
       )}

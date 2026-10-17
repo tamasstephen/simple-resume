@@ -5,14 +5,19 @@ import { hasErrors } from "../../lib/validation/sectionRules";
 export interface SectionDraftApi<T> {
   draft: T | null;
   isEditing: boolean;
-  /** Errors for the draft, empty until the first blocked save so nobody is
-   *  scolded mid-typing; after that they track every edit. */
+  /** True once the draft differs from what was opened; closing then asks
+   *  before discarding. */
+  isDirty: boolean;
+  /** Errors to show: fields the writer has left (blur) and, after a blocked
+   *  save, every field — so nobody is scolded mid-typing. */
   errors: FieldErrors<T>;
   /** Bumps on every blocked save, so the dialog can move focus each time. */
   blockedSaveCount: number;
   startAdd(): void;
   startEdit(item: T): void;
   updateDraft(patch: Partial<T>): void;
+  /** Marks a field as visited, so its error shows from now on. */
+  touch(field: Extract<keyof T, string>): void;
   /** Hands a valid draft to `commit` and closes it; an invalid one stays
    *  open with its errors shown. */
   trySave(commit: (item: T) => void): void;
@@ -20,6 +25,20 @@ export interface SectionDraftApi<T> {
 }
 
 const NO_RULES = () => ({});
+
+function pickVisible<T>({
+  errors,
+  touched,
+}: {
+  errors: FieldErrors<T>;
+  touched: ReadonlySet<string>;
+}): FieldErrors<T> {
+  const visible: FieldErrors<T> = { ...errors };
+  for (const field of Object.keys(visible)) {
+    if (!touched.has(field)) Reflect.deleteProperty(visible, field);
+  }
+  return visible;
+}
 
 /**
  * Owns the in-progress draft for one section's form. The draft lives in local
@@ -31,12 +50,16 @@ export function useSectionDraft<T>(
   validate: Validator<T> = NO_RULES,
 ): SectionDraftApi<T> {
   const [draft, setDraft] = useState<T | null>(null);
+  const [opened, setOpened] = useState<T | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [touched, setTouched] = useState<ReadonlySet<string>>(new Set());
   const [blockedSaveCount, setBlockedSaveCount] = useState(0);
 
   const open = useCallback((next: T, editing: boolean) => {
     setDraft(next);
+    setOpened(next);
     setIsEditing(editing);
+    setTouched(new Set());
     setBlockedSaveCount(0);
   }, []);
 
@@ -48,9 +71,15 @@ export function useSectionDraft<T>(
     setDraft((current) => (current === null ? current : { ...current, ...patch }));
   }, []);
 
+  const touch = useCallback((field: Extract<keyof T, string>) => {
+    setTouched((current) => (current.has(field) ? current : new Set(current).add(field)));
+  }, []);
+
   const cancel = useCallback(() => {
     setDraft(null);
+    setOpened(null);
     setIsEditing(false);
+    setTouched(new Set());
     setBlockedSaveCount(0);
   }, []);
 
@@ -64,16 +93,20 @@ export function useSectionDraft<T>(
     cancel();
   };
 
-  const errors = draft !== null && blockedSaveCount > 0 ? validate(draft) : {};
+  const allErrors = draft === null ? {} : validate(draft);
+  const errors = blockedSaveCount > 0 ? allErrors : pickVisible({ errors: allErrors, touched });
+  const isDirty = draft !== null && JSON.stringify(draft) !== JSON.stringify(opened);
 
   return {
     draft,
     isEditing,
+    isDirty,
     errors,
     blockedSaveCount,
     startAdd,
     startEdit,
     updateDraft,
+    touch,
     trySave,
     cancel,
   };

@@ -34,7 +34,8 @@ function setup(overrides: TableOverrides = {}) {
       items={[{ id: "1", name: "TS" }]}
       draft={null}
       isEditing={false}
-      canSave={true}
+      dialogDescription="One skill per entry."
+      isDirty={false}
       renderSummary={(item) => <span>{item.name}</span>}
       renderForm={() => <input aria-label="name" />}
       {...handlers}
@@ -125,9 +126,20 @@ test("the dialog's cancel request (Esc) calls onCancel", () => {
   expect(h.onCancel).toHaveBeenCalledOnce();
 });
 
-test("Save is disabled when canSave is false", () => {
-  setup({ draft: { id: "new", name: "" }, canSave: false });
-  expect(screen.getByRole("button", { name: /save/i })).toBeDisabled();
+test("closing an edited draft asks first, and Keep editing keeps it open", async () => {
+  const h = setup({ draft: { id: "new", name: "TS" }, isDirty: true });
+  await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
+  expect(h.onCancel).not.toHaveBeenCalled();
+  expect(screen.getByRole("dialog", { name: "Discard your changes?" })).toBeInTheDocument();
+  await userEvent.click(screen.getByRole("button", { name: "Keep editing" }));
+  expect(h.onCancel).not.toHaveBeenCalled();
+});
+
+test("Discard closes an edited draft", async () => {
+  const h = setup({ draft: { id: "new", name: "TS" }, isDirty: true });
+  await userEvent.click(screen.getByRole("button", { name: "Close" }));
+  await userEvent.click(screen.getByRole("button", { name: "Discard" }));
+  expect(h.onCancel).toHaveBeenCalledOnce();
 });
 
 test("does not show the Add button while a draft is open", () => {
@@ -175,14 +187,10 @@ test("omits the subtitle element when it is empty", () => {
   expect(row.querySelector(".entry__subtitle")).toBeNull();
 });
 
-test("the dialog eyebrow names the section and whether the item is new", () => {
+test("the dialog explains itself under its heading", () => {
   setup({ draft: { id: "new", name: "" } });
-  expect(screen.getByText("06 / SKILLS / NEW")).toBeInTheDocument();
-});
-
-test("the dialog eyebrow says EDIT when editing", () => {
-  setup({ draft: { id: "1", name: "TS" }, isEditing: true });
-  expect(screen.getByText("06 / SKILLS / EDIT")).toBeInTheDocument();
+  expect(screen.getByText("One skill per entry.")).toBeInTheDocument();
+  expect(screen.getByText("* Required fields")).toBeInTheDocument();
 });
 
 test("the dialog heading and Save label follow add versus edit", () => {
@@ -228,7 +236,8 @@ function setupTags() {
       items={[{ id: "1", name: "TS" }]}
       draft={null}
       isEditing={false}
-      canSave={true}
+      dialogDescription="One skill per entry."
+      isDirty={false}
       renderSummary={(item) => <span>{item.name}</span>}
       renderForm={() => <input aria-label="name" />}
       {...handlers}

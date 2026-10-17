@@ -4,17 +4,21 @@ import { ItemDialog } from "./ItemDialog";
 import { KebabMenu } from "./KebabMenu";
 import { ErrorIcon } from "./TextField";
 import { SectionHeading } from "./SectionHeading";
-import { getSectionMeta, sectionAnchor, type SectionId } from "./sectionMeta";
+import { sectionAnchor, type SectionId } from "./sectionMeta";
 
 export interface SectionEditorBaseProps<T extends { id: string }> {
   sectionId: SectionId;
   title: string;
   /** Singular name of one item ("skill"), used by the add action and dialog. */
   itemNoun: string;
+  /** What the dialog heading calls an item when it differs ("work experience"). */
+  dialogNoun?: string;
+  /** One line under the dialog heading: what this entry is for. */
+  dialogDescription: string;
   items: readonly T[];
   draft: T | null;
   isEditing: boolean;
-  canSave: boolean;
+  isDirty: boolean;
   /** Labels of the draft's invalid fields, for the dialog's summary alert. */
   errorLabels?: readonly string[];
   blockedSaveCount?: number;
@@ -74,10 +78,12 @@ export function SectionEditor<T extends { id: string }>(props: SectionEditorProp
     sectionId,
     title,
     itemNoun,
+    dialogNoun = itemNoun,
+    dialogDescription,
     items,
     draft,
     isEditing,
-    canSave,
+    isDirty,
     errorLabels = [],
     blockedSaveCount = 0,
     renderSummary,
@@ -89,7 +95,6 @@ export function SectionEditor<T extends { id: string }>(props: SectionEditorProp
     onCancel,
   } = props;
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-  const { number, name } = getSectionMeta(sectionId);
   // Stays mounted (hidden) while the dialog is open so focus can return to it.
   const addButton = (
     <button
@@ -185,10 +190,11 @@ export function SectionEditor<T extends { id: string }>(props: SectionEditorProp
 
       {draft !== null && (
         <ItemDialog
-          title={itemNoun}
-          eyebrow={`${number} / ${name.toUpperCase()} / ${isEditing ? "EDIT" : "NEW"}`}
+          title={`${isEditing ? "Edit" : "Add"} ${dialogNoun}`}
+          description={dialogDescription}
+          itemNoun={itemNoun}
           isEditing={isEditing}
-          canSave={canSave}
+          isDirty={isDirty}
           errorLabels={errorLabels}
           blockedSaveCount={blockedSaveCount}
           onSave={onSave}

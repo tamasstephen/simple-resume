@@ -1,6 +1,6 @@
-import { useId, useRef } from "react";
-import type { MouseEvent } from "react";
+import { useState } from "react";
 import { emptyResume } from "../../lib/schema/resume";
+import { ConfirmDialog } from "../editor/ConfirmDialog";
 import { useResumeDispatch } from "./useResume";
 
 function TrashIcon() {
@@ -27,20 +27,12 @@ interface ClearResumeButtonProps {
  *  there is no undo and the data lives only in this browser. */
 export function ClearResumeButton({ onCleared }: ClearResumeButtonProps) {
   const dispatch = useResumeDispatch();
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const titleId = useId();
-  const descriptionId = useId();
-
-  const closeDialog = () => dialogRef.current?.close();
+  const [isConfirming, setIsConfirming] = useState(false);
 
   const confirmClear = () => {
     dispatch({ type: "REPLACE_ALL", resume: emptyResume() });
-    closeDialog();
+    setIsConfirming(false);
     onCleared();
-  };
-
-  const handleBackdropClick = (event: MouseEvent<HTMLDialogElement>) => {
-    if (event.target === dialogRef.current) closeDialog();
   };
 
   return (
@@ -48,39 +40,20 @@ export function ClearResumeButton({ onCleared }: ClearResumeButtonProps) {
       <button
         type="button"
         className="btn btn--secondary clear-button"
-        onClick={() => dialogRef.current?.showModal()}
+        onClick={() => setIsConfirming(true)}
       >
         <TrashIcon />
         <span className="clear-button__label">Clear</span>
       </button>
-      <dialog
-        ref={dialogRef}
-        className="modal modal--confirm"
-        aria-labelledby={titleId}
-        aria-describedby={descriptionId}
-        onClick={handleBackdropClick}
-      >
-        <div className="modal__header">
-          <div>
-            <p className="modal__eyebrow">CLEAR RESUME</p>
-            <h2 className="modal__title" id={titleId}>
-              Clear everything?
-            </h2>
-          </div>
-        </div>
-        <p className="modal__form" id={descriptionId}>
-          This deletes every section of your resume from this browser. It can’t be undone.
-        </p>
-        <div className="modal__actions">
-          {/* First in DOM order, so showModal focuses the safe choice. */}
-          <button type="button" className="btn btn--secondary" onClick={closeDialog}>
-            Cancel
-          </button>
-          <button type="button" className="btn btn--danger" onClick={confirmClear}>
-            Clear resume
-          </button>
-        </div>
-      </dialog>
+      <ConfirmDialog
+        isOpen={isConfirming}
+        eyebrow="CLEAR RESUME"
+        title="Clear everything?"
+        description="This deletes every section of your resume from this browser. It can’t be undone."
+        confirmLabel="Clear resume"
+        onConfirm={confirmClear}
+        onCancel={() => setIsConfirming(false)}
+      />
     </>
   );
 }

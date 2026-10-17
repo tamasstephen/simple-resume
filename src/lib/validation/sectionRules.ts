@@ -3,8 +3,10 @@ import type {
   ContactHeader,
   EducationItem,
   ExperienceItem,
+  LanguageItem,
   LinkItem,
   ProjectItem,
+  SkillItem,
 } from "../schema/resume";
 import {
   MESSAGES,
@@ -14,6 +16,7 @@ import {
   validateMonthYear,
   validatePhone,
   validateWebAddress,
+  type FieldRule,
 } from "./fieldRules";
 
 /** Fix-it message per field; null or a missing entry means the field is valid. */
@@ -27,6 +30,20 @@ export function countErrors<T>(errors: FieldErrors<T>): number {
 
 export function hasErrors<T>(errors: FieldErrors<T>): boolean {
   return countErrors(errors) > 0;
+}
+
+/** `message` when the value is blank, else the format `rule`'s verdict. */
+function required({
+  value,
+  message,
+  rule,
+}: {
+  value: string;
+  message: string;
+  rule?: FieldRule;
+}): string | null {
+  if (value.trim().length === 0) return message;
+  return rule === undefined ? null : rule(value);
 }
 
 /** The end-date message: its own format first, then its order against a
@@ -52,24 +69,47 @@ export const validateContact: Validator<ContactHeader> = (contact) => ({
 });
 
 export const validateExperience: Validator<ExperienceItem> = (item) => ({
-  startDate:
-    item.startDate.trim().length === 0
-      ? MESSAGES.startDateRequired
-      : validateMonthYear(item.startDate),
-  endDate: item.current ? null : validateDateRange(item),
+  role: required({ value: item.role, message: MESSAGES.jobTitleRequired }),
+  company: required({ value: item.company, message: MESSAGES.companyRequired }),
+  startDate: required({
+    value: item.startDate,
+    message: MESSAGES.startDateRequired,
+    rule: validateMonthYear,
+  }),
+  // A current role prints "Present"; any other needs to say when it ended.
+  endDate: item.current
+    ? null
+    : required({
+        value: item.endDate,
+        message: MESSAGES.endDateRequired,
+        rule: () => validateDateRange(item),
+      }),
 });
 
 export const validateEducation: Validator<EducationItem> = (item) => ({
+  institution: required({ value: item.institution, message: MESSAGES.institutionRequired }),
   startDate: validateMonthYear(item.startDate),
   endDate: validateDateRange(item),
 });
 
+export const validateSkill: Validator<SkillItem> = (item) => ({
+  name: required({ value: item.name, message: MESSAGES.skillRequired }),
+});
+
+export const validateLanguage: Validator<LanguageItem> = (item) => ({
+  name: required({ value: item.name, message: MESSAGES.languageRequired }),
+});
+
 export const validateCertification: Validator<CertificationItem> = (item) => ({
+  name: required({ value: item.name, message: MESSAGES.certificationRequired }),
   date: validateMonthYear(item.date),
 });
 
 export const validateProject: Validator<ProjectItem> = (item) => ({
+  name: required({ value: item.name, message: MESSAGES.projectRequired }),
   url: validateWebAddress(item.url),
 });
 
-export const validateLink: Validator<LinkItem> = (item) => ({ url: validateWebAddress(item.url) });
+export const validateLink: Validator<LinkItem> = (item) => ({
+  url: required({ value: item.url, message: MESSAGES.linkRequired, rule: validateWebAddress }),
+});
