@@ -541,69 +541,267 @@ body {
   font: 600 14px / 18px var(--font-sans);
 }
 
-/* Forms: 14px/600 labels 8px above 44px boxed inputs, 16px field rhythm. */
-.section label {
-  display: block;
-  color: var(--color-text);
-  font: 600 14px / 1.5 var(--font-sans);
+/* Fields (refined design system): 14px/600 label row with a required star or
+   "Optional" on the right, 8px above a 48px control with a #8A8A8A border and
+   16px text, then a 13px helper or error line. 16px between fields. */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
 }
 
-.section input:not([type="checkbox"]) {
-  display: block;
-  width: 100%;
-  height: 44px;
-  margin-top: 8px;
-  padding-inline: 14px;
-  border: 1px solid var(--color-border-strong);
+.field__label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.section .field__label {
+  color: var(--color-text);
+  font: 600 14px / 20px var(--font-sans);
+}
+
+/* The star is decoration for sighted users; inputs carry aria-required. */
+.field__label--required::after {
+  content: " *" / "";
+}
+
+.field__hint,
+.section .field__helper {
+  color: var(--color-text-secondary);
+  font: 400 13px / 20px var(--font-sans);
+}
+
+.field__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: var(--container-input);
+  border: 1px solid var(--color-control-border);
   border-radius: var(--radius-control);
   background: var(--color-background);
+  transition:
+    border-color 120ms var(--ease-out),
+    box-shadow 120ms var(--ease-out);
+}
+
+.field--short .field__control {
+  max-width: 200px;
+}
+
+.field--medium .field__control {
+  max-width: 320px;
+}
+
+.field__input {
+  flex: 1;
+  align-self: stretch;
+  min-width: 0;
+  padding: 0 16px;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
   color: var(--color-text);
-  font: 400 14px / 1.5 var(--font-sans);
-  text-transform: none;
-  letter-spacing: normal;
+  font: 400 16px / 24px var(--font-sans);
 }
 
-.section input:not([type="checkbox"]):focus,
-.rich-text:focus-within {
-  border-color: var(--color-focus);
+.field__input:focus {
   outline: none;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus) 20%, transparent);
 }
 
-.section input::placeholder {
+.field__input::placeholder {
+  color: var(--color-text-placeholder);
+  opacity: 1;
+}
+
+/* Focus: 2px white gap + 2px cobalt ring, drawn on the box so a trailing
+   picker button sits inside it. */
+.field__control:focus-within {
+  border-color: var(--color-focus);
+  box-shadow:
+    0 0 0 2px var(--color-background),
+    0 0 0 4px var(--color-focus);
+}
+
+.field__control:has(.field__input[aria-invalid="true"]) {
+  border-color: var(--color-danger);
+}
+
+.field__control:has(.field__input:disabled) {
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
+.field__input:disabled {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.field__input:disabled::placeholder {
   color: var(--color-text-disabled);
 }
 
-/* Invalid: danger border and ring, focused or not — the error must not
-   vanish the moment the writer clicks in to fix it. */
-.section input[aria-invalid="true"],
-.section input[aria-invalid="true"]:focus {
-  border-color: var(--color-danger);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-danger) 18%, transparent);
+.section .field__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: var(--color-danger-text);
+  font: 400 13px / 20px var(--font-sans);
 }
 
-.field > .field__error {
+.field__error svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+/* Icon button inside the control (the month picker trigger). */
+.field__trailing-button {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 44px;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0 var(--radius-control) var(--radius-control) 0;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.field__trailing-button:disabled {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+/* Two fields side by side (job title + company, start + end date). */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.form-row .field--short .field__control,
+.form-row .field--medium .field__control {
+  max-width: none;
+}
+
+/* Checkbox: 20px box, black when checked, inside a 44px tall target. */
+.section .checkbox {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 8px;
-  color: var(--color-danger-text);
-  font: 500 13px / 1.4 var(--font-sans);
+  gap: 12px;
+  min-height: 44px;
+  color: var(--color-text);
+  font: 400 14px / 20px var(--font-sans);
+  cursor: pointer;
 }
 
-.field__error svg,
+.checkbox__input {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  border: 1px solid var(--color-control-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-background) center / 14px no-repeat;
+  appearance: none;
+  cursor: pointer;
+}
+
+.checkbox__input:checked {
+  border-color: var(--color-action);
+  background-color: var(--color-action);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='m4 10 4 4 8-8' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Month picker: year stepper over a 4×3 grid of months, below the field. */
+.month-field {
+  position: relative;
+}
+
+.month-picker {
+  position: absolute;
+  z-index: 3;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 288px;
+  max-width: 100%;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 12%);
+}
+
+.month-picker__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.month-picker__year {
+  font: 600 14px / 20px var(--font-sans);
+}
+
+.month-picker__nav,
+.month-picker__month {
+  display: grid;
+  place-items: center;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-text);
+  font: 400 14px / 20px var(--font-sans);
+  cursor: pointer;
+  transition: background-color 120ms var(--ease-out);
+}
+
+.month-picker__nav {
+  width: 44px;
+}
+
+.month-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.month-picker__nav:hover,
+.month-picker__month:hover {
+  background: var(--color-surface);
+}
+
+.month-picker__month[aria-pressed="true"] {
+  background: var(--color-action);
+  color: var(--color-white);
+  font-weight: 600;
+}
+
+/* Inline forms (Contact, Summary): the same 16px rhythm as the dialogs. */
+.section > .field + .field,
+.section > .btn {
+  margin-top: 16px;
+}
+
+/* Error summary: what blocks Save and how to fix it, above the fields. */
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-control);
+}
+
 .alert svg {
   flex-shrink: 0;
-}
-
-/* Dialog summary: what blocks Save, named, above the fields. */
-.modal__form > .alert {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  font: 600 14px / 20px var(--font-sans);
+  margin-top: 1px;
 }
 
 .alert--danger {
@@ -612,49 +810,33 @@ body {
   color: var(--color-danger-text);
 }
 
-.section input:not([type="checkbox"]):disabled {
-  background: var(--color-surface);
-  color: var(--color-text-disabled);
+.section .alert__title {
+  font: 600 14px / 20px var(--font-sans);
 }
 
-/* Field widths carry meaning: a date is not as wide as a job title. */
-.field--short input:not([type="checkbox"]) {
-  max-width: 140px;
+.section .alert__text {
+  color: var(--color-text);
+  font: 400 14px / 20px var(--font-sans);
 }
 
-.field--medium input:not([type="checkbox"]) {
-  max-width: 300px;
-}
-
-/* Checkbox labels render as an inline row instead of stacked. */
-.section input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  margin-left: 8px;
-  accent-color: var(--color-text);
-}
-
-/* 16px between fields in the single-form sections (Contact, Summary). */
-.section > :is(label, .field) + :is(label, .field),
-.section > .btn {
-  margin-top: 16px;
-}
-
-/* Add/edit popup: native <dialog> card over a dark scrim. The top layer
-   escapes the pane's overflow AND the print stylesheet (the dialog lives
-   in .editor-pane DOM-wise, so it is display:none in print — no stray
-   dialogs in exported PDFs). Padding lives on the parts so the footer can
-   stick edge to edge. */
+/* Popup form: native <dialog>, 640px card over the scrim. The top layer
+   escapes the pane's overflow AND the print stylesheet (the dialog lives in
+   .editor-pane DOM-wise, so it is display:none in print). Header and footer
+   stay put; only the body scrolls. */
 .modal {
-  width: min(560px, calc(100vw - 2 * 16px));
+  width: min(640px, calc(100vw - 2 * 32px));
   max-height: calc(100dvh - 2 * 32px);
   padding: 0;
-  overflow-y: auto;
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--radius-dialog);
   background: var(--color-background);
   color: var(--color-text);
   box-shadow: 0 24px 64px rgb(0 0 0 / 18%);
+}
+
+.modal[open] {
+  display: flex;
+  flex-direction: column;
 }
 
 .modal::backdrop {
@@ -663,189 +845,362 @@ body {
 
 .modal__header {
   display: flex;
+  flex-shrink: 0;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  padding: 24px 24px 0;
+  padding: 24px;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.modal .modal__eyebrow,
+.modal__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
 .modal .modal__title {
   margin: 0;
+  font: 600 24px / 30px var(--font-sans);
+  letter-spacing: -0.02em;
+}
+
+.section .modal__description {
+  color: var(--color-text-secondary);
+  font: 400 13px / 20px var(--font-sans);
+}
+
+.modal__description--compact {
+  display: none;
 }
 
 .modal__eyebrow {
+  margin: 0;
   color: var(--color-text-secondary);
   font: 400 12px / 16px var(--font-mono);
-  letter-spacing: 0.06em;
-}
-
-.modal .modal__title {
-  margin-top: 6px;
-  font: 600 20px / 26px var(--font-sans);
-  letter-spacing: -0.01em;
+  letter-spacing: 0.08em;
 }
 
 .modal__close {
   display: grid;
   flex-shrink: 0;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
+  margin: -10px -10px 0 0;
   padding: 0;
   border: 0;
   border-radius: var(--radius-control);
   background: transparent;
-  color: var(--color-text-secondary);
+  color: var(--color-text);
   cursor: pointer;
+  transition: background-color 120ms var(--ease-out);
 }
 
 .modal__close:hover {
   background: var(--color-surface);
-  color: var(--color-text);
 }
 
-.modal__close:focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 2px;
+.modal__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  margin: 0;
+  padding: 24px;
+  overflow-y: auto;
 }
 
-.modal__form {
-  padding: 20px 24px 24px;
+.modal__footer {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-background);
 }
 
-/* Lives inside the header (white-space: nowrap) DOM-wise. */
+.section .modal__required-note {
+  color: var(--color-text-secondary);
+  font: 400 13px / 20px var(--font-sans);
+}
+
+.modal__actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* Confirmation: the same card, narrower, with a heading, one paragraph and
+   the actions. It lives in the header DOM-wise (white-space: nowrap). */
 .modal--confirm {
   width: min(440px, calc(100vw - 2 * 16px));
   white-space: normal;
 }
 
-.modal--confirm .modal__form {
-  margin: 0;
+.modal--confirm .modal__header {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.modal--confirm .modal__title {
+  font-size: 20px;
+  line-height: 26px;
+}
+
+.modal .modal__confirm-text {
+  padding-block: 16px 24px;
   color: var(--color-text-secondary);
+  font: 400 14px / 20px var(--font-sans);
 }
 
-.modal__form > * + * {
-  margin-top: 16px;
+/* Below 768px the form becomes a bottom sheet: full width, 30px of page
+   left visible above it, stacked columns, 20px gutters, 48px actions and
+   safe-area room under them. */
+@media (max-width: 767px) {
+  .modal--form {
+    width: 100%;
+    max-width: none;
+    max-height: calc(100dvh - 30px);
+    margin: auto 0 0;
+    border-radius: var(--radius-dialog) var(--radius-dialog) 0 0;
+    box-shadow: 0 -8px 32px rgb(0 0 0 / 10%);
+  }
+
+  .modal--form .modal__header {
+    gap: 12px;
+    padding: 20px;
+  }
+
+  .modal--form .modal__title {
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  .modal--form .modal__description {
+    display: none;
+  }
+
+  .modal--form .modal__description--compact {
+    display: block;
+  }
+
+  .modal--form .modal__body {
+    padding: 20px;
+  }
+
+  .modal--form .modal__footer {
+    padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+  }
+
+  .modal--form .modal__required-note {
+    display: none;
+  }
+
+  .modal--form .modal__actions {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .modal--form .modal__actions .btn {
+    flex: 1;
+    height: 48px;
+  }
+
+  .modal--form .modal__actions .btn--primary {
+    flex: 2;
+  }
+
+  .form-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .form-row--dates {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rich-text .tiptap {
+    font-size: 16px;
+    line-height: 24px;
+  }
 }
 
-/* Sticky to the card's bottom edge: the card scrolls on short viewports and
-   Save must never scroll out of reach. */
-.modal__actions {
-  position: sticky;
-  bottom: 0;
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  padding: 16px 24px;
-  background: var(--color-background);
-  border-top: 1px solid var(--color-border);
+@media (max-width: 374px) {
+  .form-row--dates {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
-/* Rich text: one bordered box, toolbar inside on top. */
+/* Rich text: one bordered box, a 44px toolbar of glyph buttons on top. */
 .rich-text {
-  margin-top: 8px;
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-control-border);
   border-radius: var(--radius-control);
   background: var(--color-background);
+  transition:
+    border-color 120ms var(--ease-out),
+    box-shadow 120ms var(--ease-out);
+}
+
+.rich-text:focus-within {
+  border-color: var(--color-focus);
+  box-shadow:
+    0 0 0 2px var(--color-background),
+    0 0 0 4px var(--color-focus);
 }
 
 .rich-text__toolbar {
   display: flex;
+  align-items: center;
   gap: 4px;
-  padding: 6px;
+  height: 44px;
+  padding-inline: 8px;
   border-bottom: 1px solid var(--color-border);
   border-radius: var(--radius-control) var(--radius-control) 0 0;
   background: var(--color-surface);
 }
 
 .rich-text__separator {
-  align-self: center;
   width: 1px;
   height: 16px;
   margin-inline: 4px;
   background: var(--color-border-strong);
 }
 
-.rich-text .tiptap {
-  min-height: 72px;
-  padding: 8px 14px;
+.rich-text__button {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--color-text);
-  font: 400 14px / 1.5 var(--font-sans);
+  font: 700 16px / 24px var(--font-sans);
+  cursor: pointer;
+  transition: background-color 120ms var(--ease-out);
+}
+
+.rich-text__button em {
+  font-weight: 400;
+}
+
+.rich-text__button:hover {
+  background: var(--color-border);
+}
+
+.rich-text__button[aria-pressed="true"] {
+  border-color: var(--color-border);
+  background: var(--color-background);
+}
+
+.rich-text .tiptap {
+  min-height: 92px;
+  padding: 12px 16px;
+  background: transparent;
+  color: var(--color-text);
+  font: 400 14px / 20px var(--font-sans);
+}
+
+.rich-text .tiptap:focus {
+  outline: none;
 }
 
 .rich-text .tiptap ul,
 .rich-text .tiptap ol {
-  padding-left: 24px;
+  padding-left: 20px;
 }
 
+.rich-text .tiptap li + li,
 .rich-text .tiptap p + p {
   margin-top: 8px;
 }
 
-/* Buttons: black solid (primary), white outlined (secondary), underline-sweep
-   text (Cancel/Edit/Delete), 32x28 toggles (toolbar). Controls are 40px tall,
-   36px in the header. */
+/* Buttons (refined): 44px targets; black primary that darkens to #262626
+   on hover and #404040 when pressed; white secondary with a hairline border.
+   Hover and pressed change fill only, over 120ms. The header keeps a 36px
+   compact size. */
 .btn {
   appearance: none;
   border: 0;
   background: none;
   padding: 0;
   color: var(--color-text);
-  font: 600 14px / 1.2 var(--font-sans);
+  font: 600 14px / 20px var(--font-sans);
   cursor: pointer;
-  transition: opacity 150ms var(--ease-out);
+  transition:
+    background-color 120ms var(--ease-out),
+    opacity 120ms var(--ease-out);
 }
 
 .btn--primary,
-.btn--secondary {
-  height: 40px;
-  padding-inline: 16px;
+.btn--secondary,
+.btn--danger {
+  height: var(--container-control);
+  padding-inline: 20px;
+  border: 1px solid transparent;
   border-radius: var(--radius-control);
 }
 
 .app-header__actions > :is(.btn--primary, .btn--secondary) {
   height: 36px;
+  padding-inline: 16px;
 }
 
 .btn--primary {
-  background: var(--color-text);
-  color: var(--color-background);
+  border-color: var(--color-action);
+  background: var(--color-action);
+  color: var(--color-white);
 }
 
 .btn--primary:hover:not(:disabled) {
-  opacity: 0.85;
+  background: var(--color-action-hover);
+}
+
+.btn--primary:active:not(:disabled) {
+  background: var(--color-action-pressed);
 }
 
 .btn--primary:disabled {
+  border-color: var(--color-surface);
   background: var(--color-surface);
   color: var(--color-text-disabled);
   cursor: default;
 }
 
 .btn--secondary {
-  border: 1px solid var(--color-border-strong);
+  border-color: var(--color-border);
   background: var(--color-background);
   color: var(--color-text);
 }
 
 .btn--secondary:hover {
-  opacity: 0.85;
+  background: var(--color-surface);
 }
 
 /* Destructive confirm: only inside a confirmation dialog, never as a
    first-click action. */
 .btn--danger {
-  height: 40px;
-  padding-inline: 16px;
-  border-radius: var(--radius-control);
+  border-color: var(--color-danger-text);
   background: var(--color-danger-text);
-  color: var(--color-background);
+  color: var(--color-white);
 }
 
 .btn--danger:hover {
-  opacity: 0.85;
+  opacity: 0.9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .field__control,
+  .rich-text {
+    transition: none;
+  }
 }
 
 .btn--text {
@@ -1152,8 +1507,8 @@ body {
     padding-inline: 16px;
   }
 
-  .field--short input:not([type="checkbox"]),
-  .field--medium input:not([type="checkbox"]) {
+  .field--short .field__control,
+  .field--medium .field__control {
     max-width: none;
   }
 }

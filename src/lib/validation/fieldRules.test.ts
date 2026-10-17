@@ -1,5 +1,6 @@
 import {
   MESSAGES,
+  formatMonthYear,
   isMonthYearBefore,
   parseMonthYear,
   validateEmail,
@@ -81,5 +82,14 @@ describe("validateWebAddress", () => {
 
   test.each(["github", "javascript:alert(1)", "http://", "mailto:yep@"])("rejects %j", (value) => {
     expect(validateWebAddress(value)).not.toBeNull();
+  });
+});
+
+test("formatMonthYear writes a short month that parseMonthYear reads back", () => {
+  expect(formatMonthYear({ year: 2022, month: 1 })).toBe("Jan 2022");
+  expect(formatMonthYear({ year: 2019, month: 9 })).toBe("Sep 2019");
+  expect(parseMonthYear(formatMonthYear({ year: 2019, month: 9 }))).toEqual({
+    year: 2019,
+    month: 9,
   });
 });

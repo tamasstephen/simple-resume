@@ -12,7 +12,16 @@ export interface MonthYear {
 }
 
 export const MESSAGES = {
-  startDateRequired: "Required to print this role.",
+  jobTitleRequired: "Add a job title.",
+  companyRequired: "Add a company.",
+  startDateRequired: "Choose a start month and year.",
+  endDateRequired: "Choose an end month and year, or tick “I currently work here”.",
+  institutionRequired: "Add a school or university.",
+  skillRequired: "Add a skill.",
+  languageRequired: "Add a language.",
+  certificationRequired: "Add a certification name.",
+  projectRequired: "Add a project name.",
+  linkRequired: "Add a web address.",
   email: "Enter a full email address, like name@example.com.",
   phoneCharacters: "Use digits, spaces and + ( ) - . only.",
   phoneLength: "Enter 7 to 15 digits.",
@@ -67,6 +76,12 @@ export function parseMonthYear(raw: string): MonthYear | null {
   if (parts === null || parts.month === null) return null;
   if (parts.month < 1 || parts.month > 12) return null;
   return { year: parts.year, month: parts.month };
+}
+
+/** "Jan 2022": the form the month picker writes, and one `parseMonthYear` reads. */
+export function formatMonthYear({ year, month }: MonthYear): string {
+  const name = MONTH_NAMES[month - 1] ?? "";
+  return `${name.charAt(0).toUpperCase()}${name.slice(1, 3)} ${year}`;
 }
 
 export function isMonthYearBefore(earlier: MonthYear, later: MonthYear): boolean {

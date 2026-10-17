@@ -9,7 +9,8 @@ test("styles the editor from the shared design-system tokens", () => {
   expect(css).toContain("var(--color-text)");
   expect(css).toContain("var(--radius-control)");
   expect(css).toContain("var(--color-focus)");
-  expect(css).toContain("color-mix(in srgb, var(--color-focus) 20%, transparent)");
+  // Refined focus: a 2px white gap, then a 2px cobalt ring.
+  expect(css).toMatch(/0 0 0 2px var\(--color-background\),\s*0 0 0 4px var\(--color-focus\)/);
 });
 
 test("defines no colour tokens of its own", () => {
@@ -29,6 +30,11 @@ test("tokens.css carries the design-system colours the editor needs", () => {
     "--color-warning",
     "--color-warning-surface",
     "--color-scrim",
+    "--color-control-border",
+    "--color-text-placeholder",
+    "--color-action",
+    "--color-action-hover",
+    "--color-action-pressed",
   ];
   names.forEach((name) => expect(tokens).toMatch(new RegExp(`${name}\\s*:`)));
 });
